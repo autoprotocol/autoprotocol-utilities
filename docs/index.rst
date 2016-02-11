@@ -1,7 +1,4 @@
 .. Autoprotocol Utilities documentation master file, created by
-   sphinx-quickstart on Wed Feb 10 20:46:44 2016.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
 
 Welcome to Autoprotocol Utilities's documentation!
 ==================================================
@@ -12,6 +9,31 @@ Contents:
    :maxdepth: 2
 
 
+Features
+--------
+
+- Utility functions to generate protocols faster and more convenient
+- Checker functions for volume etc
+
+Installation
+------------
+
+Install $project by running:
+
+    python setup.py install
+
+Contribute
+----------
+
+- Source Code: https://work.r23s.net/diffusion/APUTILS/
+
+Support
+-------
+
+If you are having issues, please let us know.
+We have a mailing list located at: project@google-groups.com
+
+
 
 Indices and tables
 ==================
@@ -20,3 +42,6 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 
+:copyright: 2016 by The Autoprotocol Development Team, see AUTHORS
+    for more details.
+:license: BSD, see LICENSE for more details
