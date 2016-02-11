@@ -6,22 +6,51 @@ import datetime
 import math
 import sys
 
-
 if sys.version_info[0] >= 3:
     string_type = str
 else:
     string_type = basestring
 
 
-def list_of_filled_wells(cont):
+def list_of_filled_wells(cont, empty=False):
+    '''
+        For the container given, determine which wells are filled
+
+        Parameters
+        ----------
+        cont  = container
+        empty = bool, if True return empty wells instead of filled
+
+        Returns
+        -------
+        list of wells
+    '''
+    if not isinstance(cont, Container):
+        raise RuntimeError("list_of_filled_wells needs a container as input")
     wells = []
     for well in cont.all_wells():
-        if well.volume is not None:
-            wells.append(well)
+        if not empty:
+            if well.volume is not None:
+                wells.append(well)
+        if empty:
+            if well.volume is None:
+                wells.append(well)
     return wells
 
 
 def first_empty_well(cont):
+    '''
+        Get the first empty well of a container followed by only empty wells
+
+        Parameters
+        ----------
+        cont = container
+
+        Returns
+        -------
+        on success: well
+        on failure: string
+    '''
     well = max(cont.all_wells(),
                key=lambda x: x.index if x.volume else 0).index + 1
     if well < cont.container_type.well_count:
@@ -31,6 +60,21 @@ def first_empty_well(cont):
 
 
 def unique_containers(wells):
+    '''
+        Get a list of unique containers for a list of wells
+
+        Parameters
+        ----------
+        wells = list of wells
+
+        Returns
+        -------
+        Container
+    '''
+    if not isinstance(wells, (list, WellGroup)):
+        raise RuntimeError("unique_containers requires a list of wells or "
+                           "a WellGroup")
+    wells = flatten_list(wells)
     cont = list(set([well.container for well in wells]))
     return cont
 
@@ -104,10 +148,13 @@ def user_errors_group(error_msgs):
                       string_type(m) for i, m in enumerate(error_msgs)]))
 
 
-def printdatetime(time=True):
+def printdatetime():
     printdate = datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
-    if not time:
-        printdate = datetime.datetime.now().strftime('%Y-%m-%d')
+    return printdate
+
+
+def printdate():
+    printdate = datetime.datetime.now().strftime('%Y-%m-%d')
     return printdate
 
 
@@ -128,9 +175,13 @@ def ref_kit_container(protocol, name, container, kit_id, discard=True,
 
 def make_list(my_str, integer=False):
     '''
-        Sometimes you need a list of a type that is not supported. This takes
-        a string and comma-seperates it, returning a list of strings or
-        integers.
+        Sometimes you need a list of a type that is not supported.
+
+        Parameters
+        ----------
+        my_str   = string with individual elements separated by comma
+        interger = bool, if true list of integers instead of list of strings
+                   is returned.
     '''
     assert isinstance(my_str, string_type), "Input needs to be of type string"
     if integer:
@@ -138,6 +189,25 @@ def make_list(my_str, integer=False):
     else:
         my_str = [x.strip() for x in my_str.split(",")]
     return my_str
+
+
+def flatten_list(l):
+    '''
+        Flatten a list recursively without for loops or additional modules
+
+        Parameters
+        ---------
+        l = list to flatten
+
+        Returns
+        -------
+        flat list
+    '''
+    if l == []:
+        return l
+    if isinstance(l[0], list):
+        return flatten_list(l[0]) + flatten_list(l[1:])
+    return l[:1] + flatten_list(l[1:])
 
 
 def thermocycle_ramp(start_temp, end_temp, total_duration, step_duration):
@@ -164,7 +234,21 @@ def thermocycle_ramp(start_temp, end_temp, total_duration, step_duration):
     return thermocycle_steps
 
 
-def return_agar_plates(wells):
+def det_new_group(i, base=0):
+    '''
+        Helper to determine if new_group should be added. Returns true when
+        i matches the base, which defaults to 0.
+    '''
+    assert isinstance(i, int), "Needs an integer."
+    assert isinstance(base, int), "Base has to be an integer"
+    if i == base:
+        new_group = True
+    else:
+        new_group = False
+    return new_group
+
+
+def return_agar_plates(wells=6):
     '''
         Dicts of all plates available that can be purchased.
     '''
@@ -183,20 +267,6 @@ def return_agar_plates(wells):
     else:
         raise ValueError("Wells has to be an integer, either 1 or 6")
     return(plates)
-
-
-def det_new_group(i, base=0):
-    '''
-        Helper to determine if new_group should be added. Returns true when
-        i matches the base, which defaults to 0.
-    '''
-    assert isinstance(i, int), "Needs an integer."
-    assert isinstance(base, int), "Base has to be an integer"
-    if i == base:
-        new_group = True
-    else:
-        new_group = False
-    return new_group
 
 
 def return_dispense_media():
