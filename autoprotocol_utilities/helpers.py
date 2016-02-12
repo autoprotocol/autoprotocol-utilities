@@ -2,6 +2,8 @@ from autoprotocol.container import Container, WellGroup, Well
 from autoprotocol.protocol import Ref
 from autoprotocol.unit import Unit
 from autoprotocol import UserError
+from itertools import groupby
+from operator import itemgetter
 import datetime
 import math
 import sys
@@ -71,12 +73,135 @@ def unique_containers(wells):
         -------
         Container
     '''
-    if not isinstance(wells, (list, WellGroup)):
-        raise RuntimeError("unique_containers requires a list of wells or "
-                           "a WellGroup")
+    assert isinstance(wells, (list, WellGroup)), "unique_containers requires"
+    " a list of wells or a WellGroup"
     wells = flatten_list(wells)
     cont = list(set([well.container for well in wells]))
     return cont
+
+
+def sort_well_group(well_group, columnwise=False):
+    '''
+        Sort a well group in rowwise or columnwise format.
+        This function sorts first by container id and name, then by row or
+        column, as needed. When the webapp returns aliquot+ inputs, it
+        usually does so as a rowwise sorted well group, so this function
+        can be useful for re-sorting when necessary.
+    '''
+    assert isinstance(well_group, WellGroup), "well_group must be an instance"
+    " of the WellGroup class"
+    well_list = [(
+        well,
+        well.container.id,
+        well.container.name,
+        well.container.decompose(well)[0],
+        well.container.decompose(well)[1]
+        ) for well in well_group
+    ]
+
+    if columnwise:
+        sorted_well_list = sorted(well_list, key=itemgetter(1, 2, 4, 3))
+    else:
+        sorted_well_list = sorted(well_list, key=itemgetter(1, 2, 3, 4))
+
+    sorted_well_group = WellGroup([well[0] for well in sorted_well_list])
+    return sorted_well_group
+
+
+# detect stamp shape
+
+# def primer_index(wells):
+
+#     if wells[0].index < 12 and wells[-1].index > 83:
+#         row_check = False
+#     else:
+#         row_check = True
+
+#     if row_check:
+#         num_primers = 12
+#     else:
+#         num_primers = 8
+
+#     if len(wells) % num_primers != 0:
+#         raise UserError("Error with %s: Must include multiple of %s primers" % (wells[0], num_primers))
+#     for w in wells:
+#         if w.container != wells[0].container:
+#             raise UserError("Error with %s: Primers of a set must be in the same container" % w)
+#     well_index = [w.index for w in wells]
+#     if row_check:
+#         if well_index != range(well_index[0], well_index[0]+len(wells)):
+#             raise UserError("Error with %s: Primers must be in the same row" % wells[0])
+#         if well_index[0] % 12 != 0:
+#             raise UserError("Error with %s: First primer must be in the first column" % wells[0])
+#     else:
+#         if [(w - well_index[0]) % 12 for w in well_index] != [x/8 for x in range(len(well_index))]:
+#             raise UserError("Error with %s: Primers must be in the same colume" % wells[0])
+#         if well_index[0] > 12:
+#             raise UserError("Error with %s: First primer must be in the first row" % wells[0])
+
+#     if row_check:
+#         shape = {"rows": len(wells)/12, "columns": 12}
+#     else:
+#         shape = {"rows": 8, "columns": len(wells)/8}
+
+#     return wells[0], shape
+
+
+def stamp_shape(wells):
+    """
+        Find biggest reactangle that can be stamped. Consequtive columns and
+        rows.
+
+        Returns
+        -------
+        dict of:
+            start_well
+            shape
+            wells not included
+    """
+    assert len(unique_containers(wells)) == 1, "stamp shape can only take"
+    "wells from one container"
+    wells = sort_well_group(wells)
+    indices = [x.index for x in wells]
+    start_well = wells[0]
+
+    cols = 0
+    rows = 0
+
+    idx = start_well.index + 1
+    for well in wells:
+        if idx == well.index:
+            cols += 1
+            idx += 1
+        else:
+            idx -= 1
+            break
+        # what happens if i use this with the sort key itemgetter function from above
+
+    # return start_well, shape, wells not included
+
+
+def detect_well_shape(wells):
+    assert isinstance(wells, (list, WellGroup)), "Detect_well_shape: wells"
+    "has to be a list or a WellGroup"
+    assert len(unique_containers(wells)) == 1, "Detect_well_shape: wells have"
+    " to come from one container"
+    indices = []
+    for well in wells:
+        assert isinstance(well, (Well)), "Detect_well_shape: elements of "
+        "wells have to be of type Well"
+        indices.append(well.index)
+
+    well_groups = []
+    for k, g in groupby(enumerate(indices), lambda ix: ix[0] - ix[1]):
+        well_groups.append(map(itemgetter(1), g))
+    # this is not sufficient yet - need to check that the first elements are 12 consecutive
+    if len(well_groups) == 8:
+        shape = "column"
+    else:
+        shape = "row"
+
+    return shape
 
 
 def plates_needed(wells_needed, wells_available):
@@ -156,21 +281,6 @@ def printdatetime():
 def printdate():
     printdate = datetime.datetime.now().strftime('%Y-%m-%d')
     return printdate
-
-
-def ref_kit_container(protocol, name, container, kit_id, discard=True,
-                      store=None):
-    '''
-        Still in use to allow booking of agar plates on the fly
-    '''
-    kit_item = Container(None, protocol.container_type(container), name)
-    if store:
-        protocol.refs[name] = Ref(
-            name, {"reserve": kit_id, "store": {"where": store}}, kit_item)
-    else:
-        protocol.refs[name] = Ref(
-            name, {"reserve": kit_id, "discard": discard}, kit_item)
-    return(kit_item)
 
 
 def make_list(my_str, integer=False):
@@ -283,3 +393,29 @@ def return_dispense_media():
              "25_ug/ml_Chloramphenicol": "lb-broth-25ug-ml-cm",
              "LB_broth": "lb-broth-noAB"}
     return(media)
+
+
+def melt_curve(start=65, end=95, inc=0.5, rate=5):
+    '''
+        Generate a melt curve on the fly. No inputs neded for standard
+    '''
+    melt_params = {"melting_start": "%f:celsius" % start,
+                   "melting_end": "%f:celsius" % end,
+                   "melting_increment": "%f:celsius" % inc,
+                   "melting_rate": "%f:second" % rate}
+    return melt_params
+
+
+def ref_kit_container(protocol, name, container, kit_id, discard=True,
+                      store=None):
+    '''
+        Still in use to allow booking of agar plates on the fly
+    '''
+    kit_item = Container(None, protocol.container_type(container), name)
+    if store:
+        protocol.refs[name] = Ref(
+            name, {"reserve": kit_id, "store": {"where": store}}, kit_item)
+    else:
+        protocol.refs[name] = Ref(
+            name, {"reserve": kit_id, "discard": discard}, kit_item)
+    return(kit_item)
