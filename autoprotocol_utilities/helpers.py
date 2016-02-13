@@ -20,8 +20,9 @@ def list_of_filled_wells(cont, empty=False):
 
         Parameters
         ----------
-        cont  = container
-        empty = bool, if True return empty wells instead of filled
+        cont : container
+        empty : bool
+            If True return empty wells instead of filled
 
         Returns
         -------
@@ -46,7 +47,7 @@ def first_empty_well(cont):
 
         Parameters
         ----------
-        cont = container
+        cont : container
 
         Returns
         -------
@@ -67,7 +68,8 @@ def unique_containers(wells):
 
         Parameters
         ----------
-        wells = list of wells
+        wells : list
+            List of wells
 
         Returns
         -------
@@ -293,9 +295,15 @@ def make_list(my_str, integer=False):
 
         Parameters
         ----------
-        my_str   = string with individual elements separated by comma
-        interger = bool, if true list of integers instead of list of strings
-                   is returned.
+        my_str : string
+            String with individual elements separated by comma
+        interger : bool
+            If true list of integers instead of list of strings
+            is returned.
+
+        Returns
+        -------
+        List of strings or integers
     '''
     assert isinstance(my_str, string_type), "Input needs to be of type string"
     if integer:
@@ -311,7 +319,8 @@ def flatten_list(l):
 
         Parameters
         ---------
-        l = list to flatten
+        l : list
+            List to flatten
 
         Returns
         -------
@@ -328,6 +337,17 @@ def det_new_group(i, base=0):
     '''
         Helper to determine if new_group should be added. Returns true when
         i matches the base, which defaults to 0.
+
+        Parameters
+        ----------
+        i : integer
+            The iteration you are on
+        base : integer
+            (optional) the value at which you want to trigger
+
+        Returns
+        -------
+        bool
     '''
     assert isinstance(i, int), "Needs an integer."
     assert isinstance(base, int), "Base has to be an integer"
@@ -343,6 +363,15 @@ def det_new_group(i, base=0):
 def return_agar_plates(wells=6):
     '''
         Dicts of all plates available that can be purchased.
+
+        Parameter
+        ---------
+        wells : integer
+            Optional, default 6 for 6-well plate
+
+        Returns
+        -------
+        dict of plates with plate identity as key and kit_id as value
     '''
     if wells == 6:
         plates = {"lb-broth-50ug-ml-kan": "ki17rs7j799zc2",
@@ -364,6 +393,15 @@ def return_agar_plates(wells=6):
 def return_dispense_media():
     '''
         Dict of media for reagent dispenser
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        dict of media with common display_name as key and identifier for code
+        as value
     '''
     media = {"50_ug/ml_Kanamycin": "lb-broth-50ug-ml-kan",
              "100_ug/ml_Ampicillin": "lb-broth-100ug-ml-amp",
@@ -380,6 +418,30 @@ def return_dispense_media():
 def melt_curve(start=65, end=95, inc=0.5, rate=5):
     '''
         Generate a melt curve on the fly. No inputs neded for standard
+        Example usage:
+            temp = melt_params()
+            protocol.thermocycle(dest_plate,
+                                 therm,
+                                 volume="15:microliter",
+                                 dataref="data",
+                                 dyes={"SYBR":dest_plate.all_wells().
+                                        indices()},
+                                 **melt_params)
+
+        Paramters
+        ---------
+        start : temperature
+            Temperature to start at
+        end : temperature
+            Temperature to end at
+        inc : Temperature
+            Temperature increment during the melt_curve
+        rate : seconds
+            After x seconds the temperature is incremented by inc
+
+        Returns
+        -------
+        dict of melt_params
     '''
     melt_params = {"melting_start": "%f:celsius" % start,
                    "melting_end": "%f:celsius" % end,
