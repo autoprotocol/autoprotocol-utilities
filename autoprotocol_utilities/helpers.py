@@ -109,7 +109,7 @@ def sort_well_group(well_group, columnwise=False):
 
 
 # detect stamp shape
-
+# from peter
 # def primer_index(wells):
 
 #     if wells[0].index < 12 and wells[-1].index > 83:
@@ -149,8 +149,9 @@ def sort_well_group(well_group, columnwise=False):
 
 def stamp_shape(wells):
     """
-        Find biggest reactangle that can be stamped. Consequtive columns and
-        rows.
+        Find biggest reactangle that can be stamped assuming the lowest index
+        well is the start well.
+        Consequtive columns and rows.
 
         Returns
         -------
@@ -159,49 +160,52 @@ def stamp_shape(wells):
             shape
             wells not included
     """
-    assert len(unique_containers(wells)) == 1, "stamp shape can only take"
-    "wells from one container"
+    assert isinstance(wells, (list, WellGroup)), "Stamp_shape: wellshas to "
+    "be a list or a WellGroup"
+    assert len(unique_containers(wells)) == 1, "Stamp_shape: wells have to"
+    " come from one container"
+    for well in wells:
+        assert isinstance(well, (Well)), "Stamp_shape: elements of wells"
+        " have to be of type Well"
+
     wells = sort_well_group(wells)
     indices = [x.index for x in wells]
     start_well = wells[0]
 
-    cols = 0
-    rows = 0
+    well_groups = []
+    for k, g in groupby(enumerate(indices), lambda ix: ix[0] - ix[1]):
+        well_groups.append(map(itemgetter(1), g))
 
-    idx = start_well.index + 1
-    for well in wells:
-        if idx == well.index:
-            cols += 1
-            idx += 1
-        else:
-            idx -= 1
-            break
-        # what happens if i use this with the sort key itemgetter function from above
+    row_length = [len(x) for x in well_groups]
+    cols = min(row_length)
+    rows = len(well_groups)
 
     # return start_well, shape, wells not included
 
 
-def detect_well_shape(wells):
-    assert isinstance(wells, (list, WellGroup)), "Detect_well_shape: wells"
-    "has to be a list or a WellGroup"
-    assert len(unique_containers(wells)) == 1, "Detect_well_shape: wells have"
-    " to come from one container"
-    indices = []
-    for well in wells:
-        assert isinstance(well, (Well)), "Detect_well_shape: elements of "
-        "wells have to be of type Well"
-        indices.append(well.index)
+# def detect_well_shape(wells):
+#     assert isinstance(wells, (list, WellGroup)), "Detect_well_shape: wells"
+#     "has to be a list or a WellGroup"
+#     assert len(unique_containers(wells)) == 1, "Detect_well_shape: wells have"
+#     " to come from one container"
+#     indices = []
+#     for well in wells:
+#         assert isinstance(well, (Well)), "Detect_well_shape: elements of "
+#         "wells have to be of type Well"
+#         indices.append(well.index)
 
-    well_groups = []
-    for k, g in groupby(enumerate(indices), lambda ix: ix[0] - ix[1]):
-        well_groups.append(map(itemgetter(1), g))
-    # this is not sufficient yet - need to check that the first elements are 12 consecutive
-    if len(well_groups) == 8:
-        shape = "column"
-    else:
-        shape = "row"
+#     well_groups = []
+#     what happens if i use this with the sort key itemgetter function from above
+#     for k, g in groupby(enumerate(indices), lambda ix: ix[0] - ix[1]):
+#         well_groups.append(map(itemgetter(1), g))
+#     # this is not sufficient yet - need to check that the first elements are 12 consecutive
+#     # do this on a plate basis 8 vs 16
+#     if len(well_groups) == 8:
+#         shape = "column"
+#     else:
+#         shape = "row"
 
-    return shape
+#     return shape
 
 
 def plates_needed(wells_needed, wells_available):
@@ -320,30 +324,6 @@ def flatten_list(l):
     return l[:1] + flatten_list(l[1:])
 
 
-def thermocycle_ramp(start_temp, end_temp, total_duration, step_duration):
-    '''
-        Create a ramp instruction for the thermocyler. Used in annealing
-        protocols.
-    '''
-    assert Unit.fromstring(
-        total_duration).unit == Unit.fromstring(
-        step_duration).unit, ("Thermocycle_ramp durations"
-                              " must be specified using the"
-                              " same unit of time.")
-    thermocycle_steps = []
-    start_temp = Unit.fromstring(start_temp).value
-    num_steps = int(
-        Unit.fromstring(total_duration).value // Unit.fromstring(
-            step_duration).value)
-    step_size = (Unit.fromstring(end_temp).value - start_temp) // num_steps
-    for i in xrange(0, num_steps):
-        thermocycle_steps.append({
-            "temperature": "%d:celsius" % (start_temp + i * step_size),
-                           "duration": step_duration
-        })
-    return thermocycle_steps
-
-
 def det_new_group(i, base=0):
     '''
         Helper to determine if new_group should be added. Returns true when
@@ -357,6 +337,8 @@ def det_new_group(i, base=0):
         new_group = False
     return new_group
 
+
+# ## Returning containers or data
 
 def return_agar_plates(wells=6):
     '''
@@ -404,6 +386,30 @@ def melt_curve(start=65, end=95, inc=0.5, rate=5):
                    "melting_increment": "%f:celsius" % inc,
                    "melting_rate": "%f:second" % rate}
     return melt_params
+
+
+def thermocycle_ramp(start_temp, end_temp, total_duration, step_duration):
+    '''
+        Create a ramp instruction for the thermocyler. Used in annealing
+        protocols.
+    '''
+    assert Unit.fromstring(
+        total_duration).unit == Unit.fromstring(
+        step_duration).unit, ("Thermocycle_ramp durations"
+                              " must be specified using the"
+                              " same unit of time.")
+    thermocycle_steps = []
+    start_temp = Unit.fromstring(start_temp).value
+    num_steps = int(
+        Unit.fromstring(total_duration).value // Unit.fromstring(
+            step_duration).value)
+    step_size = (Unit.fromstring(end_temp).value - start_temp) // num_steps
+    for i in xrange(0, num_steps):
+        thermocycle_steps.append({
+            "temperature": "%d:celsius" % (start_temp + i * step_size),
+                           "duration": step_duration
+        })
+    return thermocycle_steps
 
 
 def ref_kit_container(protocol, name, container, kit_id, discard=True,
