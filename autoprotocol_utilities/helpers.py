@@ -2,7 +2,8 @@ from autoprotocol.container import Container, WellGroup, Well
 from autoprotocol.protocol import Ref
 from autoprotocol.unit import Unit
 from autoprotocol import UserError
-from itertools import groupby
+from rectangle import binary_list, chop_list, max_rectangle
+from collections import namedtuple
 from operator import itemgetter
 import datetime
 import math
@@ -110,59 +111,24 @@ def sort_well_group(well_group, columnwise=False):
     return sorted_well_group
 
 
-# detect stamp shape
-# from peter
-# def primer_index(wells):
-
-#     if wells[0].index < 12 and wells[-1].index > 83:
-#         row_check = False
-#     else:
-#         row_check = True
-
-#     if row_check:
-#         num_primers = 12
-#     else:
-#         num_primers = 8
-
-#     if len(wells) % num_primers != 0:
-#         raise UserError("Error with %s: Must include multiple of %s primers" % (wells[0], num_primers))
-#     for w in wells:
-#         if w.container != wells[0].container:
-#             raise UserError("Error with %s: Primers of a set must be in the same container" % w)
-#     well_index = [w.index for w in wells]
-#     if row_check:
-#         if well_index != range(well_index[0], well_index[0]+len(wells)):
-#             raise UserError("Error with %s: Primers must be in the same row" % wells[0])
-#         if well_index[0] % 12 != 0:
-#             raise UserError("Error with %s: First primer must be in the first column" % wells[0])
-#     else:
-#         if [(w - well_index[0]) % 12 for w in well_index] != [x/8 for x in range(len(well_index))]:
-#             raise UserError("Error with %s: Primers must be in the same colume" % wells[0])
-#         if well_index[0] > 12:
-#             raise UserError("Error with %s: First primer must be in the first row" % wells[0])
-
-#     if row_check:
-#         shape = {"rows": len(wells)/12, "columns": 12}
-#     else:
-#         shape = {"rows": 8, "columns": len(wells)/8}
-
-#     return wells[0], shape
-
-
 def stamp_shape(wells):
     """
-        Find biggest reactangle that can be stamped assuming the lowest index
-        well is the start well.
-        Consequtive columns and rows.
+        Find biggest reactangle that can be stamped from a list of wells.
+
+        Parameters
+        ----------
+        wells: list, WellGroup
+            List of wells or well_group containing the wells in question.
 
         Returns
         -------
-        dict of:
-            start_well
-            shape
-            wells not included
+        stamp shape: named tuple
+            start_well is the top left well for the source stamp group
+            shape is a dict of rows and columns describing the stamp shape
+            remainging_wells is a list of wells that are not included in the
+                stamp shape
     """
-    assert isinstance(wells, (list, WellGroup)), "Stamp_shape: wellshas to "
+    assert isinstance(wells, (list, WellGroup)), "Stamp_shape: wells has to "
     "be a list or a WellGroup"
     assert len(unique_containers(wells)) == 1, "Stamp_shape: wells have to"
     " come from one container"
@@ -170,44 +136,72 @@ def stamp_shape(wells):
         assert isinstance(well, (Well)), "Stamp_shape: elements of wells"
         " have to be of type Well"
 
+    stamp_shape = namedtuple('Stamp', 'start_well shape remaining_wells')
     wells = sort_well_group(wells)
+    cont = unique_containers(wells)
+    rows = cont.container_type.row_count()
+    cols = cont.container_type.col_count
+    # rows = 8
+    # cols = 12
     indices = [x.index for x in wells]
-    start_well = wells[0]
 
-    well_groups = []
-    for k, g in groupby(enumerate(indices), lambda ix: ix[0] - ix[1]):
-        well_groups.append(map(itemgetter(1), g))
+    bnry_list = [bnry for bnry in binary_list(indices, length=rows*cols)]
+    bnry_mat = chop_list(bnry_list, cols)
+    r = max_rectangle(bnry_mat, value=1)
 
-    row_length = [len(x) for x in well_groups]
-    cols = min(row_length)
-    rows = len(well_groups)
+    # Determine start_well and wells not included in the rectangle
+    wells_included = []
+    start_well = (r.y*cols) + r.x
+    for y in range(r.height):
+        for z in range(r.width):
+            wells_included.append(start_well + y*cols + z)
+    wells_remaining = [x for x in wells if x not in wells_included]
 
-    # return start_well, shape, wells not included
+    return stamp_shape(start_well=start_well,
+                       shape=dict(rows=r.height, columns=r.width),
+                       remaining_wells=wells_remaining)
 
 
-# def detect_well_shape(wells):
-#     assert isinstance(wells, (list, WellGroup)), "Detect_well_shape: wells"
-#     "has to be a list or a WellGroup"
-#     assert len(unique_containers(wells)) == 1, "Detect_well_shape: wells have"
-#     " to come from one container"
-#     indices = []
-#     for well in wells:
-#         assert isinstance(well, (Well)), "Detect_well_shape: elements of "
-#         "wells have to be of type Well"
-#         indices.append(well.index)
+def is_columnwise(wells):
+    """
+        Assumes: wells are in a block
+        Will find the biggest reactangle and work from there
+        I think there is a better way to do this.
 
-#     well_groups = []
-#     what happens if i use this with the sort key itemgetter function from above
-#     for k, g in groupby(enumerate(indices), lambda ix: ix[0] - ix[1]):
-#         well_groups.append(map(itemgetter(1), g))
-#     # this is not sufficient yet - need to check that the first elements are 12 consecutive
-#     # do this on a plate basis 8 vs 16
-#     if len(well_groups) == 8:
-#         shape = "column"
-#     else:
-#         shape = "row"
+        Parameters
+        ----------
+        wells: list, WellGroup
+            List of wells or well_group containing the wells in question.
 
-#     return shape
+        Returns
+        -------
+        shape: bool
+            True if columnwise
+    """
+    assert isinstance(wells, (list, WellGroup)), "is_columnwise: wells has to"
+    " be a list or a WellGroup"
+    assert len(unique_containers(wells)) == 1, "is_columnwise: wells have to"
+    " come from one container"
+    for well in wells:
+        assert isinstance(well, (Well)), "is_columnwise: elements of wells"
+        " have to be of type Well"
+
+    wells = sort_well_group(wells)
+    cont = unique_containers(wells)
+    rows = cont.container_type.row_count()
+    cols = cont.container_type.col_count
+
+    indices = [x.index for x in wells]
+
+    bnry_list = [bnry for bnry in binary_list(indices, length=rows*cols)]
+    bnry_mat = chop_list(bnry_list, cols)
+    r = max_rectangle(bnry_mat, value=1)
+    if r.height == rows:
+        shape = True
+    else:
+        shape = False
+
+    return shape
 
 
 def plates_needed(wells_needed, wells_available):
