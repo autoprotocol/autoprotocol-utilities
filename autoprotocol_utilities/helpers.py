@@ -74,7 +74,7 @@ def unique_containers(wells):
 
         Returns
         -------
-        Container
+        list of Containers
     '''
     assert isinstance(wells, (list, WellGroup)), "unique_containers requires"
     " a list of wells or a WellGroup"
@@ -138,7 +138,7 @@ def stamp_shape(wells):
 
     stamp_shape = namedtuple('Stamp', 'start_well shape remaining_wells')
     wells = sort_well_group(wells)
-    cont = unique_containers(wells)
+    cont = unique_containers(wells)[0]
     rows = cont.container_type.row_count()
     cols = cont.container_type.col_count
     # rows = 8
@@ -164,9 +164,21 @@ def stamp_shape(wells):
 
 def is_columnwise(wells):
     """
-        Assumes: wells are in a block
-        Will find the biggest reactangle and work from there
-        I think there is a better way to do this.
+        Goal: Detect if input wells are in a columnwise format. This will only
+        trigger if the first column is full and only consecutive fractionally
+        filled columns exist.
+        Examples (4x6 plate):
+        True:
+        x x x | x x x  | x
+        x     | x x x  | x
+        x     | x x x  | x
+        x     | x x x  | x
+
+        False:
+        x x x  | x      | x
+          x x  | x      | x
+          x x  | x      | x
+          x x  | x x x  |
 
         Parameters
         ----------
@@ -186,17 +198,20 @@ def is_columnwise(wells):
         assert isinstance(well, (Well)), "is_columnwise: elements of wells"
         " have to be of type Well"
 
-    wells = sort_well_group(wells)
-    cont = unique_containers(wells)
+    cont = unique_containers(wells)[0]
     rows = cont.container_type.row_count()
-    cols = cont.container_type.col_count
+    y = stamp_shape(wells)
 
-    indices = [x.index for x in wells]
+    consecutive = False
+    if len(y.remaining_wells) == 0:
+        consecutive = True
+    else:
+        next_well = y.start_well + y.shape["columns"] + 1
+        z = stamp_shape(y.remaining_wells)
+        if len(z.remaining_wells) == 0 and z.start_well == next_well:
+            consecutive = True
 
-    bnry_list = [bnry for bnry in binary_list(indices, length=rows*cols)]
-    bnry_mat = chop_list(bnry_list, cols)
-    r = max_rectangle(bnry_mat, value=1)
-    if r.height == rows:
+    if y.shape["rows"] == rows and consecutive:
         shape = True
     else:
         shape = False
@@ -210,6 +225,18 @@ def plates_needed(wells_needed, wells_available):
         and wells_available as a container or a well number
         (int or float) and calculates how many plates are
         needed to accomodate the wells_needed.
+
+        Parameters
+        ----------
+        wells_needed: float, int
+            How many you need
+        wells_available: Container, float, int
+            How many you have available per unit
+
+        Returns
+        -------
+        integer
+            How many of unit you will need to accomodate all wells_needed
     '''
     if not isinstance(wells_needed, (float, int)):
         raise RuntimeError("wells_needed has to be an int or a float")
