@@ -1,45 +1,37 @@
-.. Autoprotocol Utilities documentation master file, created by
-
-Welcome to Autoprotocol Utilities's documentation!
+``Autoprotocol Utilities's`` documentation
 ==================================================
 
-Contents:
-
 .. toctree::
-   :maxdepth: 2
+   :hidden:
 
+   Documentation <autoprotocol_utilities>
+   AUTHORS
 
-Features
---------
+Use the sidebar to navigate specific module documentation.
 
-- Utility functions to generate protocols faster and more convenient
-- Checker functions for volume etc
+Autoprotocol Utilities are helper functions and modules to generate autoprotocol faster and include on-the-fly verifications. It can only be used in conjunction with autoprotocol-python.
+
 
 Installation
 ------------
+.. code-block:: none
 
-Install $project by running:
-
-    python setup.py install
-
-Contribute
-----------
-
-- Source Code: https://work.r23s.net/diffusion/APUTILS/
-
-Support
--------
-
-If you are having issues, please let us know.
-We have a mailing list located at: project@google-groups.com
+	$ git clone ssh://vcs@work.r23s.net/diffusion/APUTILS/autoprotocol-utilities.git
+	$ cd autoprotocol-utilities
+	$ python setup.py install
 
 
+Contributing
+------------
 
-Indices and tables
-==================
+Use Phabricator to contribute code. 
+Source Code: https://work.r23s.net/diffusion/APUTILS/
+
+
+Search the Docs
+---------------
 
 * :ref:`genindex`
-* :ref:`modindex`
 * :ref:`search`
 
 :copyright: 2016 by The Autoprotocol Development Team, see AUTHORS

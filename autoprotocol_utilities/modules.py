@@ -5,25 +5,50 @@ from autoprotocol.unit import Unit
 def createMastermix(protocol, name, cont, reactions, resources={},
                     othermaterial={}, start_well=None, mm_mult=1.3,
                     use_dead_vol=True, columnwise=False):
-    """
-        Creates a mix of the indicated reagents/resources for the number of
-        reactions indicated. Balances the volume across the destination
-        wells such that all but the last well carry the maximum number
-        of reactions, the last well the overflow.
-        Can account for dead_volume in each destination well.
-        Can work with an existing mm container or create new ones and
-        create new ones if existing ones are filled.
-        You should only fill wells in order - so fill a container
-        consistently with columnwise True or False throughout the protocol.
-        Returns a list of wells. If you parsed in a container it is a good
-        practice to check if you needed to make a new container and use
-        that for future calls.
-        Example: reagent_plate = unique_containers(target_wells)[-1]
-        Otherwise you get a new plate everytime you try to fill the old one
+    """Create simple or complex mastermixes from resourceIds or aliquots
 
-        Returns
-        -------
-        List of wells
+    Creates a mix of the indicated reagents/resources for the number of
+    reactions indicated. Balances the volume across the destination
+    wells such that all but the last well carry the maximum number
+    of reactions, the last well the overflow.
+    Can account for dead_volume in each destination well.
+    Can work with an existing mm container or create new ones and
+    create new ones if existing ones are filled.
+    You should only fill wells in order - so fill a container
+    consistently with columnwise True or False throughout the protocol.
+    Returns a list of wells. If you parsed in a container it is a good
+    practice to check if you needed to make a new container and use
+    that for future calls.
+    Example: reagent_plate = unique_containers(target_wells)[-1]
+    Otherwise you get a new plate everytime you try to fill the old one
+
+    Parameters
+    ----------
+    protocol : Protocol
+    name : str
+        Well and or container name
+    cont : str, Container
+        String corresponding to wanted Container type or container
+    reactions : int
+        How many reactions to prepare
+    resources : dict
+        Dict with resource ids as keys and volume per reaction as value
+    othermaterial : dict
+        Dict with alliquot as key and volume per reaction as value
+    start_well : int, optional
+        Starting well for the container
+    mm_mult : float, optional
+        Multiplier used to account for overage
+    use_dead_vol : bool, optional
+        Account for dead_volume of container type
+    columnwise : bool, optional
+
+
+    Returns
+    -------
+    target_wells : list
+        List of wells containing mastermix
+
     """
     if not isinstance(resources, dict):
         raise RuntimeError("To calculate a mastermix 'resources' has to be "
@@ -254,20 +279,23 @@ def echo_mastermix_load(protocol, mastermix, echo_plate, vol_mastermix=None,
     '''
     Return WellGroup of Echo Plate wells containing mastermix
 
-    Parameters:
+    Parameters
     -----------
-    mastermix : single well containing mastermix
+    mastermix : Well
+        single well containing mastermix
     vol_mastermix : vol, microliter
-    echo_plate : echo compatible source container
+    echo_plate : Container
+        echo compatible source container
     echo_dead_vol : vol, microliter
     echo_max_vol : vol, microliter
     start : int
         echo well to start at
 
-    Returns:
+    Returns
     --------
     WellGroup
         Returns a WellGroup containing mastermix with corrected dead volumes
+
     '''
     vol_mastermix = mastermix.volume.value or Unit.fromstring(vol_mastermix).value
     echo_dead_vol = Unit.fromstring(echo_dead_vol).value
