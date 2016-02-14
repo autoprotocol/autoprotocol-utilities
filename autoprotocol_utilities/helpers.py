@@ -307,29 +307,23 @@ def set_pipettable_volume(well):
         return well
 
 
-def volume_check(aliquot, usage_volume=0):
+def volume_check(aliquot, invalid_msgs, usage_volume=0):
     """
     Takes an aliquot and if usaage_volume is 0 checks if that aliquot
     is above the dead volume for its well type.
     If the usage_volume is set it will check if there is enough volume
-    above the dead_volume to execute the
-    pipette.
-    Usage volume can be a Unit, a string of type "3:microliter" or an
-    integer
+    above the dead_volume to execute the pipette.
 
     Parameters
     ----------
     aliquot : Well
         Well to test
+    invalid_msgs : list
+        List of error messages from your current protocol that is later
+        converted using `user_errors_group()`
     usage_volume : Unit, str, int, optional
         Volume to test for. If 0 the aliquot will be tested against the
         container dead volume.
-
-    Returns
-    -------
-    message : str
-        If volume passes check message will be empty. Otherwise it reports
-        how much volume is available vs needed.
 
     """
     if isinstance(aliquot, Container):
@@ -345,16 +339,18 @@ def volume_check(aliquot, usage_volume=0):
 
     if test_vol > aliquot.volume.value:
         if usage_volume == 0:
-            return ("You want to pipette from a container with %s uL"
-                    " dead volume. However, you aliquot only has "
-                    "%s uL." % (dead_vol, aliquot.volume.value))
+            invalid_msgs.append(
+                "You want to pipette from a container with %s uL"
+                " dead volume. However, you aliquot only has "
+                "%s uL." % (dead_vol, aliquot.volume.value))
         else:
-            return ("You want to pipette %s uL from a container with "
-                    "%s uL dead volume (%s uL total). However, your"
-                    " aliquot only has %s uL." % (usage_volume,
-                                                  dead_vol,
-                                                  usage_volume + dead_vol,
-                                                  aliquot.volume.value))
+            invalid_msgs.append(
+                "You want to pipette %s uL from a container with "
+                "%s uL dead volume (%s uL total). However, your"
+                " aliquot only has %s uL." % (usage_volume,
+                                              dead_vol,
+                                              usage_volume + dead_vol,
+                                              aliquot.volume.value))
 
 
 def user_errors_group(error_msgs):
@@ -472,7 +468,61 @@ def det_new_group(i, base=0):
         new_group = False
     return new_group
 
+
+def label_limit(label, invalid_msgs, length=22):
+    """Enforces a string limit on the label provided
+
+    Parameters
+    ----------
+    label : str
+        String to test
+    invalid_msgs : list
+        List of error messages from your current protocol that is later
+        converted using `user_errors_group()`
+    length : int, optional
+        Maximum label length for this string
+
+    """
+    if len(label) > length:
+        invalid_msgs.append("The specified label, '%s', has too many "
+                            "characters. Please enter a label of %s "
+                            "or less characters." % (label, length))
+
 # ## Returning containers or data
+
+
+def scale_default(length, scale, label, invalid_msgs):
+    """Detects if the oligo length matches the selected scale
+
+    Parameters
+    ----------
+    length : int
+        Length of the oligo in question
+    scale : str
+        Scale of the oligo in question
+    label : str
+        Name of the oligo
+    invalid_msgs : list
+        List of error messages from your current protocol that is later
+        converted using `user_errors_group()`
+
+    """
+    ok = True
+    if scale == '25nm':
+        ok = True if (length >= 15 and length <= 60) else False
+    elif scale == '100nm':
+        ok = True if (length >= 10 and length <= 90) else False
+    elif scale == '250nm':
+        ok = True if (length >= 5 and length <= 100) else False
+    elif scale == '1um':
+        ok = True if (length >= 5 and length <= 100) else False
+    else:
+        ok = False
+    if not ok:
+        invalid_msgs.append("The specified oligo, '%s', is %s base pairs long"
+                            ". This sequence length is invalid for the scale "
+                            "of synthesis chosen (%s)."
+                            % (label, length, scale))
 
 
 def return_agar_plates(wells=6):

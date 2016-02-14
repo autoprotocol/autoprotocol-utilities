@@ -2,10 +2,12 @@ from autoprotocol.container import Container, WellGroup, Well
 from autoprotocol.protocol import Ref
 from autoprotocol.unit import Unit
 from autoprotocol import UserError
+from rectangle import binary_list, chop_list, max_rectangle
+from collections import namedtuple
+from operator import itemgetter
 import datetime
 import math
 import sys
-
 
 if sys.version_info[0] >= 3:
     string_type = str
@@ -13,15 +15,48 @@ else:
     string_type = basestring
 
 
-def list_of_filled_wells(cont):
+def list_of_filled_wells(cont, empty=False):
+    """
+    For the container given, determine which wells are filled
+
+    Parameters
+    ----------
+    cont : Container
+    empty : bool
+        If True return empty wells instead of filled
+
+    Returns
+    -------
+    wells : list
+        list of wells
+    """
+    if not isinstance(cont, Container):
+        raise RuntimeError("list_of_filled_wells needs a container as input")
     wells = []
     for well in cont.all_wells():
-        if well.volume is not None:
-            wells.append(well)
+        if not empty:
+            if well.volume is not None:
+                wells.append(well)
+        if empty:
+            if well.volume is None:
+                wells.append(well)
     return wells
 
 
 def first_empty_well(cont):
+    """
+    Get the first empty well of a container followed by only empty wells
+
+    Parameters
+    ----------
+    cont : container
+
+    Returns
+    -------
+    on success: well
+    on failure: string
+
+    """
     well = max(cont.all_wells(),
                key=lambda x: x.index if x.volume else 0).index + 1
     if well < cont.container_type.well_count:
@@ -31,17 +66,190 @@ def first_empty_well(cont):
 
 
 def unique_containers(wells):
+    """
+    Get a list of unique containers for a list of wells
+
+    Parameters
+    ----------
+    wells : list
+        List of wells
+
+    Returns
+    -------
+    cont : list
+        List of Containers
+
+    """
+    assert isinstance(wells, (list, WellGroup)), "unique_containers requires"
+    " a list of wells or a WellGroup"
+    wells = flatten_list(wells)
     cont = list(set([well.container for well in wells]))
     return cont
 
 
+def sort_well_group(well_group, columnwise=False):
+    """
+        Sort a well group in rowwise or columnwise format.
+        This function sorts first by container id and name, then by row or
+        column, as needed. When the webapp returns aliquot+ inputs, it
+        usually does so as a rowwise sorted well group, so this function
+        can be useful for re-sorting when necessary.
+    """
+    assert isinstance(well_group, WellGroup), "well_group must be an instance"
+    " of the WellGroup class"
+    well_list = [(
+        well,
+        well.container.id,
+        well.container.name,
+        well.container.decompose(well)[0],
+        well.container.decompose(well)[1]
+        ) for well in well_group
+    ]
+
+    if columnwise:
+        sorted_well_list = sorted(well_list, key=itemgetter(1, 2, 4, 3))
+    else:
+        sorted_well_list = sorted(well_list, key=itemgetter(1, 2, 3, 4))
+
+    sorted_well_group = WellGroup([well[0] for well in sorted_well_list])
+    return sorted_well_group
+
+
+def stamp_shape(wells):
+    """
+    Find biggest reactangle that can be stamped from a list of wells.
+
+    Parameters
+    ----------
+    wells: list, WellGroup
+        List of wells or well_group containing the wells in question.
+
+    Returns
+    -------
+    stamp_shape : named tuple
+        start_well is the top left well for the source stamp group
+        shape is a dict of rows and columns describing the stamp shape
+        remainging_wells is a list of wells that are not included in the
+        stamp shape.
+
+    """
+    assert isinstance(wells, (list, WellGroup)), "Stamp_shape: wells has to "
+    "be a list or a WellGroup"
+    assert len(unique_containers(wells)) == 1, "Stamp_shape: wells have to"
+    " come from one container"
+    for well in wells:
+        assert isinstance(well, (Well)), "Stamp_shape: elements of wells"
+        " have to be of type Well"
+
+    stamp_shape = namedtuple('Stamp', 'start_well shape remaining_wells')
+    wells = sort_well_group(wells)
+    cont = unique_containers(wells)[0]
+    rows = cont.container_type.row_count()
+    cols = cont.container_type.col_count
+    # rows = 8
+    # cols = 12
+    indices = [x.index for x in wells]
+
+    bnry_list = [bnry for bnry in binary_list(indices, length=rows*cols)]
+    bnry_mat = chop_list(bnry_list, cols)
+    r = max_rectangle(bnry_mat, value=1)
+
+    # Determine start_well and wells not included in the rectangle
+    wells_included = []
+    start_well = (r.y*cols) + r.x
+    for y in range(r.height):
+        for z in range(r.width):
+            wells_included.append(start_well + y*cols + z)
+    wells_remaining = [x for x in wells if x not in wells_included]
+
+    return stamp_shape(start_well=start_well,
+                       shape=dict(rows=r.height, columns=r.width),
+                       remaining_wells=wells_remaining)
+
+
+def is_columnwise(wells):
+    """
+    Goal: Detect if input wells are in a columnwise format. This will only
+    trigger if the first column is full and only consecutive fractionally
+    filled columns exist.
+
+    Patterns detected (4x6 plate):
+
+    .. code-block:: none
+
+        x x x | x x x  | x
+        x     | x x x  | x
+        x     | x x x  | x
+        x     | x x x  | x
+
+    Patterns NOT detected (4x6 plate):
+
+    .. code-block:: none
+
+        x x x  | x      | x
+          x x  | x      | x
+          x x  | x      | x
+          x x  | x x x  |
+
+    Parameters
+    ----------
+    wells: list, WellGroup
+        List of wells or well_group containing the wells in question.
+
+    Returns
+    -------
+    shape : bool
+        True if columnwise
+    """
+    assert isinstance(wells, (list, WellGroup)), "is_columnwise: wells has to"
+    " be a list or a WellGroup"
+    assert len(unique_containers(wells)) == 1, "is_columnwise: wells have to"
+    " come from one container"
+    for well in wells:
+        assert isinstance(well, (Well)), "is_columnwise: elements of wells"
+        " have to be of type Well"
+
+    cont = unique_containers(wells)[0]
+    rows = cont.container_type.row_count()
+    y = stamp_shape(wells)
+
+    consecutive = False
+    if len(y.remaining_wells) == 0:
+        consecutive = True
+    else:
+        next_well = y.start_well + y.shape["columns"] + 1
+        z = stamp_shape(y.remaining_wells)
+        if len(z.remaining_wells) == 0 and z.start_well == next_well:
+            consecutive = True
+
+    if y.shape["rows"] == rows and consecutive:
+        shape = True
+    else:
+        shape = False
+
+    return shape
+
+
 def plates_needed(wells_needed, wells_available):
-    '''
-        Takes wells needed as a numbers (int or float)
-        and wells_available as a container or a well number
-        (int or float) and calculates how many plates are
-        needed to accomodate the wells_needed.
-    '''
+    """
+    Takes wells needed as a numbers (int or float)
+    and wells_available as a container or a well number
+    (int or float) and calculates how many plates are
+    needed to accomodate the wells_needed.
+
+    Parameters
+    ----------
+    wells_needed: float, int
+        How many you need
+    wells_available: Container, float, int
+        How many you have available per unit
+
+    Returns
+    -------
+    i : int
+        How many of unit you will need to accomodate all wells_needed
+
+    """
     if not isinstance(wells_needed, (float, int)):
         raise RuntimeError("wells_needed has to be an int or a float")
     if isinstance(wells_available, Container):
@@ -54,16 +262,70 @@ def plates_needed(wells_needed, wells_available):
     return int(math.ceil(wells_needed / wells_available))
 
 
-def volume_check(aliquot, usage_volume=0):
-    '''
-        Takes an aliquot and if usaage_volume is 0 checks if that aliquot
-        is above the dead volume for its well type.
-        If the usage_volume is set it will check if there is enough volume
-        above the dead_volume to execute the
-        pipette.
-        Usage volume can be a Unit, a string of type "3:microliter" or an
-        integer
-    '''
+def set_pipettable_volume(well):
+    """Remove dead volume from pipettable volume.
+
+    In one_tip true pipetting operations the volume of the well is used to
+    determine who many more wells can be filled from this source well. Thus
+    it is useful to remove the dead_volume from the set_volume of the well.
+
+    Parameters
+    ----------
+    well : Well, List, WellGroup, Container
+
+    Returns
+    -------
+    well : Well, List, WellGroup, Container
+        Will return the same type as was received
+    """
+
+    if isinstance(well, (list, WellGroup)):
+        cont = unique_containers(well)
+        if len(cont) > 1:
+            raise RuntimeError("Wells can only be from one container")
+        else:
+            cont = cont[0]
+        r = 'list'
+    elif isinstance(well, Container):
+        cont = well
+        well = list_of_filled_wells(cont)
+        r = 'cont'
+    elif isinstance(well, Well):
+        cont = well.container
+        well = [well]
+        r = 'well'
+
+    dead_volume = cont.container_type.dead_volume_ul
+    for x in well:
+        x.set_volume(x.volume - dead_volume)
+
+    if r == 'cont':
+        return cont
+    elif r == 'well':
+        return well[0]
+    else:
+        return well
+
+
+def volume_check(aliquot, invalid_msgs, usage_volume=0):
+    """
+    Takes an aliquot and if usaage_volume is 0 checks if that aliquot
+    is above the dead volume for its well type.
+    If the usage_volume is set it will check if there is enough volume
+    above the dead_volume to execute the pipette.
+
+    Parameters
+    ----------
+    aliquot : Well
+        Well to test
+    invalid_msgs : list
+        List of error messages from your current protocol that is later
+        converted using `user_errors_group()`
+    usage_volume : Unit, str, int, optional
+        Volume to test for. If 0 the aliquot will be tested against the
+        container dead volume.
+
+    """
     if isinstance(aliquot, Container):
         raise RuntimeError("volume check accepts only aliquots, "
                            "not containers")
@@ -77,22 +339,24 @@ def volume_check(aliquot, usage_volume=0):
 
     if test_vol > aliquot.volume.value:
         if usage_volume == 0:
-            return ("You want to pipette from a container with %s uL"
-                    " dead volume. However, you aliquot only has "
-                    "%s uL." % (dead_vol, aliquot.volume.value))
+            invalid_msgs.append(
+                "You want to pipette from a container with %s uL"
+                " dead volume. However, you aliquot only has "
+                "%s uL." % (dead_vol, aliquot.volume.value))
         else:
-            return ("You want to pipette %s uL from a container with "
-                    "%s uL dead volume (%s uL total). However, your"
-                    " aliquot only has %s uL." % (usage_volume,
-                                                  dead_vol,
-                                                  usage_volume + dead_vol,
-                                                  aliquot.volume.value))
+            invalid_msgs.append(
+                "You want to pipette %s uL from a container with "
+                "%s uL dead volume (%s uL total). However, your"
+                " aliquot only has %s uL." % (usage_volume,
+                                              dead_vol,
+                                              usage_volume + dead_vol,
+                                              aliquot.volume.value))
 
 
 def user_errors_group(error_msgs):
-    '''
+    """
         Takes a list error messages and neatly displays as a single UserError
-    '''
+    """
     assert isinstance(error_msgs, list), ("Error messages must be in the form"
                                           " of a list to properly format the "
                                           "grouped message.")
@@ -104,34 +368,50 @@ def user_errors_group(error_msgs):
                       string_type(m) for i, m in enumerate(error_msgs)]))
 
 
-def printdatetime(time=True):
+def printdatetime():
+    """
+    Generate a datetime string
+
+    Returns
+    -------
+    printdate : str
+
+    """
     printdate = datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
-    if not time:
-        printdate = datetime.datetime.now().strftime('%Y-%m-%d')
     return printdate
 
 
-def ref_kit_container(protocol, name, container, kit_id, discard=True,
-                      store=None):
-    '''
-        Still in use to allow booking of agar plates on the fly
-    '''
-    kit_item = Container(None, protocol.container_type(container), name)
-    if store:
-        protocol.refs[name] = Ref(
-            name, {"reserve": kit_id, "store": {"where": store}}, kit_item)
-    else:
-        protocol.refs[name] = Ref(
-            name, {"reserve": kit_id, "discard": discard}, kit_item)
-    return(kit_item)
+def printdate():
+    """
+    Generate a date string
+
+    Returns
+    -------
+    printdate : str
+
+    """
+    printdate = datetime.datetime.now().strftime('%Y-%m-%d')
+    return printdate
 
 
 def make_list(my_str, integer=False):
-    '''
-        Sometimes you need a list of a type that is not supported. This takes
-        a string and comma-seperates it, returning a list of strings or
-        integers.
-    '''
+    """
+    Sometimes you need a list of a type that is not supported.
+
+    Parameters
+    ----------
+    my_str : string
+        String with individual elements separated by comma
+    interger : bool
+        If true list of integers instead of list of strings
+        is returned.
+
+    Returns
+    -------
+    my_str : list
+        List of strings or integers
+
+    """
     assert isinstance(my_str, string_type), "Input needs to be of type string"
     if integer:
         my_str = [int(x.strip()) for x in my_str.split(",")]
@@ -140,34 +420,125 @@ def make_list(my_str, integer=False):
     return my_str
 
 
-def thermocycle_ramp(start_temp, end_temp, total_duration, step_duration):
-    '''
-        Create a ramp instruction for the thermocyler. Used in annealing
-        protocols.
-    '''
-    assert Unit.fromstring(
-        total_duration).unit == Unit.fromstring(
-        step_duration).unit, ("Thermocycle_ramp durations"
-                              " must be specified using the"
-                              " same unit of time.")
-    thermocycle_steps = []
-    start_temp = Unit.fromstring(start_temp).value
-    num_steps = int(
-        Unit.fromstring(total_duration).value // Unit.fromstring(
-            step_duration).value)
-    step_size = (Unit.fromstring(end_temp).value - start_temp) // num_steps
-    for i in xrange(0, num_steps):
-        thermocycle_steps.append({
-            "temperature": "%d:celsius" % (start_temp + i * step_size),
-                           "duration": step_duration
-        })
-    return thermocycle_steps
+def flatten_list(l):
+    """
+    Flatten a list recursively without for loops or additional modules
+
+    Parameters
+    ---------
+    l : list
+        List to flatten
+
+    Returns
+    -------
+    list : list
+        Flat list
+
+    """
+    if l == []:
+        return l
+    if isinstance(l[0], list):
+        return flatten_list(l[0]) + flatten_list(l[1:])
+    return l[:1] + flatten_list(l[1:])
 
 
-def return_agar_plates(wells):
-    '''
-        Dicts of all plates available that can be purchased.
-    '''
+def det_new_group(i, base=0):
+    """Determine if new_group should be added to pipetting operation.
+
+    Helper to determine if new_group should be added. Returns true when
+    i matches the base, which defaults to 0.
+
+    Parameters
+    ----------
+    i : int
+        The iteration you are on
+    base : int, optional
+        The value at which you want to trigger
+
+    Returns
+    -------
+    new_group : bool
+
+    """
+    assert isinstance(i, int), "Needs an integer."
+    assert isinstance(base, int), "Base has to be an integer"
+    if i == base:
+        new_group = True
+    else:
+        new_group = False
+    return new_group
+
+
+def label_limit(label, invalid_msgs, length=22):
+    """Enforces a string limit on the label provided
+
+    Parameters
+    ----------
+    label : str
+        String to test
+    invalid_msgs : list
+        List of error messages from your current protocol that is later
+        converted using `user_errors_group()`
+    length : int, optional
+        Maximum label length for this string
+
+    """
+    if len(label) > length:
+        invalid_msgs.append("The specified label, '%s', has too many "
+                            "characters. Please enter a label of %s "
+                            "or less characters." % (label, length))
+
+# ## Returning containers or data
+
+
+def scale_default(length, scale, label, invalid_msgs):
+    """Detects if the oligo length matches the selected scale
+
+    Parameters
+    ----------
+    length : int
+        Length of the oligo in question
+    scale : str
+        Scale of the oligo in question
+    label : str
+        Name of the oligo
+    invalid_msgs : list
+        List of error messages from your current protocol that is later
+        converted using `user_errors_group()`
+
+    """
+    ok = True
+    if scale == '25nm':
+        ok = True if (length >= 15 and length <= 60) else False
+    elif scale == '100nm':
+        ok = True if (length >= 10 and length <= 90) else False
+    elif scale == '250nm':
+        ok = True if (length >= 5 and length <= 100) else False
+    elif scale == '1um':
+        ok = True if (length >= 5 and length <= 100) else False
+    else:
+        ok = False
+    if not ok:
+        invalid_msgs.append("The specified oligo, '%s', is %s base pairs long"
+                            ". This sequence length is invalid for the scale "
+                            "of synthesis chosen (%s)."
+                            % (label, length, scale))
+
+
+def return_agar_plates(wells=6):
+    """Dicts of all plates available that can be purchased.
+
+    Parameters
+    ----------
+    wells : integer
+        Optional, default 6 for 6-well plate
+
+    Returns
+    -------
+    plates : dict
+        plates with plate identity as key and kit_id as value
+
+    """
     if wells == 6:
         plates = {"lb-broth-50ug-ml-kan": "ki17rs7j799zc2",
                   "lb-broth-100ug-ml-amp": "ki17sbb845ssx9",
@@ -185,24 +556,16 @@ def return_agar_plates(wells):
     return(plates)
 
 
-def det_new_group(i, base=0):
-    '''
-        Helper to determine if new_group should be added. Returns true when
-        i matches the base, which defaults to 0.
-    '''
-    assert isinstance(i, int), "Needs an integer."
-    assert isinstance(base, int), "Base has to be an integer"
-    if i == base:
-        new_group = True
-    else:
-        new_group = False
-    return new_group
-
-
 def return_dispense_media():
-    '''
-        Dict of media for reagent dispenser
-    '''
+    """Dict of media for reagent dispenser.
+
+    Returns
+    -------
+    media : dict
+        Media with common display_name as key and identifier for code
+    as value
+
+    """
     media = {"50_ug/ml_Kanamycin": "lb-broth-50ug-ml-kan",
              "100_ug/ml_Ampicillin": "lb-broth-100ug-ml-amp",
              "100_ug/mL_Spectinomycin": "lb-broth-100ug-ml-specto",
@@ -213,3 +576,113 @@ def return_dispense_media():
              "25_ug/ml_Chloramphenicol": "lb-broth-25ug-ml-cm",
              "LB_broth": "lb-broth-noAB"}
     return(media)
+
+
+def ref_kit_container(protocol, name, container, kit_id, discard=True,
+                      store=None):
+    """Reserve agar plates on the fly
+
+    In use only to allow booking of agar plates on the fly.
+
+    Parameters
+    ----------
+    protocol : Protocol
+        instance of protocol.
+    name : str
+        Name for the plate.
+    container : str
+        Container type name.
+    kit_id : str
+        Kit item to be created.
+    discard : bool
+        Determine if plate is discarded after use.
+    store : str
+        If the plate is not discarded, indicate storage condition.
+
+    Returns
+    -------
+    kit_item : Container
+
+    """
+    kit_item = Container(None, protocol.container_type(container), name)
+    if store:
+        protocol.refs[name] = Ref(
+            name, {"reserve": kit_id, "store": {"where": store}}, kit_item)
+    else:
+        protocol.refs[name] = Ref(
+            name, {"reserve": kit_id, "discard": discard}, kit_item)
+    return(kit_item)
+
+# ## Thermocycling helpers
+
+
+def melt_curve(start=65, end=95, inc=0.5, rate=5):
+    """Generate a melt curve on the fly
+
+    No inputs neded for standard.
+
+    Example Usage:
+
+    .. code-block:: python
+
+        temp = melt_params()
+        protocol.thermocycle(dest_plate,
+                             therm,
+                             volume="15:microliter",
+                             dataref="data",
+                             dyes={"SYBR":dest_plate.all_wells().
+                                    indices()},
+                             **melt_params)
+
+    Parameters
+    ----------
+    start : Temperature
+        Temperature to start at
+    end : Temperature
+        Temperature to end at
+    inc : Temperature
+        Temperature increment during the melt_curve
+    rate : seconds
+        After x seconds the temperature is incremented by inc
+
+    Returns
+    -------
+    melt_params : dict
+        containing melt_params
+
+    """
+    melt_params = {"melting_start": "%f:celsius" % start,
+                   "melting_end": "%f:celsius" % end,
+                   "melting_increment": "%f:celsius" % inc,
+                   "melting_rate": "%f:second" % rate}
+    return melt_params
+
+
+def thermocycle_ramp(start_temp, end_temp, total_duration, step_duration):
+    """Create a ramp instruction for the thermocyler.
+
+    Used in annealing protocols.
+
+    Returns
+    -------
+    thermocycle_steps : dict
+        containing thermocycling steps
+
+    """
+    assert Unit.fromstring(
+        total_duration).unit == Unit.fromstring(
+        step_duration).unit, ("Thermocycle_ramp durations"
+                              " must be specified using the"
+                              " same unit of time.")
+    thermocycle_steps = []
+    start_temp = Unit.fromstring(start_temp).value
+    num_steps = int(
+        Unit.fromstring(total_duration).value // Unit.fromstring(
+            step_duration).value)
+    step_size = (Unit.fromstring(end_temp).value - start_temp) // num_steps
+    for i in xrange(0, num_steps):
+        thermocycle_steps.append({
+            "temperature": "%d:celsius" % (start_temp + i * step_size),
+                           "duration": step_duration
+        })
+    return thermocycle_steps

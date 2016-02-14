@@ -21,6 +21,11 @@ helpers.user_errors_group()
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. autofunction:: autoprotocol_utilities.helpers.user_errors_group
 
+helpers.label_limit()
+~~~~~~~~~~~~~~~~~~~~~
+.. autofunction:: autoprotocol_utilities.helpers.label_limit
+
+
 helpers.printdatetime()
 ~~~~~~~~~~~~~~~~~~~~~~~
 .. autofunction:: autoprotocol_utilities.helpers.printdatetime
@@ -44,6 +49,10 @@ Pipetting helpers
 helpers.volume_check()
 ~~~~~~~~~~~~~~~~~~~~~~
 .. autofunction:: autoprotocol_utilities.helpers.volume_check
+
+helpers.set_pipettable_volume()
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. autofunction:: autoprotocol_utilities.helpers.set_pipettable_volume
 
 helpers.det_new_group()
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -80,6 +89,10 @@ helpers.list_of_filled_wells()
 
 Reagent helpers
 ---------------
+
+helpers.scale_default()
+~~~~~~~~~~~~~~~~~~~~~~~
+.. autofunction:: autoprotocol_utilities.helpers.scale_default
 
 helpers.return_dispense_media()
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

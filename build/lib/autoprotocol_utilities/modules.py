@@ -1,29 +1,55 @@
 from .helpers import *
+from autoprotocol.container import Container, WellGroup, Well
 from autoprotocol.unit import Unit
 
 
 def createMastermix(protocol, name, cont, reactions, resources={},
                     othermaterial={}, start_well=None, mm_mult=1.3,
                     use_dead_vol=True, columnwise=False):
-    """
-        Creates a mix of the indicated reagents/resources for the number of
-        reactions indicated. Balances the volume across the destination
-        wells such that all but the last well carry the maximum number
-        of reactions, the last well the overflow.
-        Can account for dead_volume in each destination well.
-        Can work with an existing mm container or create new ones and
-        create new ones if existing ones are filled.
-        You should only fill wells in order - so fill a container
-        consistently with columnwise True or False throughout the protocol.
-        Returns a list of wells. If you parsed in a container it is a good
-        practice to check if you needed to make a new container and use
-        that for future calls.
-        Example: reagent_plate = unique_containers(target_wells)[-1]
-        Otherwise you get a new plate everytime you try to fill the old one
+    """Create simple or complex mastermixes from resourceIds or aliquots
 
-        Returns
-        -------
-        List of wells
+    Creates a mix of the indicated reagents/resources for the number of
+    reactions indicated. Balances the volume across the destination
+    wells such that all but the last well carry the maximum number
+    of reactions, the last well the overflow.
+    Can account for dead_volume in each destination well.
+    Can work with an existing mm container or create new ones and
+    create new ones if existing ones are filled.
+    You should only fill wells in order - so fill a container
+    consistently with columnwise True or False throughout the protocol.
+    Returns a list of wells. If you parsed in a container it is a good
+    practice to check if you needed to make a new container and use
+    that for future calls.
+    Example: reagent_plate = unique_containers(target_wells)[-1]
+    Otherwise you get a new plate everytime you try to fill the old one
+
+    Parameters
+    ----------
+    protocol : Protocol
+    name : str
+        Well and or container name
+    cont : str, Container
+        String corresponding to wanted Container type or container
+    reactions : int
+        How many reactions to prepare
+    resources : dict
+        Dict with resource ids as keys and volume per reaction as value
+    othermaterial : dict
+        Dict with alliquot as key and volume per reaction as value
+    start_well : int, optional
+        Starting well for the container
+    mm_mult : float, optional
+        Multiplier used to account for overage
+    use_dead_vol : bool, optional
+        Account for dead_volume of container type
+    columnwise : bool, optional
+
+
+    Returns
+    -------
+    target_wells : list
+        List of wells containing mastermix
+
     """
     if not isinstance(resources, dict):
         raise RuntimeError("To calculate a mastermix 'resources' has to be "
@@ -214,98 +240,85 @@ def createMastermix(protocol, name, cont, reactions, resources={},
 
     return target_wells
 
+# obsolete?
+def echo_mastermix_vol(protocol, num_rxt, vol_per_rxt,
+                       echo_dead_vol='15:microliter',
+                       echo_max_vol='60:microliter'):
+    '''
+    Return volume needed for number of reactions corrected for dead volume
+    over multiple wells. This does not correct for overage needed to account
+    for loss in mastermix container, ie. a multiplier should still be used
+    to create an overage of mastermix.
 
-def provision_group(protocol, name, cont, resource_id, num_samples,
-                    vol_per_sample, mm_mult=1.3, discard=True, storage=None,
-                    start_well=0, use_dead_vol=False):
+    Parameters:
+    -----------
+    num_rxt : int
+    vol_per_rxt : vol, microliter
+    echo_dead_vol : vol, microliter
+    echo_max_vol : vol, microliter
 
-    """
-        Provision all the volume you need to multiple wells.
-        Returns
-        -------
-        List of wells
-    """
+    Returns:
+    --------
+    Unit
+        Returns a volume in microliters corrected for dead volume
+    '''
 
-    dead_vol = 0.0
-    set_volume_adjustment = 0.9
-    if isinstance(cont, str):
-        cont_max_vol = 0.8 * _CONTAINER_TYPES[cont].well_volume_ul
-        if use_dead_vol:
-            dead_vol = _CONTAINER_TYPES[cont].dead_volume_ul
-            set_volume_adjustment = 1.0
-    elif isinstance(cont, Container):
-        cont_max_vol = 0.8 * cont.container_type.well_volume_ul
-        if use_dead_vol:
-            dead_vol = cont.container_type.dead_volume_ul
-            set_volume_adjustment = 1.0
-    else:
-        raise RuntimeError(
-            "cont for provision_group must be of type string or container")
-    if isinstance(vol_per_sample, Unit):
-        vol_per_sample = vol_per_sample.value
-    total_vol = num_samples * vol_per_sample * mm_mult
-    num_wells = int(math.ceil(float(total_vol)/cont_max_vol))
-    vol_per_well = total_vol/num_wells
-    if cont in ["micro-1.5", "micro-2.0"]:
-        wells = WellGroup([])
-        wells.wells.extend([
-            provision_to_tube(
-                protocol,
-                name +
-                "_%s_%d" % (printdatetime(time=False), i+1),
-                cont,
-                resource_id,
-                vol_per_well + dead_vol).set_volume(Unit(
-                                                    set_volume_adjustment *
-                                                    vol_per_well,
-                                                    "microliter"))
-            for i in range(0, num_wells)])
-    else:
-        if isinstance(cont, str):
-            p = protocol.ref(name + "_%s" % (printdatetime(time=False)), None, cont,
-                             storage, discard)
-        else:
-            p = cont
+    vol_per_rxt = Unit.fromstring(vol_per_rxt).value
+    echo_dead_vol = Unit.fromstring(echo_dead_vol).value
+    echo_max_vol = Unit.fromstring(echo_max_vol).value
+    well_working_vol = echo_max_vol - echo_dead_vol
+    tot_rxt_vol = float(num_rxt * vol_per_rxt)
+    tot_wells = int(math.ceil(tot_rxt_vol / well_working_vol))
+    total_vol = tot_rxt_vol + (echo_dead_vol * tot_wells)
 
-        wells = p.wells_from(start_well, num_wells)
-        for i, w in enumerate(wells):
-            protocol.provision(
-                resource_id, w, Unit(vol_per_well + dead_vol, "microliter"))
-            w.set_volume(
-                Unit(set_volume_adjustment * vol_per_well, "microliter"))
-            w.set_name("%s_%i" % (name, i + 1))
-    return wells
+    return Unit(total_vol, 'microliter')
 
+# obsolete?
+def echo_mastermix_load(protocol, mastermix, echo_plate, vol_mastermix=None,
+                        echo_dead_vol='15:microliter',
+                        echo_max_vol='60:microliter', start=0):
+    '''
+    Return WellGroup of Echo Plate wells containing mastermix
 
-def provision_to_tube(protocol, name, tube, resource_id, volume, discard=True,
-                      storage=None):
-    """
-        Provision_to_tube allows us to provision into a tube/well that can
-        then be used in transfers on the workcell.
+    Parameters
+    -----------
+    mastermix : Well
+        single well containing mastermix
+    vol_mastermix : vol, microliter
+    echo_plate : Container
+        echo compatible source container
+    echo_dead_vol : vol, microliter
+    echo_max_vol : vol, microliter
+    start : int
+        echo well to start at
 
-        Parameters
-        ----------
-        protocol = the protocol instance you are using
-        name = string for the new container name
-        tube = tube type, micro-1.5 or micro-2.0
-        volume = volume in int, float or Unit to provision
-        discard = discard the tube after use, default true
+    Returns
+    --------
+    WellGroup
+        Returns a WellGroup containing mastermix with corrected dead volumes
 
-        Returns
-        -------
-        Well
-    """
-    assert isinstance(
-        volume, (
-            Unit, int, float)), "Volume must be of type int, float or Unit."
-    if isinstance(volume, Unit):
-        volume = volume.value
-    if storage:
-        dest = protocol.ref(name, None, tube, storage=storage).well(0)
-    else:
-        dest = protocol.ref(name, None, tube, discard=discard).well(0)
-    protocol.provision(resource_id, dest, "%s:microliter" % volume)
-    return(dest)
+    '''
+    vol_mastermix = mastermix.volume.value or Unit.fromstring(vol_mastermix).value
+    echo_dead_vol = Unit.fromstring(echo_dead_vol).value
+    echo_max_vol = Unit.fromstring(echo_max_vol).value
+    well_working_vol = echo_max_vol - echo_dead_vol
+    vol_remaining = vol_mastermix
+    transfer_vol = float(echo_max_vol)
+    echo_mastermix_wells = WellGroup([])
+
+    start = start
+    while vol_remaining > echo_dead_vol:
+        if vol_remaining < echo_max_vol:
+            transfer_vol = vol_remaining
+        protocol.transfer(mastermix, echo_plate.well(start),
+                          '%s:microliter' % transfer_vol,
+                          new_group=det_new_group(start))
+        echo_mastermix_wells.append(echo_plate.well(start).set_volume(
+            '%s:microliter' % (transfer_vol - echo_dead_vol)))
+        vol_remaining -= transfer_vol
+        start += 1
+
+    return echo_mastermix_wells
 
 
 def serial_dilute_rowwise(protocol, source, well_group, vol,
