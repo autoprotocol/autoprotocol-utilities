@@ -1,4 +1,5 @@
 from .helpers import *
+from autoprotocol.container import Container, WellGroup, Well
 from autoprotocol.unit import Unit
 
 

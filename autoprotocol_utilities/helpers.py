@@ -262,6 +262,51 @@ def plates_needed(wells_needed, wells_available):
     return int(math.ceil(wells_needed / wells_available))
 
 
+def set_pipettable_volume(well):
+    """Remove dead volume from pipettable volume.
+
+    In one_tip true pipetting operations the volume of the well is used to
+    determine who many more wells can be filled from this source well. Thus
+    it is useful to remove the dead_volume from the set_volume of the well.
+
+    Parameters
+    ----------
+    well : Well, List, WellGroup, Container
+
+    Returns
+    -------
+    well : Well, List, WellGroup, Container
+        Will return the same type as was received
+    """
+
+    if isinstance(well, (list, WellGroup)):
+        cont = unique_containers(well)
+        if len(cont) > 1:
+            raise RuntimeError("Wells can only be from one container")
+        else:
+            cont = cont[0]
+        r = 'list'
+    elif isinstance(well, Container):
+        cont = well
+        well = list_of_filled_wells(cont)
+        r = 'cont'
+    elif isinstance(well, Well):
+        cont = well.container
+        well = [well]
+        r = 'well'
+
+    dead_volume = cont.container_type.dead_volume_ul
+    for x in well:
+        x.set_volume(x.volume - dead_volume)
+
+    if r == 'cont':
+        return cont
+    elif r == 'well':
+        return well[0]
+    else:
+        return well
+
+
 def volume_check(aliquot, usage_volume=0):
     """
     Takes an aliquot and if usaage_volume is 0 checks if that aliquot
