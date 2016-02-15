@@ -29,9 +29,10 @@ def list_of_filled_wells(cont, empty=False):
     -------
     wells : list
         list of wells
+
     """
     if not isinstance(cont, Container):
-        raise RuntimeError("list_of_filled_wells needs a container as input")
+        raise RuntimeError("needs a container as input")
     wells = []
     for well in cont.all_wells():
         if not empty:
@@ -53,16 +54,21 @@ def first_empty_well(cont):
 
     Returns
     -------
-    on success: well
-    on failure: string
+    Response : namedtuple
+        `success` is true if there is an empty well left on the container in
+        question
+        `well` is the first index that was found to be without volume. May be
+        beyond the number of available wells - in that case `success` is false
 
     """
+    r = namedtuple('Response', 'success well')
     well = max(cont.all_wells(),
                key=lambda x: x.index if x.volume else 0).index + 1
     if well < cont.container_type.well_count:
-        return well
+        success = True
     else:
-        return "The container has no empty wells left"
+        success = False
+    return r(success=success, well=well)
 
 
 def unique_containers(wells):
@@ -87,23 +93,37 @@ def unique_containers(wells):
     return cont
 
 
-def sort_well_group(well_group, columnwise=False):
+def sort_well_group(wells, columnwise=False):
+    """Sort a well group in rowwise or columnwise format.
+
+    This function sorts first by container id and name, then by row or
+    column, as needed. When the webapp returns aliquot+ inputs, it
+    usually does so as a rowwise sorted well group, so this function
+    can be useful for re-sorting when necessary.
+
+    Parameters
+    ----------
+    wells : list, WellGroup
+        List of wells to sort
+    columnwise : bool, optional
+
+    Returns
+    -------
+    sorted_well_group : WellGroup
+        Sorted list of wells
+
     """
-        Sort a well group in rowwise or columnwise format.
-        This function sorts first by container id and name, then by row or
-        column, as needed. When the webapp returns aliquot+ inputs, it
-        usually does so as a rowwise sorted well group, so this function
-        can be useful for re-sorting when necessary.
-    """
-    assert isinstance(well_group, WellGroup), "well_group must be an instance"
-    " of the WellGroup class"
+    if isinstance(wells, list):
+        wells = WellGroup(wells)
+    assert isinstance(wells, WellGroup), "wells must be an instance"
+    " of the WellGroup class or of type list"
     well_list = [(
         well,
         well.container.id,
         well.container.name,
         well.container.decompose(well)[0],
         well.container.decompose(well)[1]
-        ) for well in well_group
+        ) for well in wells
     ]
 
     if columnwise:
@@ -126,10 +146,10 @@ def stamp_shape(wells):
 
     Returns
     -------
-    stamp_shape : named tuple
-        start_well is the top left well for the source stamp group
-        shape is a dict of rows and columns describing the stamp shape
-        remainging_wells is a list of wells that are not included in the
+    stamp_shape : namedtuple
+        `start_well` is the top left well for the source stamp group
+        `shape` is a dict of rows and columns describing the stamp shape
+        `remainging_wells` is a list of wells that are not included in the
         stamp shape.
 
     """
@@ -307,7 +327,7 @@ def set_pipettable_volume(well):
         return well
 
 
-def volume_check(aliquot, invalid_msgs, usage_volume=0):
+def volume_check(aliquot, usage_volume=0):
     """
     Takes an aliquot and if usaage_volume is 0 checks if that aliquot
     is above the dead volume for its well type.
@@ -318,12 +338,14 @@ def volume_check(aliquot, invalid_msgs, usage_volume=0):
     ----------
     aliquot : Well
         Well to test
-    invalid_msgs : list
-        List of error messages from your current protocol that is later
-        converted using `user_errors_group()`
     usage_volume : Unit, str, int, optional
         Volume to test for. If 0 the aliquot will be tested against the
         container dead volume.
+
+    Returns
+    -------
+    error_message : str or None
+        String if volume check failed
 
     """
     if isinstance(aliquot, Container):
@@ -337,25 +359,32 @@ def volume_check(aliquot, invalid_msgs, usage_volume=0):
     dead_vol = aliquot.container.container_type.dead_volume_ul
     test_vol = dead_vol + usage_volume
 
+    error_message = None
     if test_vol > aliquot.volume.value:
         if usage_volume == 0:
-            invalid_msgs.append(
-                "You want to pipette from a container with %s uL"
-                " dead volume. However, you aliquot only has "
-                "%s uL." % (dead_vol, aliquot.volume.value))
+            error_message = """
+                You want to pipette from a container with %s uL
+                 dead volume. However, you aliquot only has
+                 %s uL.""" % (dead_vol, aliquot.volume.value)
         else:
-            invalid_msgs.append(
-                "You want to pipette %s uL from a container with "
-                "%s uL dead volume (%s uL total). However, your"
-                " aliquot only has %s uL." % (usage_volume,
-                                              dead_vol,
-                                              usage_volume + dead_vol,
-                                              aliquot.volume.value))
+            error_message = """
+                You want to pipette %s uL from a container with
+                 %s uL dead volume (%s uL total). However, your
+                 aliquot only has %s uL.""" % (usage_volume,
+                                               dead_vol,
+                                               usage_volume + dead_vol,
+                                               aliquot.volume.value)
+    return error_message
 
 
 def user_errors_group(error_msgs):
-    """
-        Takes a list error messages and neatly displays as a single UserError
+    """Takes a list error messages and neatly displays as a single UserError
+
+    Parameters
+    ----------
+    error_msgs : list
+        List of strings that are the error messages
+
     """
     assert isinstance(error_msgs, list), ("Error messages must be in the form"
                                           " of a list to properly format the "
@@ -469,29 +498,46 @@ def det_new_group(i, base=0):
     return new_group
 
 
-def label_limit(label, invalid_msgs, length=22):
+def char_limit(label, length=22, trunc=False, clip=False):
     """Enforces a string limit on the label provided
 
     Parameters
     ----------
     label : str
         String to test
-    invalid_msgs : list
-        List of error messages from your current protocol that is later
-        converted using `user_errors_group()`
     length : int, optional
-        Maximum label length for this string
+        Maximum label length for this string. Default: 22
+    trunc : bool
+        Truncate the label if it is too long
+    clip : bool
+        Clip the label (remove from beginning of the string) if it is too long
+
+    Returns
+    -------
+    Response : namedtuple
+        `label` (str) and `error_message` (string) that is empty on success
+        `label` is the unmodified, truncated to clipped label as indicated
 
     """
+    assert isinstance(label, string_type), "Label has to be of type string"
+
+    r = namedtuple('Response', 'label error_message')
+    if trunc and len(label) > length:
+        label = label[0: length]
+    if clip and len(label) > length:
+        label = label[len(label) - length: len(label)]
+
     if len(label) > length:
-        invalid_msgs.append("The specified label, '%s', has too many "
-                            "characters. Please enter a label of %s "
-                            "or less characters." % (label, length))
+        error_message = """The specified label, '%s', has too many
+                         characters. Please enter a label of %s
+                         or less characters.""" % (label, length)
+
+    return r(label=label, error_message=error_message)
 
 # ## Returning containers or data
 
 
-def scale_default(length, scale, label, invalid_msgs):
+def scale_default(length, scale, label):
     """Detects if the oligo length matches the selected scale
 
     Parameters
@@ -502,12 +548,17 @@ def scale_default(length, scale, label, invalid_msgs):
         Scale of the oligo in question
     label : str
         Name of the oligo
-    invalid_msgs : list
-        List of error messages from your current protocol that is later
-        converted using `user_errors_group()`
+
+    Returns
+    -------
+    Response : namedtuple
+        `success` (bool) and `error_message` (string) that is empty on success
 
     """
+
+    r = namedtuple('Response', 'success error_message')
     ok = True
+    error_message = ""
     if scale == '25nm':
         ok = True if (length >= 15 and length <= 60) else False
     elif scale == '100nm':
@@ -519,10 +570,12 @@ def scale_default(length, scale, label, invalid_msgs):
     else:
         ok = False
     if not ok:
-        invalid_msgs.append("The specified oligo, '%s', is %s base pairs long"
-                            ". This sequence length is invalid for the scale "
-                            "of synthesis chosen (%s)."
-                            % (label, length, scale))
+        error_message = """The specified oligo, '%s', is %s base pairs long.
+                         This sequence length is invalid for the scale
+                         of synthesis chosen (%s).""" % (label,
+                                                         length,
+                                                         scale)
+    return r(success=ok, error_message=error_message)
 
 
 def return_agar_plates(wells=6):

@@ -21,9 +21,9 @@ helpers.user_errors_group()
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. autofunction:: autoprotocol_utilities.helpers.user_errors_group
 
-helpers.label_limit()
+helpers.char_limit()
 ~~~~~~~~~~~~~~~~~~~~~
-.. autofunction:: autoprotocol_utilities.helpers.label_limit
+.. autofunction:: autoprotocol_utilities.helpers.char_limit
 
 
 helpers.printdatetime()
