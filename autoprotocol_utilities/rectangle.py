@@ -4,7 +4,6 @@ try:
 except NameError:
     from functools import reduce  # py3k
 
-
 # A column in a histogram
 Column = namedtuple('Column', 'height x')
 # An area under a histogram
@@ -51,19 +50,6 @@ def max_rectangle(mat, value=0):
 def max_histogram_area(histogram):
     """Find height, width of the largest rectangle that fits entirely under
     the histogram.
-    >>> f = max_rectangle_size
-    >>> f([5,3,1])
-    (3, 2)
-    >>> f([1,3,5])
-    (3, 2)
-    >>> f([3,1,5])
-    (5, 1)
-    >>> f([4,8,3,2,0])
-    (3, 3)
-    >>> f([4,8,3,1,1,0])
-    (3, 3)
-    >>> f([1,2,1])
-    (1, 3)
     Algorithm is "Linear search using a stack of incomplete subproblems" [1].
     [1]: http://blog.csdn.net/arbuckle/archive/2006/05/06/710988.aspx
     """
@@ -98,12 +84,13 @@ def binary_list(wells, length=None):
     otherwise. `wells` must be sorted, `length` is the length of
     the resulting list.
 
-    >>> binary_list([1, 3, 5], length=7)
-    [0, 1, 0, 1, 0, 1, 0]
-    >>> binary_list([0, 1, 2, 6])
-    [1, 1, 1, 0, 0, 0, 6]
+    .. code-block:: none
+
+        [bnry for bnry in binary_list([1, 3, 5], length=7)]
+        [0, 1, 0, 1, 0, 1, 0]
+
     """
-    length = length or max(wells)
+    length = length or max(wells) + 1
     wells_ptr = 0
     for i in range(length):
         try:
@@ -117,6 +104,9 @@ def binary_list(wells, length=None):
 
 
 def chop_list(lst, chop_length, filler=None):
+    """Chops a list into a list of lists. Used to generate a plate map
+    corresponding to microplate layouts.
+    """
     assert chop_length > 0
     ret = []
     row_idx = 0
@@ -138,20 +128,3 @@ def chop_list(lst, chop_length, filler=None):
             return ret
 
     return ret
-
-# Test code from dev in ipython notebook. leave here for now
-# wells = [12,13,14,24,25,26,72,73,74,75,76,84,85,86,87,88,89]
-# rows = 8
-# cols = 12
-# bnry_list = [bnry for bnry in binary_list(wells, length=rows*cols)]
-# bnry_mat = chop_list(bnry_list, cols)
-# t = max_rectangle(bnry_mat, value=1)
-# wells_included = []
-# start_well = (t.y*cols) + t.x
-# for y in range(t.height):
-#     for z in range(t.width):
-#         wells_included.append(start_well + y*cols + z)
-# wells_remaining = [x for x in wells if x not in wells_included]
-# print start_well
-# print wells_included
-# print wells_remaining

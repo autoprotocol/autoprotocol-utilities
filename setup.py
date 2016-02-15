@@ -8,5 +8,6 @@ setup(name='autoprotocol_utilities',
       author_email='conny@transcriptic.com, vanessa@transcriptic.com',
       license='MIT',
       packages=['autoprotocol_utilities'],
-      dependency_links=['https://github.com/autoprotocol/autoprotocol-python/master#egg=package-2.6'],
+      tests_require=['pytest'],
+      install_requires=['autoprotocol'],
       zip_safe=False)
