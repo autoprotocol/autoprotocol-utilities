@@ -2,7 +2,7 @@
 ==================================================
 
 .. toctree::
-   :hidden:
+   :maxdepth: 2
 
    Documentation <autoprotocol_utilities>
    AUTHORS
