@@ -1,6 +1,12 @@
 from .helpers import *
 from autoprotocol.container import Container, WellGroup, Well
+from autoprotocol.container_type import _CONTAINER_TYPES
 from autoprotocol.unit import Unit
+
+if sys.version_info[0] >= 3:
+    string_type = str
+else:
+    string_type = basestring
 
 
 def createMastermix(protocol, name, cont, reactions, resources={},
@@ -62,6 +68,7 @@ def createMastermix(protocol, name, cont, reactions, resources={},
                                    "volumes of type float, int or Unit.")
             if isinstance(v, Unit):
                 resources[k] = v.value
+            resources[k] = float(v)
             if 'rs' not in k:
                 raise RuntimeError("Keys of the resources dict have to be "
                                    "resource ids starting with 'rs'.")
@@ -77,12 +84,15 @@ def createMastermix(protocol, name, cont, reactions, resources={},
                                    "Unit.")
             if isinstance(v, Unit):
                 othermaterial[k] = v.value
+            othermaterial[k] = float(v)
+
             if not isinstance(k, Well):
                 raise RuntimeError("Keys of the othermaterial dict have to "
                                    "be wells")
     if not isinstance(reactions, int):
         raise RuntimeError("Reactions has to be an int")
-    if isinstance(cont, str):
+    assert isinstance(name, string_type)
+    if isinstance(cont, string_type):
         max_well_vol = 0.9 * _CONTAINER_TYPES[cont].well_volume_ul
         dead_vol = _CONTAINER_TYPES[cont].dead_volume_ul
     elif isinstance(cont, Container):
@@ -104,16 +114,21 @@ def createMastermix(protocol, name, cont, reactions, resources={},
 
     # Set-up params and determine how much we need
     total_vol_per_reaction = (
-        sum(resources.values()) + sum(othermaterial.values())) * mm_mult
-    total_vol_mm_mult = total_vol_per_reaction * reactions
+        sum(resources.values()) + sum(othermaterial.values()))
+    total_vol_pr_mm_mult = total_vol_per_reaction * mm_mult
+    total_vol_all = total_vol_pr_mm_mult * reactions
     base_per_mm_well = 0.0
     if use_dead_vol:
         max_well_vol -= dead_vol
         base_per_mm_well += dead_vol
     # Determine mm well volume
-    wells_needed = plates_needed(total_vol_mm_mult, max_well_vol)
-    reactions_per_well = int(math.ceil(max_well_vol / total_vol_per_reaction))
+    wells_needed = plates_needed(total_vol_all, max_well_vol)
+    reactions_per_well = plates_needed(max_well_vol, total_vol_pr_mm_mult)
 
+    if total_vol_pr_mm_mult > max_well_vol:
+        raise RuntimeError("The mastermix volume for 1 reaction is bigger "
+                           "than the maximum volume allowed in this "
+                           "container: %s" % cont)
     # Make a list of volumes such that all but the last well
     # have the max number of reactions per well.
     # The last well has the reaction overfow.
@@ -121,10 +136,10 @@ def createMastermix(protocol, name, cont, reactions, resources={},
     vol_per_mm_well = []
     while reactions > 0:
         if reactions > reactions_per_well:
-            vol = total_vol_per_reaction * reactions_per_well
+            vol = total_vol_pr_mm_mult * reactions_per_well
             reactions -= reactions_per_well
         else:
-            vol = total_vol_per_reaction * reactions
+            vol = total_vol_pr_mm_mult * reactions
             reactions -= reactions
         vol_per_mm_well.append(round(base_per_mm_well + vol, 2))
 
@@ -155,7 +170,7 @@ def createMastermix(protocol, name, cont, reactions, resources={},
             for x in range(wells_needed):
                 y = protocol.ref("%s-%s_%s" % (name,
                                                x + 1,
-                                               printdatetime(time=False)),
+                                               printdate()),
                                  cont_type=cont,
                                  discard=True).well(0)
                 y.set_name(name)
@@ -167,7 +182,7 @@ def createMastermix(protocol, name, cont, reactions, resources={},
             for x in range(num_plates):
                 y = protocol.ref("%s-%s_%s" % (name,
                                                x + 1,
-                                               printdatetime(time=False)),
+                                               printdate()),
                                  cont_type=cont,
                                  discard=True)
                 len_wells = temp_wells if temp_wells < max_wells else max_wells
@@ -217,7 +232,7 @@ def createMastermix(protocol, name, cont, reactions, resources={},
         ratio = v/total_vol_per_reaction
         vol = map((lambda x: Unit(round(x * ratio, 2), "microliter")),
                   vol_per_mm_well)
-        material_needed = total_vol_mm_mult * ratio
+        material_needed = total_vol_all * ratio
         # Check if well has enough
         if k.volume.value < material_needed:
             UserError("The following well does not have enough material for "
@@ -407,3 +422,14 @@ def serial_dilute_rowwise(protocol, source, well_group, vol,
             vols.append(vol)
     protocol.transfer(srcs.set_volume(Unit.fromstring(vol)*2), dests, vols,
                       mix_after=mix_after, one_tip=True)
+
+
+def autoseal(protocol, wells):
+    """Determine whether to seal or cover a plate and do so
+    """
+    to_seal = unique_containers(wells)
+    for c in to_seal:
+        if c.container_type.shortname in ["96-pcr", "384-pcr", "384-echo"]:
+            protocol.seal(c)
+        elif c.container_type.shortname not in ["micro-1.5", "micro-2.0"]:
+            protocol.cover(c)
