@@ -424,24 +424,34 @@ def serial_dilute_rowwise(protocol, source, well_group, vol,
                       mix_after=mix_after, one_tip=True)
 
 
-def autoseal(protocol, wells, covertype="standard"):
+def autoseal(protocol, wells, covertype="standard", sealtype="ultra-clear"):
     """Determine whether to seal or cover a plate and do so
 
     Parameters
     ----------
     protocol: Protocol
         instance of autoprotocol Protocol
-    wells: list, WellGroup
-        list of wells that need covering on the container level
+    wells: list, WellGroup, Container
+        list of wells that need covering on the container level or container
     covertype: str, optional
         in case the plate needs to be covered, determine which covertype gets
-        used defaults to standard
+        used. defaults to standard
+    sealtype: str, optional
+        in case the plate needs to be sealed, determine which seal type to
+        select. defaults to ultra-clear
 
     """
-    assert isinstance(wells, (list, WellGroup))
-    to_seal = unique_containers(wells)
+    if isinstance(wells, (list, WellGroup)):
+        to_seal = unique_containers(wells)
+    elif isinstance(wells, Container):
+        to_seal = [wells]
+    else:
+        raise RuntimeError("Wells has to be of type Well, WellGroup,"
+                           "list of wells or container")
+    assert isinstance(protocol, Protocol)
+
     for c in to_seal:
         if c.container_type.shortname in ["96-pcr", "384-pcr", "384-echo"]:
-            protocol.seal(c)
+            protocol.seal(c, type=sealtype)
         elif c.container_type.shortname not in ["micro-1.5", "micro-2.0"]:
             protocol.cover(c, lid=covertype)

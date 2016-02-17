@@ -63,22 +63,6 @@ class TestCreateMastermix:
 
 class TestSeal:
     p = Protocol()
-    c = p.ref("testtube", id=None, cont_type="micro-1.5", discard=True)
-    w = c.well(0)
-    c1 = p.ref("testplate_pcr", id=None, cont_type="96-pcr", discard=True)
-    w1 = c1.well(0)
-    c2 = p.ref("testplate_flat", id=None, cont_type="96-flat", discard=True)
-    w2 = c2.well(0)
-
-    # need to figure out how to test the output
-    @pytest.mark.parametrize("well, r", [
-        ([w], None),
-        ([w1], None),
-        ([w2], None)
-    ])
-    def test_sealing(self, well, r):
-        test = autoseal(self.p, well)
-        assert test == r
 
     def test_seal_fail(self):
         with pytest.raises(Exception):
