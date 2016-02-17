@@ -1,7 +1,7 @@
 import pytest
 from autoprotocol import Protocol
-from autoprotocol_utilities.modules import createMastermix, autoseal
 from autoprotocol.container import Well
+from autoprotocol_utilities.modules import createMastermix, autoseal
 
 
 class TestCreateMastermix:

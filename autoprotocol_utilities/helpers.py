@@ -180,7 +180,7 @@ def stamp_shape(wells):
     for y in range(r.height):
         for z in range(r.width):
             wells_included.append(start_well + y*cols + z)
-    wells_remaining = [x for x in wells if x not in wells_included]
+    wells_remaining = [x for x in wells if x.index not in wells_included]
 
     return stamp_shape(start_well=start_well,
                        shape=dict(rows=r.height, columns=r.width),
@@ -237,15 +237,14 @@ def is_columnwise(wells):
     if len(y.remaining_wells) == 0:
         consecutive = True
     else:
-        next_well = y.start_well + y.shape["columns"] + 1
+        next_well = y.start_well + y.shape["columns"]
         z = stamp_shape(y.remaining_wells)
         if len(z.remaining_wells) == 0 and z.start_well == next_well:
             consecutive = True
 
+    shape = False
     if y.shape["rows"] == rows and consecutive:
         shape = True
-    else:
-        shape = False
 
     return shape
 
