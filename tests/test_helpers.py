@@ -1,11 +1,12 @@
 import pytest
 from random import sample
 from autoprotocol import Protocol
-from autoprotocol.container import Well, WellGroup
-from autoprotocol_utilities.helpers import list_of_filled_wells, first_empty_well, unique_containers, sort_well_group, stamp_shape, is_columnwise, volume_check
+from autoprotocol.container import Well, WellGroup, Container
+from autoprotocol_utilities.helpers import list_of_filled_wells, first_empty_well, unique_containers, sort_well_group, stamp_shape, is_columnwise, volume_check, set_pipettable_volume
+from autoprotocol_utilities.helpers import make_list, flatten_list
 
 
-class TestContainefunctions:
+class TestContainerfunctions:
     p = Protocol()
     c = p.ref("testplate_pcr", id=None, cont_type="96-pcr", discard=True)
     c.wells_from(0, 30).set_volume("20:microliter")
@@ -48,7 +49,23 @@ class TestContainefunctions:
         assert list(random_wells) != list(wells)
         assert list(sort_well_group(random_wells)) == list(wells)
 
-    # def test_shape(self):
+    @pytest.mark.parametrize("wells, r", [
+        (c.wells_from(0, 16, columnwise=True),
+         [0, {"rows": 8, "columns": 2}, []]),
+        (c.wells_from(0, 16), [0, {"rows": 1, "columns": 12},
+         [12, 13, 14, 15]]),
+        (c.wells(0, 1, 2, 3, 95, 94, 93, 92, 91, 83, 82, 81, 80, 79),
+         [79, {"rows": 2, "columns": 5}, [0, 1, 2, 3]])
+    ])
+    def test_shape(self, wells, r):
+        res = stamp_shape(wells)
+        assert res.start_well == r[0]
+        assert res.shape == r[1]
+        if len(r[2]) == 0:
+            assert len(res.remaining_wells) == len(r[2])
+        else:
+            for i, well in enumerate(res.remaining_wells):
+                assert well.index == r[2][i]
 
     @pytest.mark.parametrize("len_wells, columnwise, r", [
         (8, True, True),
@@ -64,3 +81,39 @@ class TestContainefunctions:
         wells.append(self.c.well(14))
         assert is_columnwise(wells) is False
 
+    def test_set_pipettable_volume(self):
+        old_vol = 20
+        new_well = set_pipettable_volume(self.c.well(95))
+        assert isinstance(new_well, Well)
+        assert new_well.volume.value == old_vol - 15
+        new_well = set_pipettable_volume(self.c.wells_from(90, 4))
+        assert isinstance(new_well, WellGroup)
+        for well in new_well:
+            assert well.volume.value == old_vol - 15
+        self.c.all_wells().set_volume("20:microliter")
+        new_well = set_pipettable_volume(self.c)
+        assert isinstance(new_well, Container)
+        for well in new_well.all_wells():
+            assert well.volume.value == old_vol - 15
+
+    def test_volume_check(self):
+        self.c.all_wells().set_volume("20:microliter")
+        self.c.wells_from(15, 15).set_volume("10:microliter")
+        assert volume_check(self.c.well(0), 1) is None
+        assert volume_check(self.c.well(0), 6) is not None
+        assert volume_check(self.c.well(15), 0) is not None
+
+
+class TestDataformattingfunctions:
+    def test_make_list(self):
+        s = "1,2,3,4"
+        r1 = [1, 2, 3, 4]
+        r2 = ["1", "2", "3", "4"]
+        assert make_list(s) == r2
+        assert make_list(s, integer=True) == r1
+
+    def test_flatten_list(self):
+        l = [[1, 2], [3, 4], [[5, 6], [[7, 8], [9, 10], 11], 12], 13]
+        assert flatten_list(l) == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+
+    # def test_char_limit(self):

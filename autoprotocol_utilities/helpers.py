@@ -316,7 +316,7 @@ def set_pipettable_volume(well):
 
     dead_volume = cont.container_type.dead_volume_ul
     for x in well:
-        x.set_volume(x.volume - dead_volume)
+        x.set_volume(Unit(x.volume.value - dead_volume, "microliter"))
 
     if r == 'cont':
         return cont
@@ -506,10 +506,11 @@ def char_limit(label, length=22, trunc=False, clip=False):
         String to test
     length : int, optional
         Maximum label length for this string. Default: 22
-    trunc : bool
-        Truncate the label if it is too long
-    clip : bool
+    trunc : bool, optional
+        Truncate the label if it is too long. Default off.
+    clip : bool, optional
         Clip the label (remove from beginning of the string) if it is too long
+         Default off.
 
     Returns
     -------
