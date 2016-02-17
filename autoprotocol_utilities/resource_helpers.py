@@ -215,3 +215,34 @@ def thermocycle_ramp(start_temp, end_temp, total_duration, step_duration):
                            "duration": step_duration
         })
     return thermocycle_steps
+
+
+class ResourceIDs(object):
+
+    """
+    A list of resource identification numbers used to provision
+    resources using Autoprotocol.
+
+    Returns
+    -------
+    resource_id: str
+
+    """
+
+    def __init__(self):
+        self.water = "rs17gmh5wafm5p"
+        self.te = "rs17pwyc754v9t"
+        # competent cells
+        self.zymo_10b = "rs16pbjc4r7vvz"
+        self.zymo_dh5a = "rs16pbj944fnny"
+        self.zymo_jm109 = "rs16pbjdhwkjxy"
+        # antibiotics
+        self.ampicillin_100mg_ml = "rs17msfk8ujkca"
+        self.chloramphenicol_34mg_ml = "rs17p6t8ty2ny4"
+        self.kanamycin_50mg_ml = "rs17msfpgpbqyv"
+        # dna polymerases
+        self.mytaq_poly = "rs16pcbhquhaz3"
+        self.phusion_poly = "rs16pcc3mgay64"
+        # orange g
+        self.orange_g_100 = "rs17zw9zsaqd55"
+        self.organge_g_500 = "rs17zwe6rux5b7"
