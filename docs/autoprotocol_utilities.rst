@@ -5,115 +5,118 @@ autoprotocol_utilities
 Modules
 -------
 
-modules.createMastermix()
+createMastermix()
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 .. autofunction:: autoprotocol_utilities.modules.createMastermix
 
-modules.serial_dilute_rowwise()
+serial_dilute_rowwise()
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. autofunction:: autoprotocol_utilities.modules.serial_dilute_rowwise
+
+autoseal()
+~~~~~~~~~~~~~~~~~~
+.. autofunction:: autoprotocol_utilities.modules.autoseal
 
 
 General helpers
 ---------------
 
-helpers.user_errors_group()
+user_errors_group()
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.. autofunction:: autoprotocol_utilities.helpers.user_errors_group
+.. autofunction:: autoprotocol_utilities.container_helpers.user_errors_group
 
-helpers.char_limit()
+char_limit()
 ~~~~~~~~~~~~~~~~~~~~~
-.. autofunction:: autoprotocol_utilities.helpers.char_limit
+.. autofunction:: autoprotocol_utilities.container_helpers.char_limit
 
-
-helpers.printdatetime()
+printdatetime()
 ~~~~~~~~~~~~~~~~~~~~~~~
-.. autofunction:: autoprotocol_utilities.helpers.printdatetime
+.. autofunction:: autoprotocol_utilities.container_helpers.printdatetime
 
-helpers.printdate()
+printdate()
 ~~~~~~~~~~~~~~~~~~~
-.. autofunction:: autoprotocol_utilities.helpers.printdate
+.. autofunction:: autoprotocol_utilities.container_helpers.printdate
 
-helpers.make_list()
+make_list()
 ~~~~~~~~~~~~~~~~~~~
-.. autofunction:: autoprotocol_utilities.helpers.make_list
+.. autofunction:: autoprotocol_utilities.container_helpers.make_list
 
-helpers.flatten_list()
+flatten_list()
 ~~~~~~~~~~~~~~~~~~~~~~
-.. autofunction:: autoprotocol_utilities.helpers.flatten_list
+.. autofunction:: autoprotocol_utilities.container_helpers.flatten_list
 
 
 Pipetting helpers
 -----------------
 
-helpers.volume_check()
+volume_check()
 ~~~~~~~~~~~~~~~~~~~~~~
-.. autofunction:: autoprotocol_utilities.helpers.volume_check
+.. autofunction:: autoprotocol_utilities.container_helpers.volume_check
 
-helpers.set_pipettable_volume()
+set_pipettable_volume()
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.. autofunction:: autoprotocol_utilities.helpers.set_pipettable_volume
+.. autofunction:: autoprotocol_utilities.container_helpers.set_pipettable_volume
 
-helpers.det_new_group()
+det_new_group()
 ~~~~~~~~~~~~~~~~~~~~~~~
-.. autofunction:: autoprotocol_utilities.helpers.det_new_group
+.. autofunction:: autoprotocol_utilities.container_helpers.det_new_group
 
-helpers.plates_needed()
+plates_needed()
 ~~~~~~~~~~~~~~~~~~~~~~~
-.. autofunction:: autoprotocol_utilities.helpers.plates_needed
+.. autofunction:: autoprotocol_utilities.container_helpers.plates_needed
 
-helpers.sort_well_group()
+sort_well_group()
 ~~~~~~~~~~~~~~~~~~~~~~~~~
-.. autofunction:: autoprotocol_utilities.helpers.sort_well_group
+.. autofunction:: autoprotocol_utilities.container_helpers.sort_well_group
 
-helpers.unique_containers()
+unique_containers()
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.. autofunction:: autoprotocol_utilities.helpers.unique_containers
+.. autofunction:: autoprotocol_utilities.container_helpers.unique_containers
 
-helpers.is_columnwise()
+is_columnwise()
 ~~~~~~~~~~~~~~~~~~~~~~~
-.. autofunction:: autoprotocol_utilities.helpers.is_columnwise
+.. autofunction:: autoprotocol_utilities.container_helpers.is_columnwise
 
-helpers.stamp_shape()
+stamp_shape()
 ~~~~~~~~~~~~~~~~~~~~~
-.. autofunction:: autoprotocol_utilities.helpers.stamp_shape
+.. autofunction:: autoprotocol_utilities.container_helpers.stamp_shape
 
-helpers.first_empty_well()
+first_empty_well()
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
-.. autofunction:: autoprotocol_utilities.helpers.first_empty_well
+.. autofunction:: autoprotocol_utilities.container_helpers.first_empty_well
 
-helpers.list_of_filled_wells()
+list_of_filled_wells()
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.. autofunction:: autoprotocol_utilities.helpers.list_of_filled_wells
+.. autofunction:: autoprotocol_utilities.container_helpers.list_of_filled_wells
 
 
-Reagent helpers
+Resource helpers
 ---------------
 
-helpers.scale_default()
+scale_default()
 ~~~~~~~~~~~~~~~~~~~~~~~
-.. autofunction:: autoprotocol_utilities.helpers.scale_default
+.. autofunction:: autoprotocol_utilities.resource_helpers.scale_default
 
-helpers.return_dispense_media()
+return_dispense_media()
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.. autofunction:: autoprotocol_utilities.helpers.return_dispense_media
+.. autofunction:: autoprotocol_utilities.resource_helpers.return_dispense_media
 
-helpers.return_agar_plates()
+return_agar_plates()
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.. autofunction:: autoprotocol_utilities.helpers.return_agar_plates
+.. autofunction:: autoprotocol_utilities.resource_helpers.return_agar_plates
 
-helpers.ref_kit_container()
+ref_kit_container()
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.. autofunction:: autoprotocol_utilities.helpers.ref_kit_container
+.. autofunction:: autoprotocol_utilities.resource_helpers.ref_kit_container
 
 
 Thermocycling helpers
 ---------------------
 
-helpers.melt_curve()
+melt_curve()
 ~~~~~~~~~~~~~~~~~~~~
-.. autofunction:: autoprotocol_utilities.helpers.melt_curve
+.. autofunction:: autoprotocol_utilities.resource_helpers.melt_curve
 
-helpers.thermocycle_ramp()
+thermocycle_ramp()
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.. autofunction:: autoprotocol_utilities.helpers.thermocycle_ramp
+.. autofunction:: autoprotocol_utilities.resource_helpers.thermocycle_ramp

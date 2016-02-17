@@ -2,8 +2,8 @@ import pytest
 from random import sample
 from autoprotocol import Protocol
 from autoprotocol.container import Well, WellGroup, Container
-from autoprotocol_utilities.helpers import list_of_filled_wells, first_empty_well, unique_containers, sort_well_group, stamp_shape, is_columnwise, volume_check, set_pipettable_volume
-from autoprotocol_utilities.helpers import make_list, flatten_list
+from autoprotocol_utilities.container_helpers import list_of_filled_wells, first_empty_well, unique_containers, sort_well_group, stamp_shape, is_columnwise, volume_check, set_pipettable_volume
+from autoprotocol_utilities.container_helpers import make_list, flatten_list, char_limit
 
 
 class TestContainerfunctions:
@@ -116,4 +116,18 @@ class TestDataformattingfunctions:
         l = [[1, 2], [3, 4], [[5, 6], [[7, 8], [9, 10], 11], 12], 13]
         assert flatten_list(l) == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
 
-    # def test_char_limit(self):
+    @pytest.mark.parametrize("string, length, trunc, clip, r", [
+        ('ILoveThis', 6, False, False, ['ILoveThis', 'The specified label']),
+        ('ILoveThis', 6, False, True, ['veThis', None]),
+        ('ILoveThis', 6, True, False, ['ILoveT', None]),
+        ('ILoveThis', 6, True, True, ['ILoveT', None])
+    ])
+    def test_char_limit(self, string, length, trunc, clip, r):
+        res = char_limit(string, length=length, trunc=trunc, clip=clip)
+        print res
+        assert res.label == r[0]
+        if not r[1]:
+            assert res.error_message == r[1]
+        else:
+            assert r[1] in res.error_message
+
