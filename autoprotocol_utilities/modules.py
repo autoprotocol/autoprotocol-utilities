@@ -11,7 +11,7 @@ else:
 
 def createMastermix(protocol, name, cont, reactions, resources={},
                     othermaterial={}, start_well=None, mm_mult=1.3,
-                    use_dead_vol=True, columnwise=False):
+                    use_dead_vol=True, columnwise=False, echo=False):
     """Create simple or complex mastermixes from resourceIds or aliquots
 
     Creates a mix of the indicated reagents/resources for the number of
@@ -101,6 +101,8 @@ def createMastermix(protocol, name, cont, reactions, resources={},
     else:
         raise RuntimeError("cont for provision_group must be of type string"
                            " or container")
+    if echo:
+        dead_vol = 15
     if start_well is not None and not isinstance(start_well, int):
         raise RuntimeError("start_well can only be None or an integer")
 
@@ -245,7 +247,7 @@ def createMastermix(protocol, name, cont, reactions, resources={},
                       " Please use another aliquot or merge two aliquots. "
                       "Well: %s Volume available: %s "
                       "Volume needed: %s" % (k, k.volume, material_needed))
-        protocol.transfer(k, target_wells, vol)
+        protocol.transfer(k, target_wells, vol, new_group=True)
 
     if (len(resources) + len(othermaterial)) > 3:
         for well in target_wells:
@@ -254,86 +256,6 @@ def createMastermix(protocol, name, cont, reactions, resources={},
                          repetitions=5)
 
     return target_wells
-
-# obsolete?
-def echo_mastermix_vol(protocol, num_rxt, vol_per_rxt,
-                       echo_dead_vol='15:microliter',
-                       echo_max_vol='60:microliter'):
-    '''
-    Return volume needed for number of reactions corrected for dead volume
-    over multiple wells. This does not correct for overage needed to account
-    for loss in mastermix container, ie. a multiplier should still be used
-    to create an overage of mastermix.
-
-    Parameters:
-    -----------
-    num_rxt : int
-    vol_per_rxt : vol, microliter
-    echo_dead_vol : vol, microliter
-    echo_max_vol : vol, microliter
-
-    Returns:
-    --------
-    Unit
-        Returns a volume in microliters corrected for dead volume
-    '''
-
-    vol_per_rxt = Unit.fromstring(vol_per_rxt).value
-    echo_dead_vol = Unit.fromstring(echo_dead_vol).value
-    echo_max_vol = Unit.fromstring(echo_max_vol).value
-    well_working_vol = echo_max_vol - echo_dead_vol
-    tot_rxt_vol = float(num_rxt * vol_per_rxt)
-    tot_wells = int(math.ceil(tot_rxt_vol / well_working_vol))
-    total_vol = tot_rxt_vol + (echo_dead_vol * tot_wells)
-
-    return Unit(total_vol, 'microliter')
-
-# obsolete?
-def echo_mastermix_load(protocol, mastermix, echo_plate, vol_mastermix=None,
-                        echo_dead_vol='15:microliter',
-                        echo_max_vol='60:microliter', start=0):
-    '''
-    Return WellGroup of Echo Plate wells containing mastermix
-
-    Parameters
-    -----------
-    mastermix : Well
-        single well containing mastermix
-    vol_mastermix : vol, microliter
-    echo_plate : Container
-        echo compatible source container
-    echo_dead_vol : vol, microliter
-    echo_max_vol : vol, microliter
-    start : int
-        echo well to start at
-
-    Returns
-    --------
-    WellGroup
-        Returns a WellGroup containing mastermix with corrected dead volumes
-
-    '''
-    vol_mastermix = mastermix.volume.value or Unit.fromstring(vol_mastermix).value
-    echo_dead_vol = Unit.fromstring(echo_dead_vol).value
-    echo_max_vol = Unit.fromstring(echo_max_vol).value
-    well_working_vol = echo_max_vol - echo_dead_vol
-    vol_remaining = vol_mastermix
-    transfer_vol = float(echo_max_vol)
-    echo_mastermix_wells = WellGroup([])
-
-    start = start
-    while vol_remaining > echo_dead_vol:
-        if vol_remaining < echo_max_vol:
-            transfer_vol = vol_remaining
-        protocol.transfer(mastermix, echo_plate.well(start),
-                          '%s:microliter' % transfer_vol,
-                          new_group=det_new_group(start))
-        echo_mastermix_wells.append(echo_plate.well(start).set_volume(
-            '%s:microliter' % (transfer_vol - echo_dead_vol)))
-        vol_remaining -= transfer_vol
-        start += 1
-
-    return echo_mastermix_wells
 
 
 def serial_dilute_rowwise(protocol, source, well_group, vol,
