@@ -3,7 +3,7 @@ from random import sample
 from autoprotocol import Protocol
 from autoprotocol.container import Well, WellGroup, Container
 from autoprotocol_utilities.container_helpers import list_of_filled_wells, first_empty_well, unique_containers, sort_well_group, stamp_shape, is_columnwise, volume_check, set_pipettable_volume
-from autoprotocol_utilities.container_helpers import make_list, flatten_list, char_limit
+from autoprotocol_utilities.misc_helpers import make_list, flatten_list, char_limit
 
 
 class TestContainerfunctions:
