@@ -13,7 +13,7 @@ else:
 # ## Returning containers or data
 
 
-def scale_default(length, scale, label):
+def oligo_scale_default(length, scale, label):
     """Detects if the oligo length matches the selected scale
 
     Parameters
@@ -52,6 +52,54 @@ def scale_default(length, scale, label):
                                                          length,
                                                          scale)
     return r(success=ok, error_message=error_message)
+
+
+def oligo_dilution_table(conc=None, sc=None):
+    """
+        Determine the amount of diluent to add to an oligo based on
+        concentration wanted and scale ordered. This function can return the
+        entire dilution table or slices and values as needd
+
+        Parameters
+        ----------
+        conc : str, optional
+            The concentration you wish to select for. Currently 100uM or 1mM.
+        sc : str, optional
+            The scale you wish to select for. Currently '10nm', '25nm',
+            '100nm', '250nm' or '1um'.
+
+        Returns
+        -------
+        dilution_table : dict
+            This is a dict of dicts to determine the volume to add for each
+            concentration (level 1) and scale (level 2).
+
+    """
+    concentration = '100uM', '1mM'
+    scale = '10nm', '25nm', '100nm', '250nm', '1um'
+    volumes = [60, 250, 1000, 2500, 10000, 6, 25, 100, 250, 1000]
+
+    if conc:
+        assert conc in concentration, ("conc has to be in %s " % concentration)
+    if sc:
+        assert sc in scale, ("sc has to be in %s " % scale)
+
+    dilution_table = {}
+    for i, y in enumerate(concentration):
+        dilution_table[y] = dict(zip(scale, volumes[i*len(scale):i*len(scale)+len(scale)]))
+
+    if conc and sc:
+        return dilution_table[conc][sc]
+    elif conc:
+        return dilution_table[conc]
+    elif sc:
+        for x in scale:
+            if sc != x:
+                for c in dilution_table:
+                    dilution_table[c].pop(x, None)
+        return dilution_table
+    else:
+        return dilution_table
 
 
 def return_agar_plates(wells=6):
