@@ -237,6 +237,7 @@ class ResourceIDs(object):
         res.chloramphenicol_34mg_ml
         res.kanamycin_50mg_ml
         res.mytaq_poly
+        res.dpn_neb
         res.phusion_poly
         res.orange_g_100
         res.orange_g_500
@@ -261,6 +262,7 @@ class ResourceIDs(object):
         # dna polymerases
         self.mytaq_poly = "rs16pcbhquhaz3"
         self.phusion_poly = "rs16pcc3mgay64"
+        self.dpn_neb = "rs18kfcmf5xvxz"
         # orange g
         self.orange_g_100 = "rs17zw9zsaqd55"
         self.organge_g_500 = "rs17zwe6rux5b7"

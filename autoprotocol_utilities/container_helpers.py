@@ -122,7 +122,7 @@ def sort_well_group(wells, columnwise=False):
         well.container.name,
         well.container.decompose(well)[0],
         well.container.decompose(well)[1]
-        ) for well in wells
+    ) for well in wells
     ]
 
     if columnwise:
@@ -360,18 +360,15 @@ def volume_check(aliquot, usage_volume=0):
     error_message = None
     if test_vol > aliquot.volume.value:
         if usage_volume == 0:
-            error_message = """
-                You want to pipette from a container with %s uL
-                 dead volume. However, you aliquot only has
-                 %s uL.""" % (dead_vol, aliquot.volume.value)
+            error_message = ("You want to pipette from a container with %s uL"
+                             " dead volume. However, you aliquot only has "
+                             "%s uL.") % (dead_vol, aliquot.volume.value)
         else:
-            error_message = """
-                You want to pipette %s uL from a container with
-                 %s uL dead volume (%s uL total). However, your
-                 aliquot only has %s uL.""" % (usage_volume,
-                                               dead_vol,
-                                               usage_volume + dead_vol,
-                                               aliquot.volume.value)
+            error_message = ("You want to pipette %s uL from a container with"
+                             " %s uL dead volume (%s uL total). However, your"
+                             " aliquot only has %s uL.") % (
+                usage_volume, dead_vol, usage_volume + dead_vol,
+                aliquot.volume.value)
     return error_message
 
 
