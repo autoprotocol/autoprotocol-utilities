@@ -223,6 +223,24 @@ class ResourceIDs(object):
     A list of resource identification numbers used to provision
     resources using Autoprotocol.
 
+    Example Usage:
+
+    .. code-block:: python
+
+        res = ResourceIDs()
+        res.water
+        res.te
+        res.zymo_10b
+        res.zymo_dh5a
+        res.zymo_jm109
+        res.ampicillin_100mg_ml
+        res.chloramphenicol_34mg_ml
+        res.kanamycin_50mg_ml
+        res.mytaq_poly
+        res.phusion_poly
+        res.orange_g_100
+        res.orange_g_500
+
     Returns
     -------
     resource_id: str

@@ -91,7 +91,11 @@ list_of_filled_wells()
 
 
 Resource helpers
----------------
+----------------
+
+ResourceIDs
+~~~~~~~~~~~~~
+.. autoclass:: autoprotocol_utilities.resource_helpers.ResourceIDs
 
 scale_default()
 ~~~~~~~~~~~~~~~~~~~~~~~
