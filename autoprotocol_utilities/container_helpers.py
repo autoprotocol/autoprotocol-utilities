@@ -280,16 +280,22 @@ def plates_needed(wells_needed, wells_available):
     return int(math.ceil(wells_needed / wells_available))
 
 
-def set_pipettable_volume(well):
+def set_pipettable_volume(well, use_safe_vol=False):
     """Remove dead volume from pipettable volume.
 
     In one_tip true pipetting operations the volume of the well is used to
     determine who many more wells can be filled from this source well. Thus
-    it is useful to remove the dead_volume from the set_volume of the well.
+    it is useful to remove the dead_volume (default), or the safe minimum from
+    the set_volume of the well.
+    It is recommeneded to remove the dead_volume only and check for safe_vol
+    later.
 
     Parameters
     ----------
     well : Well, List, WellGroup, Container
+    use_safe_vol : bool, optional
+        Instead of removing the indicated dead_volume, remove the safe minimum
+        volume
 
     Returns
     -------
@@ -313,9 +319,12 @@ def set_pipettable_volume(well):
         well = [well]
         r = 'well'
 
-    dead_volume = cont.container_type.dead_volume_ul
+    correction_vol = cont.container_type.dead_volume_ul
+    if use_safe_vol:
+        correction_vol = cont.container_type.safe_min_volume_ul
+
     for x in well:
-        x.set_volume(Unit(x.volume.value - dead_volume, "microliter"))
+        x.set_volume(Unit(x.volume.value - correction_vol, "microliter"))
 
     if r == 'cont':
         return cont
@@ -325,7 +334,8 @@ def set_pipettable_volume(well):
         return well
 
 
-def volume_check(aliquot, usage_volume=0):
+def volume_check(aliquot, usage_volume=0, use_safe_vol=False,
+                 use_safe_dead_diff=False):
     """
     Takes an aliquot and if usaage_volume is 0 checks if that aliquot
     is above the dead volume for its well type.
@@ -339,6 +349,12 @@ def volume_check(aliquot, usage_volume=0):
     usage_volume : Unit, str, int, optional
         Volume to test for. If 0 the aliquot will be tested against the
         container dead volume.
+    use_safe_vol : bool, optional
+        Use safe minimum volume instead of dead volume
+    use_safe_dead_diff : bool, optional
+        Use the safe_minimum_volume - dead_volume as the required amount.
+        Useful if `set_pipettable_volume()' was used before to correct the
+        well_volume to not include the dead_volume anymore'
 
     Returns
     -------
@@ -354,21 +370,34 @@ def volume_check(aliquot, usage_volume=0):
     if isinstance(usage_volume, string_type):
         usage_volume = int(usage_volume.split(":microliter")[0])
 
-    dead_vol = aliquot.container.container_type.dead_volume_ul
-    test_vol = dead_vol + usage_volume
+    correction_vol = aliquot.container.container_type.dead_volume_ul
+    message_string = "dead volume"
+    volume = aliquot.volume.value
+    if use_safe_vol:
+        correction_vol = aliquot.container.container_type.safe_min_volume_ul
+        message_string = "safe minimum volume"
+        volume = aliquot.volume.value
+    elif use_safe_dead_diff:
+        correction_vol = aliquot.container.container_type.safe_min_volume_ul - \
+            aliquot.container.container_type.dead_volume_ul
+        message_string = "safe minimum volume"
+        volume = aliquot.volume.value + \
+            aliquot.container.container_type.dead_volume_ul
+    test_vol = correction_vol + usage_volume
 
     error_message = None
     if test_vol > aliquot.volume.value:
         if usage_volume == 0:
             error_message = ("You want to pipette from a container with %s uL"
-                             " dead volume. However, you aliquot only has "
-                             "%s uL.") % (dead_vol, aliquot.volume.value)
+                             " %s. However, you aliquot only has "
+                             "%s uL.") % (
+                correction_vol, message_string, volume)
         else:
             error_message = ("You want to pipette %s uL from a container with"
-                             " %s uL dead volume (%s uL total). However, your"
+                             " %s uL %s (%s uL total). However, your"
                              " aliquot only has %s uL.") % (
-                usage_volume, dead_vol, usage_volume + dead_vol,
-                aliquot.volume.value)
+                usage_volume, correction_vol, message_string,
+                usage_volume + correction_vol, volume)
     return error_message
 
 
@@ -528,7 +557,8 @@ def char_limit(label, length=22, trunc=False, clip=False):
 
     error_message = None
     if len(label) > length:
-        error_message = "The specified label, '%s', has too many characters. "
-        "Please enter a label of %s or less characters." % (label, length)
+        error_message = ("The specified label, '%s', has too many characters."
+                         " Please enter a label of %s or fewer "
+                         "characters.") % (label, length)
 
     return r(label=label, error_message=error_message)

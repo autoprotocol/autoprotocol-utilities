@@ -11,7 +11,7 @@ else:
 
 def createMastermix(protocol, name, cont, reactions, resources={},
                     othermaterial={}, start_well=None, mm_mult=1.3,
-                    use_dead_vol=True, columnwise=False, echo=False):
+                    use_safe_vol=True, use_dead_vol=False, columnwise=False):
     """Create simple or complex mastermixes from resourceIds or aliquots
 
     Creates a mix of the indicated reagents/resources for the number of
@@ -95,14 +95,15 @@ def createMastermix(protocol, name, cont, reactions, resources={},
     if isinstance(cont, string_type):
         max_well_vol = 0.9 * _CONTAINER_TYPES[cont].well_volume_ul
         dead_vol = _CONTAINER_TYPES[cont].dead_volume_ul
+        safe_vol = _CONTAINER_TYPES[cont].safe_min_volume_ul
     elif isinstance(cont, Container):
         max_well_vol = 0.9 * cont.container_type.well_volume_ul
         dead_vol = cont.container_type.dead_volume_ul
+        safe_vol = cont.container_type.safe_min_volume_ul
     else:
         raise RuntimeError("cont for provision_group must be of type string"
                            " or container")
-    if echo:
-        dead_vol = 15
+
     if start_well is not None and not isinstance(start_well, int):
         raise RuntimeError("start_well can only be None or an integer")
 
@@ -123,6 +124,9 @@ def createMastermix(protocol, name, cont, reactions, resources={},
     if use_dead_vol:
         max_well_vol -= dead_vol
         base_per_mm_well += dead_vol
+    if use_safe_vol:
+        max_well_vol -= safe_vol
+        base_per_mm_well += safe_vol
     # Determine mm well volume
     wells_needed = plates_needed(total_vol_all, max_well_vol)
     reactions_per_well = plates_needed(max_well_vol, total_vol_pr_mm_mult)

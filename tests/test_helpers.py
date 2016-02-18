@@ -85,23 +85,30 @@ class TestContainerfunctions:
         old_vol = 20
         new_well = set_pipettable_volume(self.c.well(95))
         assert isinstance(new_well, Well)
-        assert new_well.volume.value == old_vol - 15
+        assert new_well.volume.value == old_vol - 3
+        new_well = set_pipettable_volume(self.c.well(45), use_safe_vol=True)
+        assert isinstance(new_well, Well)
+        assert new_well.volume.value == old_vol - 5
         new_well = set_pipettable_volume(self.c.wells_from(90, 4))
         assert isinstance(new_well, WellGroup)
         for well in new_well:
-            assert well.volume.value == old_vol - 15
+            assert well.volume.value == old_vol - 3
         self.c.all_wells().set_volume("20:microliter")
         new_well = set_pipettable_volume(self.c)
         assert isinstance(new_well, Container)
         for well in new_well.all_wells():
-            assert well.volume.value == old_vol - 15
+            assert well.volume.value == old_vol - 3
 
     def test_volume_check(self):
         self.c.all_wells().set_volume("20:microliter")
-        self.c.wells_from(15, 15).set_volume("10:microliter")
+        self.c.wells_from(15, 10).set_volume("2:microliter")
+        self.c.wells_from(25, 5).set_volume("1:microliter")
+        self.c.wells_from(30, 15).set_volume("4:microliter")
         assert volume_check(self.c.well(0), 1) is None
-        assert volume_check(self.c.well(0), 6) is not None
+        assert volume_check(self.c.well(0), 18) is not None
         assert volume_check(self.c.well(15), 0) is not None
+        assert volume_check(self.c.well(16), 0, use_safe_dead_diff=True) is None
+        assert volume_check(self.c.well(25), 0, use_safe_vol=True) is not None
 
 
 class TestDataformattingfunctions:

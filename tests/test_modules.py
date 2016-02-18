@@ -27,29 +27,33 @@ class TestCreateMastermix:
         with pytest.raises(Exception):
             createMastermix(self.p, name, cont, rxt, res, om)
 
-    @pytest.mark.parametrize("i, res, om, use_dead_vol, mm_mult, r", [
-        (0, {"rs123": 1}, {w: 1}, False, 1, 2),
-        (1, {"rs123": 1}, {w: 1}, True, 1, 17),
-        (2, {"rs123": 1}, {w: 1}, False, 2, 4),
-        (3, {"rs123": 1}, {w: 1}, True, 2, 19),
-        (4, {"rs123": 3}, {w: 1}, False, 2, 8),
-        (5, {"rs123": 3}, {}, False, 2, 6),
-        (6, {"rs123": 3}, {}, True, 2, 21),
-        (7, {"rs123": 3, "rs1234": 2}, {}, True, 1, 20),
-        (8, {}, {w: 2, w2: 2.5}, True, 1, 19.5),
-        (9, {"rs123": 1000}, {}, False, 1.3, 1300)
-    ])
-    def test_single_well(self, i, res, om, use_dead_vol, mm_mult, r):
+    @pytest.mark.parametrize(
+        "i, res, om, use_dead_vol, use_safe_vol, ""mm_mult, r", [
+            (0, {"rs123": 1}, {w: 1}, False, False, 1, 2),
+            (1, {"rs123": 1}, {w: 1}, True, False, 1, 17),
+            (10, {"rs123": 1}, {w: 1}, False, True, 1, 22),
+            (2, {"rs123": 1}, {w: 1}, False, False, 2, 4),
+            (3, {"rs123": 1}, {w: 1}, True, False, 2, 19),
+            (4, {"rs123": 3}, {w: 1}, False, False, 2, 8),
+            (5, {"rs123": 3}, {}, False, False, 2, 6),
+            (6, {"rs123": 3}, {}, True, False, 2, 21),
+            (7, {"rs123": 3, "rs1234": 2}, {}, True, False, 1, 20),
+            (8, {}, {w: 2, w2: 2.5}, True, False, 1, 19.5),
+            (9, {"rs123": 1000}, {}, False, False, 1.3, 1300)
+        ])
+    def test_single_well(self, i, res, om, use_dead_vol, use_safe_vol,
+                         mm_mult, r):
         mm = createMastermix(self.p, "single_well_test%s" % i, "micro-1.5",
                              1, res, om, mm_mult=mm_mult,
-                             use_dead_vol=use_dead_vol)
+                             use_dead_vol=use_dead_vol,
+                             use_safe_vol=use_safe_vol)
         assert isinstance(mm, list)
         assert isinstance(mm[0], Well)
         assert mm[0].volume.value == r
 
     @pytest.mark.parametrize("i, rxt, res, om, use_dead_vol, mm_mult, r", [
-        (0, 10, {"rs123": 5, "rs1234": 5}, {}, False, 2, [160, 40]),
-        (1, 10, {"rs123": 5, "rs1234": 5}, {}, True, 2, [155, 75])
+        (0, 10, {"rs123": 5, "rs1234": 5}, {}, False, 2, [145, 65]),
+        (1, 10, {"rs123": 5, "rs1234": 5}, {}, True, 2, [148, 68])
     ])
     def test_multiple_wells(self, i, rxt, res, om, use_dead_vol, mm_mult, r):
         mm = createMastermix(self.p, "multi_well_test%s" % i, "96-pcr",
