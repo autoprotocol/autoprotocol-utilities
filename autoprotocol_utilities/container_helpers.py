@@ -528,8 +528,7 @@ def char_limit(label, length=22, trunc=False, clip=False):
 
     error_message = None
     if len(label) > length:
-        error_message = """The specified label, '%s', has too many
-                         characters. Please enter a label of %s
-                         or less characters.""" % (label, length)
+        error_message = "The specified label, '%s', has too many characters. "
+        "Please enter a label of %s or less characters." % (label, length)
 
     return r(label=label, error_message=error_message)
