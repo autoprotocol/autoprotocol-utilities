@@ -9,10 +9,6 @@ createMastermix()
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 .. autofunction:: autoprotocol_utilities.modules.createMastermix
 
-serial_dilute_rowwise()
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.. autofunction:: autoprotocol_utilities.modules.serial_dilute_rowwise
-
 autoseal()
 ~~~~~~~~~~~~~~~~~~
 .. autofunction:: autoprotocol_utilities.modules.autoseal
