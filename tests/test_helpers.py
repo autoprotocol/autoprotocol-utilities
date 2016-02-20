@@ -3,7 +3,7 @@ from random import sample
 from autoprotocol import Protocol
 from autoprotocol.container import Well, WellGroup, Container
 from autoprotocol_utilities.container_helpers import list_of_filled_wells, first_empty_well, unique_containers, sort_well_group, stamp_shape, is_columnwise, volume_check, set_pipettable_volume, well_name
-from autoprotocol_utilities.misc_helpers import make_list, flatten_list, char_limit
+from autoprotocol_utilities.misc_helpers import make_list, flatten_list, char_limit, recursive_search
 
 
 class TestContainerfunctions:
@@ -146,3 +146,32 @@ class TestDataformattingfunctions:
         else:
             assert r[1] in res.error_message
 
+
+class TestRecursiveParams:
+    protocol = Protocol()
+    c1 = protocol.ref("plate", None, "96-pcr", discard=True)
+    w = c1.well(45).set_volume("50:microliter")
+    well_list = [{"hidden_well": w}]
+    well_dict = {"hidden_well": [w]}
+    for i in range(10):
+        w = c1.well(i)
+        w.set_volume("100:microliter")
+        well_list.append(w)
+        well_dict["well_%s" % i] = w
+    well_list = {"well_list": well_list}
+    some_fields = ["1", "2", 3, 4]
+
+    @pytest.mark.parametrize("params, cl, method, args, expected", [
+        (well_list, Well, volume_check, {'usage_volume': 45}, 0),
+        (well_dict, Well, volume_check, {'usage_volume': 75}, 1)
+    ])
+    def test_recursive_search_vol_check(self, params, cl, method, args, expected):
+        assert len(recursive_search(params, cl, volume_check, args)) == expected
+
+    @pytest.mark.parametrize("params, cl, expected", [
+        (well_list, Well, 11),
+        (well_dict, None, 22),
+        (some_fields, None, 4)
+    ])
+    def test_recursive_search_instance(self, params, cl, expected):
+        assert len(recursive_search(params, cl)) == expected

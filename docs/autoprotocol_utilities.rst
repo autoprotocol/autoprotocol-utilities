@@ -45,6 +45,10 @@ flatten_list()
 ~~~~~~~~~~~~~~~~~~~~~~
 .. autofunction:: autoprotocol_utilities.misc_helpers.flatten_list
 
+recursive_search()
+~~~~~~~~~~~~~~~~~~~~~~
+.. autofunction:: autoprotocol_utilities.misc_helpers.recursive_search
+
 
 Container helpers
 -----------------

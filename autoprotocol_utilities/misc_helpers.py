@@ -168,3 +168,68 @@ def char_limit(label, length=22, trunc=False, clip=False):
                          "characters.") % (label, length)
 
     return r(label=label, error_message=error_message)
+
+
+def recursive_search(params, class_name=None, method=None, args={}):
+    """
+    Iterates through all items of a passed in dict, tuple, or list
+    and returns all, optional subset or calls a method on a subset
+
+    Parameters
+    ----------
+    params : list, tuple or dict
+        Structure to parse
+    class_name : Class name, optional
+        Optionally return only instances of a class.
+    method : function, optional
+        A function that will be applied to all instances found of a class, must include class name.
+    args : parameters, optional
+        Parameters to pass to a method, if desired.
+
+    Returns
+    -------
+    found_fields : list
+        Will return a list of all items, or the found items of a specified class, or the
+        response (if not None) from a method called on found items.
+
+    Example
+    -------
+
+            .. code-block:: python
+
+            recursive_search(params, Well, volume_check, args={"usage_volume": 1500})
+
+    """
+
+    all_fields = []
+
+    def find_all_fields(params):
+        if isinstance(params, dict):
+            for key, value in params.iteritems():
+                all_fields.append(key)
+                find_all_fields(value)
+        elif isinstance(params, list) or isinstance(params, tuple):
+            for item in params:
+                find_all_fields(item)
+        else:
+            all_fields.append(params)
+
+    find_all_fields(params)
+
+    if class_name:
+        found_instances = []
+        for field in all_fields:
+            if isinstance(field, class_name):
+                found_instances.append(field)
+        if method:
+            method_msgs = []
+            if hasattr(method, '__call__'):
+                for found in found_instances:
+                    response = method(found, **args)
+                    if response is not None:
+                        method_msgs.append(response)
+            return method_msgs
+        else:
+            return found_instances
+    else:
+        return all_fields

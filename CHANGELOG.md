@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](http://semver.org/)
 ---
 Added
 - well_name() function
+- recursive_search() function
 
 Changed
 
