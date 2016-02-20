@@ -85,6 +85,10 @@ list_of_filled_wells()
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. autofunction:: autoprotocol_utilities.container_helpers.list_of_filled_wells
 
+well_name()
+~~~~~~~~~~~~
+.. autofunction:: autoprotocol_utilities.container_helpers.well_name
+
 
 Resource helpers
 ----------------

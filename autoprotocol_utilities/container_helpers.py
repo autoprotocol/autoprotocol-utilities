@@ -398,3 +398,39 @@ def volume_check(aliquot, usage_volume=0, use_safe_vol=False,
                 usage_volume, correction_vol, message_string,
                 usage_volume + correction_vol, volume)
     return error_message
+
+
+def well_name(well, alternate_name=None):
+    """
+    Determine the a name that a new well is getting based on old well
+    information
+
+    Parameters
+    ----------
+    well: Well
+        well in question
+    alternate_name: str, optional
+        If this parameter is passed and the well does not have a name, this
+        name will be returned instead of the container name, appended with
+        the well index
+
+    Returns
+    -------
+    base_name: str
+        well name in the format `name` if the well had a name or `name-index`
+        if the name is derived from the container name or alternate_name
+
+    """
+
+    assert isinstance(well, Well)
+    if alternate_name:
+        assert isinstance(alternate_name, string_type)
+
+    if well.name is not None:
+        base_name = well.name
+    elif alternate_name:
+        base_name = "%s-%s" % (alternate_name, well.index)
+    else:
+        base_name = "%s-%s" % (well.container.name, well.index)
+
+    return base_name

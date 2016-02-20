@@ -5,10 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/)
 ## Unreleased
 ---
 Added
+- well_name() function
 
 Changed
 
 Removed
+- stray setup.py
 
 Fixed
 
