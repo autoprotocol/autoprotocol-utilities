@@ -5,6 +5,16 @@ This project adheres to [Semantic Versioning](http://semver.org/)
 ## Unreleased
 ---
 Added
+
+Changed
+
+Removed
+
+Fixed
+
+## v1.1.0 - 2016-02-19
+---
+Added
 - well_name() function
 - recursive_search() function
 - first_empty_well() can take a list of wells or container
