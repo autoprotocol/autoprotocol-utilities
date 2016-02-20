@@ -13,60 +13,75 @@ else:
     string_type = basestring
 
 
-def list_of_filled_wells(cont, empty=False):
+def list_of_filled_wells(wells, empty=False):
     """
     For the container given, determine which wells are filled
 
     Parameters
     ----------
-    cont : Container
+    wells : Container, WellGroup, List
+        Takes a container (uses all wells), a WellGroup or a List of wells
     empty : bool
         If True return empty wells instead of filled
 
     Returns
     -------
-    wells : list
+    return_wells : list
         list of wells
 
     """
-    if not isinstance(cont, Container):
-        raise RuntimeError("needs a container as input")
-    wells = []
-    for well in cont.all_wells():
+    assert isinstance(wells, (Container, WellGroup, list))
+    if isinstance(wells, Container):
+        wells = wells.all_wells()
+
+    return_wells = []
+    for well in wells:
         if not empty:
             if well.volume is not None:
-                wells.append(well)
+                return_wells.append(well)
         if empty:
             if well.volume is None:
-                wells.append(well)
-    return wells
+                return_wells.append(well)
+    return return_wells
 
 
-def first_empty_well(cont):
+def first_empty_well(wells, return_index=True):
     """
     Get the first empty well of a container followed by only empty wells
 
     Parameters
     ----------
-    cont : container
+    wells : Container, WellGroup, List
+        Can accept a container, WellGroup or list of wells
+    return_index : bool, optional
+        Default true, if true returns the index of the well, if false the
+        well itself
 
     Returns
     -------
-    Response : namedtuple
-        `success` is true if there is an empty well left on the container in
-        question
-        `well` is the first index that was found to be without volume. May be
-        beyond the number of available wells - in that case `success` is false
+    well : well or int
+        Either the first empty well or the index of the first empty well.
+        None when no empty well was found.
 
     """
-    r = namedtuple('Response', 'success well')
-    well = max(cont.all_wells(),
-               key=lambda x: x.index if x.volume else 0).index + 1
-    if well < cont.container_type.well_count:
-        success = True
+    assert isinstance(wells, (Container, WellGroup, list))
+    if isinstance(wells, Container):
+        wells = list(wells.all_wells())
     else:
-        success = False
-    return r(success=success, well=well)
+        assert len(unique_containers(wells)) == 1
+        wells = list(sort_well_group(wells))
+
+    last_well = max(wells, key=lambda x: x.index if x.volume else 0)
+    next_index = wells.index(last_well) + 1
+    if len(wells) > next_index:
+        well = wells[next_index]
+    else:
+        well = None
+
+    if return_index and well:
+        well = well.index
+
+    return well
 
 
 def unique_containers(wells):

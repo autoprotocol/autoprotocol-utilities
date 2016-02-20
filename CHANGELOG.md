@@ -7,6 +7,8 @@ This project adheres to [Semantic Versioning](http://semver.org/)
 Added
 - well_name() function
 - recursive_search() function
+- first_empty_well() can take a list of wells or container
+- list_of_filled_wells() can take a list of wells or container
 
 Changed
 

@@ -11,30 +11,37 @@ class TestContainerfunctions:
     c = p.ref("testplate_pcr", id=None, cont_type="96-pcr", discard=True)
     c.wells_from(0, 30).set_volume("20:microliter")
     ws = c.wells_from(0, 8)
+    w = c.well(0)
 
-    def test_asserts(self):
+    @pytest.mark.parametrize("func, arg", [
+        (list_of_filled_wells, w),
+        (first_empty_well, w),
+        (unique_containers, c),
+        (sort_well_group, c),
+        (stamp_shape, c),
+        (is_columnwise, c),
+        (volume_check, ws),
+        (volume_check, c),
+        (well_name, c),
+        (well_name, ws)
+        ])
+    def test_asserts(self, func, arg):
         with pytest.raises(Exception):
-            list_of_filled_wells(self.ws)
-            first_empty_well(self.ws)
-            unique_containers(self.c)
-            sort_well_group(self.c)
-            stamp_shape(self.c)
-            is_columnwise(self.c)
-            volume_check(self.ws)
-            volume_check(self.c)
-            well_name(self.c)
-            well_name(self.ws)
+            func(arg)
 
     def test_filled_wells(self):
         assert len(list_of_filled_wells(self.c)) == 30
         assert len(list_of_filled_wells(self.c, empty=True)) == 66
         assert isinstance(list_of_filled_wells(self.c)[0], Well)
+        assert len(list_of_filled_wells(self.ws)) == 8
+        assert len(list_of_filled_wells(self.ws, empty=True)) == 0
 
     def test_first_empty_well(self):
-        assert first_empty_well(self.c).well == 30
-        assert first_empty_well(self.c).success is True
+        assert first_empty_well(self.c) == 30
+        assert first_empty_well(self.c, return_index=False).index == 30
         self.c.all_wells().set_volume("20:microliter")
-        assert first_empty_well(self.c).success is False
+        assert not first_empty_well(self.c)
+        assert not first_empty_well(self.ws)
 
     def test_unique_containers(self):
         wells = self.ws
@@ -109,8 +116,10 @@ class TestContainerfunctions:
         assert volume_check(self.c.well(0), 1) is None
         assert volume_check(self.c.well(0), 18) is not None
         assert volume_check(self.c.well(15), 0) is not None
-        assert volume_check(self.c.well(16), 0, use_safe_dead_diff=True) is None
-        assert volume_check(self.c.well(25), 0, use_safe_vol=True) is not None
+        assert volume_check(self.c.well(16), 0,
+                            use_safe_dead_diff=True) is None
+        assert volume_check(self.c.well(25), 0,
+                            use_safe_vol=True) is not None
 
     def test_well_name(self):
         assert well_name(self.c.well(0)) == "testplate_pcr-0"
@@ -165,8 +174,10 @@ class TestRecursiveParams:
         (well_list, Well, volume_check, {'usage_volume': 45}, 0),
         (well_dict, Well, volume_check, {'usage_volume': 75}, 1)
     ])
-    def test_recursive_search_vol_check(self, params, cl, method, args, expected):
-        assert len(recursive_search(params, cl, volume_check, args)) == expected
+    def test_recursive_search_vol_check(self, params, cl, method,
+                                        args, expected):
+        assert len(recursive_search(params, cl,
+                                    volume_check, args)) == expected
 
     @pytest.mark.parametrize("params, cl, expected", [
         (well_list, Well, 11),

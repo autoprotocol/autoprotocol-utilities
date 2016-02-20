@@ -165,8 +165,8 @@ def createMastermix(protocol, name, cont, reactions, resources={},
                 start_well = 0
             # Container has content - select the first empty well
             else:
-                if first_empty_well(cont).success:
-                    start_well = first_empty_well(cont).well
+                if first_empty_well(cont):
+                    start_well = first_empty_well(cont)
                 else:
                     start_well = 0
                     cont = cont.container_type.shortname
