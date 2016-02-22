@@ -18,7 +18,7 @@ class TestContainerfunctions:
         (first_empty_well, w),
         (unique_containers, c),
         (sort_well_group, c),
-        (stamp_shape, c),
+        (stamp_shape, w),
         (is_columnwise, c),
         (volume_check, ws),
         (volume_check, c),
@@ -58,16 +58,19 @@ class TestContainerfunctions:
         assert list(random_wells) != list(wells)
         assert list(sort_well_group(random_wells)) == list(wells)
 
-    @pytest.mark.parametrize("wells, r", [
-        (c.wells_from(0, 16, columnwise=True),
+    @pytest.mark.parametrize("wells, full, r", [
+        (c.wells_from(0, 16, columnwise=True), False,
          [0, {"rows": 8, "columns": 2}, []]),
-        (c.wells_from(0, 16), [0, {"rows": 1, "columns": 12},
+        (c.wells_from(0, 16), False, [0, {"rows": 1, "columns": 12},
          [12, 13, 14, 15]]),
-        (c.wells(0, 1, 2, 3, 95, 94, 93, 92, 91, 83, 82, 81, 80, 79),
-         [79, {"rows": 2, "columns": 5}, [0, 1, 2, 3]])
+        (c.wells(0, 1, 2, 3, 95, 94, 93, 92, 91, 83, 82, 81, 80, 79), False,
+         [79, {"rows": 2, "columns": 5}, [0, 1, 2, 3]]),
+        (c.wells(0, 1, 2, 3, 95, 94, 93, 92, 91, 83, 82, 81, 80, 79), True,
+         [79, {"rows": 0, "columns": 0},
+         [0, 1, 2, 3, 79, 80, 81, 82, 83, 91, 92, 93, 94, 95]])
     ])
-    def test_shape(self, wells, r):
-        res = stamp_shape(wells)
+    def test_shape(self, wells, full, r):
+        res = stamp_shape(wells, full)
         assert res.start_well == r[0]
         assert res.shape == r[1]
         if len(r[2]) == 0:

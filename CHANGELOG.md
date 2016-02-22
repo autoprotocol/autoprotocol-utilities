@@ -12,6 +12,18 @@ Removed
 
 Fixed
 
+## v1.2.0 - 2016-0-22
+---
+Added
+
+Changed
+
+Removed
+
+Fixed
+ - user_error_groups
+ - stamp function defaults to only return full row or col stamp
+
 ## v1.1.0 - 2016-02-19
 ---
 Added

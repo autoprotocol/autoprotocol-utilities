@@ -19,7 +19,7 @@ def list_of_filled_wells(wells, empty=False):
 
     Parameters
     ----------
-    wells : Container, WellGroup, List
+    wells : Container, WellGroup, list
         Takes a container (uses all wells), a WellGroup or a List of wells
     empty : bool
         If True return empty wells instead of filled
@@ -51,7 +51,7 @@ def first_empty_well(wells, return_index=True):
 
     Parameters
     ----------
-    wells : Container, WellGroup, List
+    wells : Container, WellGroup, list
         Can accept a container, WellGroup or list of wells
     return_index : bool, optional
         Default true, if true returns the index of the well, if false the
@@ -90,7 +90,7 @@ def unique_containers(wells):
 
     Parameters
     ----------
-    wells : list
+    wells : list, WellGroup
         List of wells
 
     Returns
@@ -148,14 +148,18 @@ def sort_well_group(wells, columnwise=False):
     return sorted_well_group
 
 
-def stamp_shape(wells):
+def stamp_shape(wells, full=True):
     """
     Find biggest reactangle that can be stamped from a list of wells.
 
     Parameters
     ----------
-    wells: list, WellGroup
-        List of wells or well_group containing the wells in question.
+    wells: Container, WellGroup, list
+        If Container - all filled wells will be used to determine the shape.
+        If list of wells or well_group all provided wells will be analyzed.
+    full: bool, optional
+        If true will only return shapes that span either the full rows or
+        columns of the container.
 
     Returns
     -------
@@ -166,37 +170,47 @@ def stamp_shape(wells):
         stamp shape.
 
     """
-    assert isinstance(wells, (list, WellGroup)), "Stamp_shape: wells has to "
-    "be a list or a WellGroup"
-    assert len(unique_containers(wells)) == 1, "Stamp_shape: wells have to"
-    " come from one container"
-    for well in wells:
-        assert isinstance(well, (Well)), "Stamp_shape: elements of wells"
-        " have to be of type Well"
+    if isinstance(wells, Container):
+        cont = wells
+        wells = list_of_filled_wells(wells)
+    elif isinstance(wells, (list, WellGroup)):
+        assert len(unique_containers(wells)) == 1, "Stamp_shape: wells have "
+        "to come from one container"
+        for well in wells:
+            assert isinstance(well, (Well)), "Stamp_shape: elements of wells"
+            " have to be of type Well"
+        wells = sort_well_group(wells)
+        cont = unique_containers(wells)[0]
+    else:
+        raise RuntimeError("Stamp_shape: wells has to be a list or a "
+                           "WellGroup")
 
     stamp_shape = namedtuple('Stamp', 'start_well shape remaining_wells')
-    wells = sort_well_group(wells)
-    cont = unique_containers(wells)[0]
     rows = cont.container_type.row_count()
     cols = cont.container_type.col_count
-    # rows = 8
-    # cols = 12
     indices = [x.index for x in wells]
 
     bnry_list = [bnry for bnry in binary_list(indices, length=rows*cols)]
     bnry_mat = chop_list(bnry_list, cols)
     r = max_rectangle(bnry_mat, value=1)
 
+    height = r.height
+    width = r.width
+    if full:
+        if not (r.height == rows or r.width == cols):
+            height = 0
+            width = 0
+
     # Determine start_well and wells not included in the rectangle
     wells_included = []
     start_well = (r.y*cols) + r.x
-    for y in range(r.height):
-        for z in range(r.width):
+    for y in range(height):
+        for z in range(width):
             wells_included.append(start_well + y*cols + z)
     wells_remaining = [x for x in wells if x.index not in wells_included]
 
     return stamp_shape(start_well=start_well,
-                       shape=dict(rows=r.height, columns=r.width),
+                       shape=dict(rows=height, columns=width),
                        remaining_wells=wells_remaining)
 
 
@@ -244,14 +258,14 @@ def is_columnwise(wells):
 
     cont = unique_containers(wells)[0]
     rows = cont.container_type.row_count()
-    y = stamp_shape(wells)
+    y = stamp_shape(wells, full=False)
 
     consecutive = False
     if len(y.remaining_wells) == 0:
         consecutive = True
     else:
         next_well = y.start_well + y.shape["columns"]
-        z = stamp_shape(y.remaining_wells)
+        z = stamp_shape(y.remaining_wells, full=False)
         if len(z.remaining_wells) == 0 and z.start_well == next_well:
             consecutive = True
 
@@ -306,14 +320,14 @@ def set_pipettable_volume(well, use_safe_vol=False):
 
     Parameters
     ----------
-    well : Well, List, WellGroup, Container
+    well : Container, WellGroup, list, Well
     use_safe_vol : bool, optional
         Instead of removing the indicated dead_volume, remove the safe minimum
         volume
 
     Returns
     -------
-    well : Well, List, WellGroup, Container
+    well : Container, WellGroup, list, Well
         Will return the same type as was received
     """
 

@@ -25,8 +25,8 @@ def user_errors_group(error_msgs):
         raise UserError(
             "%s error(s) found in this protocol: " % len(error_msgs) +
             " ".join(["<Error " +
-                      string_type(i + 1) + "> " +
-                      string_type(m) for i, m in enumerate(error_msgs)]))
+                      str(i + 1) + "> " +
+                      str(m) for i, m in enumerate(error_msgs)]))
 
 
 def printdatetime():
