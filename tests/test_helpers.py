@@ -2,13 +2,14 @@ import pytest
 from random import sample
 from autoprotocol import Protocol
 from autoprotocol.container import Well, WellGroup, Container
-from autoprotocol_utilities.container_helpers import list_of_filled_wells, first_empty_well, unique_containers, sort_well_group, stamp_shape, is_columnwise, volume_check, set_pipettable_volume, well_name
+from autoprotocol_utilities.container_helpers import list_of_filled_wells, first_empty_well, unique_containers, sort_well_group, stamp_shape, is_columnwise, volume_check, set_pipettable_volume, well_name, container_type_check
 from autoprotocol_utilities.misc_helpers import make_list, flatten_list, char_limit, recursive_search
 
 
 class TestContainerfunctions:
     p = Protocol()
     c = p.ref("testplate_pcr", id=None, cont_type="96-pcr", discard=True)
+    c2 = p.ref("testplate_echo", id=None, cont_type="384-echo", discard=True)
     c.wells_from(0, 30).set_volume("20:microliter")
     ws = c.wells_from(0, 8)
     w = c.well(0)
@@ -129,6 +130,14 @@ class TestContainerfunctions:
         assert well_name(self.c.well(0), 'pytest') == "pytest-0"
         self.c.well(0).set_name("mywell")
         assert well_name(self.c.well(0)) == "mywell"
+
+    def test_container_type_check(self):
+        assert container_type_check(self.c, "96-pcr") is True
+        assert container_type_check(self.c2, "384-echo") is True
+        assert container_type_check([self.c2, self.c], ["384-echo", "96-pcr"]) is True
+        assert len(container_type_check(self.c, "micro-1.5")) > 0
+        assert container_type_check(self.c, "micro-1.5", exclude=True) is True
+        assert len(container_type_check(self.c, "96-pcr", exclude=True)) > 0
 
 
 class TestDataformattingfunctions:

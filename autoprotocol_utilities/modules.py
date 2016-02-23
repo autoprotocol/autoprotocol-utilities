@@ -1,4 +1,4 @@
-from container_helpers import plates_needed, first_empty_well, unique_containers
+from container_helpers import plates_needed, first_empty_well, unique_containers, container_type_check
 from misc_helpers import printdate
 from autoprotocol.container import Container, WellGroup, Well
 from autoprotocol.container_type import _CONTAINER_TYPES
@@ -292,7 +292,7 @@ def autoseal(protocol, wells, covertype="standard", sealtype="ultra-clear"):
     assert isinstance(protocol, Protocol)
 
     for c in to_seal:
-        if c.container_type.shortname in ["96-pcr", "384-pcr", "384-echo"]:
+        if container_type_check(c, ["96-pcr", "384-pcr", "384-echo"]):
             protocol.seal(c, type=sealtype)
-        elif c.container_type.shortname not in ["micro-1.5", "micro-2.0"]:
+        elif container_type_check(c, ["micro-1.5", "micro-2.0"], exclude=True):
             protocol.cover(c, lid=covertype)

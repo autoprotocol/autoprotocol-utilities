@@ -1,4 +1,5 @@
 from autoprotocol.container import Container, WellGroup, Well
+from autoprotocol.container_type import _CONTAINER_TYPES
 from autoprotocol.unit import Unit
 from misc_helpers import flatten_list
 from rectangle import binary_list, chop_list, max_rectangle
@@ -463,3 +464,63 @@ def well_name(well, alternate_name=None):
         base_name = "%s-%s" % (well.container.name, well.index)
 
     return base_name
+
+
+def container_type_check(containers, shortname, exclude=False):
+
+    """
+    Verify container is of specified container_type.
+
+    Parameters
+    ----------
+    containers : Container, list
+        Single Container or list of Containers
+    shortname : str, list of str
+        Short name used to specify ContainerType.
+    exclude: bool, optional
+        Verify container is NOT of specified container_type.
+    Returns
+    -------
+    error_message : list of strings or True
+        List containing containers failing container_type_check or True.
+
+    Raises
+    ------
+    ValueError
+        If an unknown ContainerType shortname is passed.
+    ValueError
+        If an containers are not of type Container.
+    """
+    if isinstance(shortname, list):
+        for short in shortname:
+            assert short in _CONTAINER_TYPES, ("container_type_check: unknown container "
+                                               "shortname: %s , (known types: %s)" %
+                                               (short, str(_CONTAINER_TYPES.keys())))
+    elif isinstance(shortname, str):
+            assert shortname in _CONTAINER_TYPES, ("container_type_check: unknown container"
+                                                   "shortname: %s , (known types: %s)" %
+                                                   (shortname, str(_CONTAINER_TYPES.keys())))
+    if isinstance(containers, list):
+        for cont in containers:
+            assert isinstance(cont, Container), ("container_type_check: containers to check"
+                                                 "must be of type Container")
+    elif isinstance(containers, Container):
+        containers = [containers]
+    else:
+        raise ValueError("container_type_check: containers to check must be of type Container")
+
+    error_messages = []
+
+    for cont in containers:
+        if exclude:
+            if cont.container_type.shortname in shortname:
+                error_messages.append("%s is of the excluded type %s" % (cont, shortname))
+
+        else:
+            if cont.container_type.shortname not in shortname:
+                error_messages.append("%s not of type %s" % (cont, shortname))
+
+    if len(error_messages) > 0:
+        return error_messages
+    else:
+        return True

@@ -5,6 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/)
 ## Unreleased
 ---
 Added
+- container_type_check() function
 
 Changed
 
