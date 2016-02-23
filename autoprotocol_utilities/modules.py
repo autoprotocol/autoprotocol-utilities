@@ -70,7 +70,8 @@ def createMastermix(protocol, name, cont, reactions, resources={},
                 raise RuntimeError("Values of the resources dict have to be "
                                    "volumes of type float, int or Unit.")
             if isinstance(v, Unit):
-                resources[k] = v.value
+                v = v.value
+                resources[k] = v
             resources[k] = float(v)
             if 'rs' not in k:
                 raise RuntimeError("Keys of the resources dict have to be "
@@ -86,7 +87,8 @@ def createMastermix(protocol, name, cont, reactions, resources={},
                                    "to be volumes of type float, int or "
                                    "Unit.")
             if isinstance(v, Unit):
-                othermaterial[k] = v.value
+                v = v.value
+                othermaterial[k] = v
             othermaterial[k] = float(v)
 
             if not isinstance(k, Well):
