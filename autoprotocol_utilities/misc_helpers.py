@@ -17,6 +17,11 @@ def user_errors_group(error_msgs):
     error_msgs : list
         List of strings that are the error messages
 
+    Raises
+    ------
+    ValueError
+        If error_msgs is not of type list
+
     """
     assert isinstance(error_msgs, list), ("Error messages must be in the form"
                                           " of a list to properly format the "
@@ -72,6 +77,11 @@ def make_list(my_str, integer=False):
     my_str : list
         List of strings or integers
 
+    Raises
+    ------
+    ValueError
+        If my_str is not of type string
+
     """
     assert isinstance(my_str, string_type), "Input needs to be of type string"
     if integer:
@@ -120,6 +130,13 @@ def det_new_group(i, base=0):
     -------
     new_group : bool
 
+    Raises
+    ------
+    ValueError
+        If i is not of type integer
+    ValueError
+        If base is not of type integer
+
     """
     assert isinstance(i, int), "Needs an integer."
     assert isinstance(base, int), "Base has to be an integer"
@@ -132,6 +149,9 @@ def det_new_group(i, base=0):
 
 def char_limit(label, length=22, trunc=False, clip=False):
     """Enforces a string limit on the label provided
+
+    Can either throw an error message if `length` is exceeded or correct the
+    string and return the corrected string.
 
     Parameters
     ----------
@@ -152,6 +172,11 @@ def char_limit(label, length=22, trunc=False, clip=False):
         `label` (str) and `error_message` (string) that is empty on success
         `label` is the unmodified, truncated to clipped label as indicated
 
+    Raises
+    ------
+    ValueError
+        If label is not of type string
+
     """
     assert isinstance(label, string_type), "Label has to be of type string"
 
@@ -171,7 +196,8 @@ def char_limit(label, length=22, trunc=False, clip=False):
 
 
 def recursive_search(params, class_name=None, method=None, args={}):
-    """
+    """Recursive params checker
+
     Iterates through all items of a passed in dict, tuple, or list
     and returns all, optional subset or calls a method on a subset
 
@@ -182,14 +208,16 @@ def recursive_search(params, class_name=None, method=None, args={}):
     class_name : Class name, optional
         Optionally return only instances of a class.
     method : function, optional
-        A function that will be applied to all instances found of a class, must include class name.
+        A function that will be applied to all instances found of a class,
+        must include class name.
     args : parameters, optional
         Parameters to pass to a method, if desired.
 
     Returns
     -------
     found_fields : list
-        Will return a list of all items, or the found items of a specified class, or the
+        Will return a list of all items, or the found items of a specified
+        class, or the
         response (if not None) from a method called on found items.
 
     Example
@@ -197,7 +225,9 @@ def recursive_search(params, class_name=None, method=None, args={}):
 
             .. code-block:: python
 
-            recursive_search(params, Well, volume_check, args={"usage_volume": 1500})
+            recursive_search(params, Well, volume_check,
+                             args={"usage_volume": 1500})
+
 
     """
 

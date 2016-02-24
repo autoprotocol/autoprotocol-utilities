@@ -1,4 +1,4 @@
-from container_helpers import plates_needed, first_empty_well, unique_containers, container_type_check
+from container_helpers import plates_needed, first_empty_well, unique_containers, container_type_checker
 from misc_helpers import printdate
 from autoprotocol.container import Container, WellGroup, Well
 from autoprotocol.container_type import _CONTAINER_TYPES
@@ -59,6 +59,33 @@ def createMastermix(protocol, name, cont, reactions, resources={},
     target_wells : list
         List of wells containing mastermix
 
+    Raises
+    ------
+    RuntimeError
+        If `resources` or `othermaterial` are not of type dict
+    RuntimeError
+        If any volumes are not of type int, float or Unit
+    RuntimeError
+        If `resources` keys are not of type string starting with "rs"
+    RuntimeError
+        If `othermaterial` keys are not of type Well
+    RuntimeError
+        If `reactions` is not of type int
+    RuntimeError
+        If `cont` is not of type string or Container
+    ValueError
+        If `cont` of type string is not matching any CONTAINER_TYPE
+    RuntimeError
+        If the requested volume for 1 well exceeds the well capacity for the
+        selected well/container
+    RuntimeError
+        If `start_well` is not None or of type integer
+    RuntimeError
+        If your provided container does not have consecutively filled wells
+    UserError
+        If the selected aliquots for othermaterial are below the safe or dead
+        volume depending on the respective parameters
+
     """
     if not isinstance(resources, dict):
         raise RuntimeError("To calculate a mastermix 'resources' has to be "
@@ -98,6 +125,7 @@ def createMastermix(protocol, name, cont, reactions, resources={},
         raise RuntimeError("Reactions has to be an int")
     assert isinstance(name, string_type)
     if isinstance(cont, string_type):
+        assert cont in _CONTAINER_TYPES.keys()
         max_well_vol = 0.9 * _CONTAINER_TYPES[cont].well_volume_ul
         dead_vol = _CONTAINER_TYPES[cont].dead_volume_ul
         safe_vol = _CONTAINER_TYPES[cont].safe_min_volume_ul
@@ -268,7 +296,10 @@ def createMastermix(protocol, name, cont, reactions, resources={},
 
 
 def autoseal(protocol, wells, covertype="standard", sealtype="ultra-clear"):
-    """Determine whether to seal or cover a plate and do so
+    """Determine how to seal or cover a plate
+
+    Plates need sealing or covering depending on container_type. This
+    function determines the correct method and issues an instruction.
 
     Parameters
     ----------
@@ -283,6 +314,11 @@ def autoseal(protocol, wells, covertype="standard", sealtype="ultra-clear"):
         in case the plate needs to be sealed, determine which seal type to
         select. defaults to ultra-clear
 
+    Raises
+    ------
+    ValueError
+        If wells is not of type list or WellGroup
+
     """
     if isinstance(wells, (list, WellGroup)):
         to_seal = unique_containers(wells)
@@ -294,7 +330,7 @@ def autoseal(protocol, wells, covertype="standard", sealtype="ultra-clear"):
     assert isinstance(protocol, Protocol)
 
     for c in to_seal:
-        if container_type_check(c, ["96-pcr", "384-pcr", "384-echo"]):
+        if container_type_checker(c, ["96-pcr", "384-pcr", "384-echo"]):
             protocol.seal(c, type=sealtype)
-        elif container_type_check(c, ["micro-1.5", "micro-2.0"], exclude=True):
+        elif container_type_checker(c, ["micro-1.5", "micro-2.0"], exclude=True):
             protocol.cover(c, lid=covertype)

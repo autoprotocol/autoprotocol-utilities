@@ -54,24 +54,32 @@ def oligo_scale_default(length, scale, label):
 
 
 def oligo_dilution_table(conc=None, sc=None):
-    """
-        Determine the amount of diluent to add to an oligo based on
-        concentration wanted and scale ordered. This function can return the
-        entire dilution table or slices and values as needd
+    """Return dilution table
 
-        Parameters
-        ----------
-        conc : str, optional
-            The concentration you wish to select for. Currently 100uM or 1mM.
-        sc : str, optional
-            The scale you wish to select for. Currently '10nm', '25nm',
-            '100nm', '250nm' or '1um'.
+    Determine the amount of diluent to add to an oligo based on
+    concentration wanted and scale ordered. This function can return the
+    entire dilution table or slices and values as needd
 
-        Returns
-        -------
-        dilution_table : dict
-            This is a dict of dicts to determine the volume to add for each
-            concentration (level 1) and scale (level 2).
+    Parameters
+    ----------
+    conc : str, optional
+        The concentration you wish to select for. Currently 100uM or 1mM.
+    sc : str, optional
+        The scale you wish to select for. Currently '10nm', '25nm',
+        '100nm', '250nm' or '1um'.
+
+    Returns
+    -------
+    dilution_table : dict
+        This is a dict of dicts to determine the volume to add for each
+        concentration (level 1) and scale (level 2).
+
+    Raises
+    ------
+    ValueError
+        If conc is not a valid concentration: '100uM', '1mM'
+    ValueError
+        If sc is is not a valid scale: '10nm', '25nm', '100nm', '250nm', '1um'
 
     """
     concentration = '100uM', '1mM'
@@ -85,7 +93,8 @@ def oligo_dilution_table(conc=None, sc=None):
 
     dilution_table = {}
     for i, y in enumerate(concentration):
-        dilution_table[y] = dict(zip(scale, volumes[i*len(scale):i*len(scale)+len(scale)]))
+        dilution_table[y] = dict(
+            zip(scale, volumes[i*len(scale):i*len(scale)+len(scale)]))
 
     if conc and sc:
         return dilution_table[conc][sc]
@@ -113,6 +122,11 @@ def return_agar_plates(wells=6):
     -------
     plates : dict
         plates with plate identity as key and kit_id as value
+
+    Raises
+    ------
+    ValueError
+        If wells is not a integer equaling to 1 or 6
 
     """
     if wells == 6:

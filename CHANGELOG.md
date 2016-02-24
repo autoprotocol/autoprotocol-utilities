@@ -5,13 +5,25 @@ This project adheres to [Semantic Versioning](http://semver.org/)
 ## Unreleased
 ---
 Added
-- container_type_check() function
 
 Changed
 
 Removed
 
 Fixed
+
+## v1.3.0 - 2016-0-24
+---
+Added
+- container_type_checker() function
+
+Changed
+- stamp shape() can now deal with 384 plates (quadrants)
+
+Removed
+
+Fixed
+- createMastermix Unit input
 
 ## v1.2.0 - 2016-0-22
 ---

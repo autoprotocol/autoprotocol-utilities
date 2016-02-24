@@ -2,8 +2,8 @@ from autoprotocol.container import Container, WellGroup, Well
 from autoprotocol.container_type import _CONTAINER_TYPES
 from autoprotocol.unit import Unit
 from misc_helpers import flatten_list
-from rectangle import binary_list, chop_list, max_rectangle
-from collections import namedtuple
+from rectangle import binary_list, chop_list, max_rectangle, get_quadrant_binary_list, get_quadrant_well
+from collections import namedtuple, Counter
 from operator import itemgetter
 import math
 import sys
@@ -29,6 +29,11 @@ def list_of_filled_wells(wells, empty=False):
     -------
     return_wells : list
         list of wells
+
+    Raises
+    ------
+    ValueError
+        If wells are not of type list, WellGroup or Container
 
     """
     assert isinstance(wells, (Container, WellGroup, list))
@@ -64,6 +69,11 @@ def first_empty_well(wells, return_index=True):
         Either the first empty well or the index of the first empty well.
         None when no empty well was found.
 
+    Raises
+    ------
+    ValueError
+        If wells are not of type list, WellGroup or Container
+
     """
     assert isinstance(wells, (Container, WellGroup, list))
     if isinstance(wells, Container):
@@ -86,7 +96,8 @@ def first_empty_well(wells, return_index=True):
 
 
 def unique_containers(wells):
-    """
+    """Get unique containers
+
     Get a list of unique containers for a list of wells
 
     Parameters
@@ -98,6 +109,11 @@ def unique_containers(wells):
     -------
     cont : list
         List of Containers
+
+    Raises
+    ------
+    ValueError
+        If wells are not of type list or WellGroup
 
     """
     assert isinstance(wells, (list, WellGroup)), "unique_containers requires"
@@ -126,8 +142,17 @@ def sort_well_group(wells, columnwise=False):
     sorted_well_group : WellGroup
         Sorted list of wells
 
+    Raises
+    ------
+    ValueError
+        If wells are not of type list or WellGroup
+    ValueError
+        If elements of wells are not of type well
+
     """
     if isinstance(wells, list):
+        for well in wells:
+            assert isinstance(well, Well)
         wells = WellGroup(wells)
     assert isinstance(wells, WellGroup), "wells must be an instance"
     " of the WellGroup class or of type list"
@@ -149,9 +174,11 @@ def sort_well_group(wells, columnwise=False):
     return sorted_well_group
 
 
-def stamp_shape(wells, full=True):
-    """
-    Find biggest reactangle that can be stamped from a list of wells.
+def stamp_shape(wells, full=True, quad=False):
+    """Determine if a list of wells is stampable
+
+    Find biggest reactangle that can be stamped from a list of wells. Can be
+    any rectangle, or enforce full row or column span.
 
     Parameters
     ----------
@@ -161,14 +188,28 @@ def stamp_shape(wells, full=True):
     full: bool, optional
         If true will only return shapes that span either the full rows or
         columns of the container.
+    quad: bool, optional
+        Set to true if you want to get the stamp shape for a 384 well testing
+        all quadrants.
 
     Returns
     -------
-    stamp_shape : namedtuple
+    stamp_shape : namedtuple or list of namedtuple
         `start_well` is the top left well for the source stamp group
         `shape` is a dict of rows and columns describing the stamp shape
         `remainging_wells` is a list of wells that are not included in the
         stamp shape.
+        If a 384 well plate is provided and quad is True this returns a list
+        of stamp shapes, one for each quadrant.
+
+    Raises
+    ------
+    RuntimeError
+        If wells are not of type list or WellGroup
+    ValueError
+        If elements of wells are not of type well
+    ValueError
+        If wells are not from one container only
 
     """
     if isinstance(wells, Container):
@@ -186,40 +227,78 @@ def stamp_shape(wells, full=True):
         raise RuntimeError("Stamp_shape: wells has to be a list or a "
                            "WellGroup")
 
+    def make_stamp_tuple(r, rows, cols, quad=None):
+        height = r.height
+        width = r.width
+        if full:
+            if not (r.height == rows or r.width == cols):
+                height = 0
+                width = 0
+
+        # Determine start_well and wells not included in the rectangle
+        wells_included = []
+        if width != 0 or height != 0:
+            start_well = (r.y * cols) + r.x
+        else:
+            start_well = 0
+        for y in range(height):
+            for z in range(width):
+                wells_included.append(start_well + y*cols + z)
+        wells_remaining = [x.index for x in wells if x.index not in
+                           wells_included]
+        # 384 well casing
+        if isinstance(quad, int):
+            wells_included = get_quadrant_well(wells_included, quad)
+            start_well = get_quadrant_well([start_well], quad)[0]
+            wells_remaining = [x.index for x in wells if x.index not in
+                               wells_included]
+        # convert indices to wells
+        wells_remaining = [x for x in wells if x.index in wells_remaining]
+        r = stamp_shape(start_well=start_well,
+                        shape=dict(rows=height, columns=width),
+                        remaining_wells=wells_remaining)
+        return r
+
     stamp_shape = namedtuple('Stamp', 'start_well shape remaining_wells')
     rows = cont.container_type.row_count()
     cols = cont.container_type.col_count
+    well_count = cont.container_type.well_count
     indices = [x.index for x in wells]
 
-    bnry_list = [bnry for bnry in binary_list(indices, length=rows*cols)]
-    bnry_mat = chop_list(bnry_list, cols)
-    r = max_rectangle(bnry_mat, value=1)
+    bnry_list = [bnry for bnry in binary_list(indices, length=well_count)]
+    if well_count == 384 and quad:
+        bnry_list_list = get_quadrant_binary_list(bnry_list)
+        temp_shape = []
+        temp_remaining_wells = []
+        remaining_wells = []
+        for i, bnry_list in enumerate(bnry_list_list):
+            bnry_mat = chop_list(bnry_list, 12)
+            r = max_rectangle(bnry_mat, value=1)
+            temp_shape.append(make_stamp_tuple(r, rows/2, cols/2, i))
+            temp_remaining_wells.append(temp_shape[i].remaining_wells)
+        temp_remaining_wells = Counter(flatten_list(remaining_wells))
+        for k, v in temp_remaining_wells.iteritems():
+            if v == 4:
+                remaining_wells.append(k)
+        shape = []
+        for s in temp_shape:
+            shape.append(stamp_shape(start_well=s.start_well,
+                                     shape=s.shape,
+                                     remaining_wells=remaining_wells))
+    else:
+        bnry_mat = chop_list(bnry_list, cols)
+        r = max_rectangle(bnry_mat, value=1)
+        shape = make_stamp_tuple(r, rows, cols)
 
-    height = r.height
-    width = r.width
-    if full:
-        if not (r.height == rows or r.width == cols):
-            height = 0
-            width = 0
-
-    # Determine start_well and wells not included in the rectangle
-    wells_included = []
-    start_well = (r.y*cols) + r.x
-    for y in range(height):
-        for z in range(width):
-            wells_included.append(start_well + y*cols + z)
-    wells_remaining = [x for x in wells if x.index not in wells_included]
-
-    return stamp_shape(start_well=start_well,
-                       shape=dict(rows=height, columns=width),
-                       remaining_wells=wells_remaining)
+    return shape
 
 
 def is_columnwise(wells):
-    """
-    Goal: Detect if input wells are in a columnwise format. This will only
-    trigger if the first column is full and only consecutive fractionally
-    filled columns exist.
+    """Detect if input wells are in a columnwise format.
+
+    This function only triggers if the first column is full and only
+    consecutive fractionally filled columns exist. It is used to determine
+    whether `columnwise` should be used in a pipette operation.
 
     Patterns detected (4x6 plate):
 
@@ -248,6 +327,14 @@ def is_columnwise(wells):
     -------
     shape : bool
         True if columnwise
+
+    Raises
+    ------
+    ValueError
+        If wells are not of type list or WellGroup
+    ValueError
+        If elements of wells are not of type Well
+
     """
     assert isinstance(wells, (list, WellGroup)), "is_columnwise: wells has to"
     " be a list or a WellGroup"
@@ -289,12 +376,20 @@ def plates_needed(wells_needed, wells_available):
     wells_needed: float, int
         How many you need
     wells_available: Container, float, int
-        How many you have available per unit
+        How many you have available per unit. If container, then all wells of
+        this container will be considered
 
     Returns
     -------
     i : int
         How many of unit you will need to accomodate all wells_needed
+
+    Raises
+    ------
+    RuntimeError
+        If wells_needed is not of type integer or float
+    RuntimeError
+        If wells_available is not of type integer or float or Container
 
     """
     if not isinstance(wells_needed, (float, int)):
@@ -330,6 +425,12 @@ def set_pipettable_volume(well, use_safe_vol=False):
     -------
     well : Container, WellGroup, list, Well
         Will return the same type as was received
+
+    Raises
+    ------
+    RuntimeError
+        If wells are spread across multiple containers
+
     """
 
     if isinstance(well, (list, WellGroup)):
@@ -365,7 +466,8 @@ def set_pipettable_volume(well, use_safe_vol=False):
 
 def volume_check(aliquot, usage_volume=0, use_safe_vol=False,
                  use_safe_dead_diff=False):
-    """
+    """Basic Volume check
+
     Takes an aliquot and if usaage_volume is 0 checks if that aliquot
     is above the dead volume for its well type.
     If the usage_volume is set it will check if there is enough volume
@@ -382,18 +484,22 @@ def volume_check(aliquot, usage_volume=0, use_safe_vol=False,
         Use safe minimum volume instead of dead volume
     use_safe_dead_diff : bool, optional
         Use the safe_minimum_volume - dead_volume as the required amount.
-        Useful if `set_pipettable_volume()' was used before to correct the
-        well_volume to not include the dead_volume anymore'
+        Useful if `set_pipettable_volume()` was used before to correct the
+        well_volume to not include the dead_volume anymore
 
     Returns
     -------
     error_message : str or None
         String if volume check failed
 
+    Raises
+    ------
+    ValueError
+        If aliquot is not of type Well
+
     """
-    if isinstance(aliquot, Container):
-        raise RuntimeError("volume check accepts only aliquots, "
-                           "not containers")
+    assert isinstance(aliquot, Well)
+
     if isinstance(usage_volume, Unit):
         usage_volume = usage_volume.value
     if isinstance(usage_volume, string_type):
@@ -431,7 +537,8 @@ def volume_check(aliquot, usage_volume=0, use_safe_vol=False,
 
 
 def well_name(well, alternate_name=None):
-    """
+    """Determine new well name
+
     Determine the a name that a new well is getting based on old well
     information
 
@@ -450,6 +557,12 @@ def well_name(well, alternate_name=None):
         well name in the format `name` if the well had a name or `name-index`
         if the name is derived from the container name or alternate_name
 
+    Raises
+    ------
+    ValueError
+        If well is not of type Well
+    ValueError
+        It alternate_name is not of type string
     """
 
     assert isinstance(well, Well)
@@ -466,10 +579,8 @@ def well_name(well, alternate_name=None):
     return base_name
 
 
-def container_type_check(containers, shortname, exclude=False):
-
-    """
-    Verify container is of specified container_type.
+def container_type_checker(containers, shortname, exclude=False):
+    """Verify container is of specified container_type.
 
     Parameters
     ----------
@@ -493,28 +604,36 @@ def container_type_check(containers, shortname, exclude=False):
     """
     if isinstance(shortname, list):
         for short in shortname:
-            assert short in _CONTAINER_TYPES, ("container_type_check: unknown container "
-                                               "shortname: %s , (known types: %s)" %
-                                               (short, str(_CONTAINER_TYPES.keys())))
+            assert short in _CONTAINER_TYPES, ("container_type_check: unknown"
+                                               " container shortname: %s , "
+                                               "(known types: %s)" %
+                                               (short,
+                                                str(_CONTAINER_TYPES.keys())))
     elif isinstance(shortname, str):
-            assert shortname in _CONTAINER_TYPES, ("container_type_check: unknown container"
-                                                   "shortname: %s , (known types: %s)" %
-                                                   (shortname, str(_CONTAINER_TYPES.keys())))
+        assert shortname in _CONTAINER_TYPES, ("container_type_check: unknown"
+                                               " container shortname: %s , "
+                                               "(known types: %s)" %
+                                               (shortname,
+                                                str(_CONTAINER_TYPES.keys())))
     if isinstance(containers, list):
         for cont in containers:
-            assert isinstance(cont, Container), ("container_type_check: containers to check"
+            assert isinstance(cont, Container), ("container_type_check: "
+                                                 "containers to check"
                                                  "must be of type Container")
     elif isinstance(containers, Container):
         containers = [containers]
     else:
-        raise ValueError("container_type_check: containers to check must be of type Container")
+        raise ValueError(
+            "container_type_check: containers to check must be of type "
+            "Container")
 
     error_messages = []
 
     for cont in containers:
         if exclude:
             if cont.container_type.shortname in shortname:
-                error_messages.append("%s is of the excluded type %s" % (cont, shortname))
+                error_messages.append(
+                    "%s is of the excluded type %s" % (cont, shortname))
 
         else:
             if cont.container_type.shortname not in shortname:

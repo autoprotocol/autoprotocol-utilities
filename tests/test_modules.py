@@ -1,6 +1,7 @@
 import pytest
 from autoprotocol import Protocol
 from autoprotocol.container import Well
+from autoprotocol.unit import Unit
 from autoprotocol_utilities.modules import createMastermix, autoseal
 
 
@@ -31,15 +32,17 @@ class TestCreateMastermix:
         "i, res, om, use_dead_vol, use_safe_vol, ""mm_mult, r", [
             (0, {"rs123": 1}, {w: 1}, False, False, 1, 2),
             (1, {"rs123": 1}, {w: 1}, True, False, 1, 17),
-            (10, {"rs123": 1}, {w: 1}, False, True, 1, 22),
-            (2, {"rs123": 1}, {w: 1}, False, False, 2, 4),
-            (3, {"rs123": 1}, {w: 1}, True, False, 2, 19),
-            (4, {"rs123": 3}, {w: 1}, False, False, 2, 8),
-            (5, {"rs123": 3}, {}, False, False, 2, 6),
-            (6, {"rs123": 3}, {}, True, False, 2, 21),
-            (7, {"rs123": 3, "rs1234": 2}, {}, True, False, 1, 20),
-            (8, {}, {w: 2, w2: 2.5}, True, False, 1, 19.5),
-            (9, {"rs123": 1000}, {}, False, False, 1.3, 1300)
+            (2, {"rs123": 1}, {w: 1}, False, True, 1, 22),
+            (3, {"rs123": 1}, {w: 1}, False, False, 2, 4),
+            (4, {"rs123": 1}, {w: 1}, True, False, 2, 19),
+            (5, {"rs123": 3}, {w: 1}, False, False, 2, 8),
+            (6, {"rs123": 3}, {}, False, False, 2, 6),
+            (7, {"rs123": 3}, {}, True, False, 2, 21),
+            (8, {"rs123": 3, "rs1234": 2}, {}, True, False, 1, 20),
+            (9, {}, {w: 2, w2: 2.5}, True, False, 1, 19.5),
+            (10, {"rs123": 1000}, {}, False, False, 1.3, 1300),
+            (11, {"rs123": Unit(1000, "microliter")}, {}, False,
+             False, 1.3, 1300)
         ])
     def test_single_well(self, i, res, om, use_dead_vol, use_safe_vol,
                          mm_mult, r):
@@ -53,9 +56,14 @@ class TestCreateMastermix:
 
     @pytest.mark.parametrize("i, rxt, res, om, use_dead_vol, mm_mult, r", [
         (0, 10, {"rs123": 5, "rs1234": 5}, {}, False, 2, [145, 65]),
-        (1, 10, {"rs123": 5, "rs1234": 5}, {}, True, 2, [148, 68])
+        (1, 10, {"rs123": 5, "rs1234": 5}, {}, True, 2, [148, 68]),
+        (2, 10, {"rs123": Unit(5, "microliter"), "rs1234": 5}, {}, True,
+         2, [148, 68]),
+        (3, 2, {"rs123": Unit(5, "microliter"), "rs1234": 5},
+         {w2: Unit(5, "microliter")}, True, 2, [68.01])
     ])
     def test_multiple_wells(self, i, rxt, res, om, use_dead_vol, mm_mult, r):
+        print om
         mm = createMastermix(self.p, "multi_well_test%s" % i, "96-pcr",
                              rxt, res, om, mm_mult=mm_mult,
                              use_dead_vol=use_dead_vol)

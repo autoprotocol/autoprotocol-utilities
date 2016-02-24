@@ -6,7 +6,7 @@ Modules
 -------
 
 createMastermix()
-~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
 .. autofunction:: autoprotocol_utilities.modules.createMastermix
 
 autoseal()
@@ -18,11 +18,11 @@ General helpers
 ---------------
 
 user_errors_group()
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~
 .. autofunction:: autoprotocol_utilities.misc_helpers.user_errors_group
 
 char_limit()
-~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~
 .. autofunction:: autoprotocol_utilities.misc_helpers.char_limit
 
 det_new_group()
@@ -92,6 +92,10 @@ list_of_filled_wells()
 well_name()
 ~~~~~~~~~~~~
 .. autofunction:: autoprotocol_utilities.container_helpers.well_name
+
+container_type_checker()
+~~~~~~~~~~~~~~~~~~~~~~~~
+.. autofunction:: autoprotocol_utilities.container_helpers.container_type_checker
 
 
 Resource helpers

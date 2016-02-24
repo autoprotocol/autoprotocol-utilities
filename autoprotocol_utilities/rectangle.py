@@ -103,6 +103,47 @@ def binary_list(wells, length=None):
             yield 0
 
 
+def get_quadrant(quad):
+    """Return a list of well indices that correspond to the correct quadrant
+    on a 384 well plate
+    """
+    assert quad in [0, 1, 2, 3]
+    start_well = [0, 1, 24, 25]
+    wells = []
+    for row_offset in xrange(start_well[quad], 384, 48):
+        for col_offset in xrange(0, 24, 2):
+            wells.append(row_offset + col_offset)
+
+    return wells
+
+
+def get_quadrant_binary_list(binary_list, quad=[0, 1, 2, 3]):
+    """Take a binary list of 384 elements (aka wells) and return the quadrant.
+    This will be the stampable 96 wells that we have to check for a rectangle.
+    """
+    assert len(binary_list) == 384
+    for q in quad:
+        assert q in [0, 1, 2, 3]
+
+    wells = []
+    for q in quad:
+        wells.append([binary_list[i] for i in get_quadrant(q)])
+
+    return wells
+
+
+def get_quadrant_well(quadwells, quad):
+    """Take a well and quadrant and return the correct well in the 384 plate
+    """
+    assert isinstance(quadwells, list)
+    assert quad in [0, 1, 2, 3]
+
+    basewells = get_quadrant(quad)
+    wells = [basewells[i] for i in quadwells]
+
+    return wells
+
+
 def chop_list(lst, chop_length, filler=None):
     """Chops a list into a list of lists. Used to generate a plate map
     corresponding to microplate layouts.

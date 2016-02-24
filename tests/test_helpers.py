@@ -2,7 +2,7 @@ import pytest
 from random import sample
 from autoprotocol import Protocol
 from autoprotocol.container import Well, WellGroup, Container
-from autoprotocol_utilities.container_helpers import list_of_filled_wells, first_empty_well, unique_containers, sort_well_group, stamp_shape, is_columnwise, volume_check, set_pipettable_volume, well_name, container_type_check
+from autoprotocol_utilities.container_helpers import list_of_filled_wells, first_empty_well, unique_containers, sort_well_group, stamp_shape, is_columnwise, volume_check, set_pipettable_volume, well_name, container_type_checker
 from autoprotocol_utilities.misc_helpers import make_list, flatten_list, char_limit, recursive_search
 
 
@@ -59,26 +59,59 @@ class TestContainerfunctions:
         assert list(random_wells) != list(wells)
         assert list(sort_well_group(random_wells)) == list(wells)
 
-    @pytest.mark.parametrize("wells, full, r", [
-        (c.wells_from(0, 16, columnwise=True), False,
+    @pytest.mark.parametrize("wells, full, quad, r", [
+        (c.wells_from(0, 16, columnwise=True), False, False,
          [0, {"rows": 8, "columns": 2}, []]),
-        (c.wells_from(0, 16), False, [0, {"rows": 1, "columns": 12},
+        (c.wells_from(0, 16), False, False, [0, {"rows": 1, "columns": 12},
          [12, 13, 14, 15]]),
         (c.wells(0, 1, 2, 3, 95, 94, 93, 92, 91, 83, 82, 81, 80, 79), False,
-         [79, {"rows": 2, "columns": 5}, [0, 1, 2, 3]]),
+         False, [79, {"rows": 2, "columns": 5}, [0, 1, 2, 3]]),
         (c.wells(0, 1, 2, 3, 95, 94, 93, 92, 91, 83, 82, 81, 80, 79), True,
-         [79, {"rows": 0, "columns": 0},
-         [0, 1, 2, 3, 79, 80, 81, 82, 83, 91, 92, 93, 94, 95]])
+         False, [0, {"rows": 0, "columns": 0},
+         [0, 1, 2, 3, 79, 80, 81, 82, 83, 91, 92, 93, 94, 95]]),
+        (c2.wells_from(0, 4), False, False, [0, {"rows": 1, "columns": 4},
+         []]),
+        (c2.wells_from(0, 4), False, True, [
+         [0, {"rows": 1, "columns": 2}, []],
+         [1, {"rows": 1, "columns": 2}, []],
+         [24, {"rows": 0, "columns": 0}, []],
+         [25, {"rows": 0, "columns": 0}, []]]),
+        (c2.wells(0, 1, 2, 3, 23), False, True, [
+         [0, {"rows": 1, "columns": 2}, [23]],
+         [1, {"rows": 1, "columns": 2}, [23]],
+         [24, {"rows": 0, "columns": 0}, [23]],
+         [25, {"rows": 0, "columns": 0}, [23]]]),
+        (c2.wells_from(0, 24), True, True, [
+         [0, {"rows": 1, "columns": 12}, []],
+         [1, {"rows": 1, "columns": 12}, []],
+         [24, {"rows": 0, "columns": 0}, []],
+         [25, {"rows": 0, "columns": 0}, []]]),
+        (c2.wells_from(24, 24), True, True, [
+         [0, {"rows": 0, "columns": 0}, []],
+         [1, {"rows": 0, "columns": 0}, []],
+         [24, {"rows": 1, "columns": 12}, []],
+         [25, {"rows": 1, "columns": 12}, []]])
     ])
-    def test_shape(self, wells, full, r):
-        res = stamp_shape(wells, full)
-        assert res.start_well == r[0]
-        assert res.shape == r[1]
-        if len(r[2]) == 0:
-            assert len(res.remaining_wells) == len(r[2])
+    def test_shape(self, wells, full, quad, r):
+        res = stamp_shape(wells, full, quad)
+        print res
+        if quad:
+            for i, re in enumerate(res):
+                assert re.start_well == r[i][0]
+                assert re.shape == r[i][1]
+                if len(r[i][2]) == 0:
+                    assert len(re.remaining_wells) == len(r[i][2])
+                else:
+                    for y, well in enumerate(re.remaining_wells):
+                        assert well.index == r[i][2][y]
         else:
-            for i, well in enumerate(res.remaining_wells):
-                assert well.index == r[2][i]
+            assert res.start_well == r[0]
+            assert res.shape == r[1]
+            if len(r[2]) == 0:
+                assert len(res.remaining_wells) == len(r[2])
+            else:
+                for y, well in enumerate(res.remaining_wells):
+                    assert well.index == r[2][y]
 
     @pytest.mark.parametrize("len_wells, columnwise, r", [
         (8, True, True),
@@ -131,13 +164,13 @@ class TestContainerfunctions:
         self.c.well(0).set_name("mywell")
         assert well_name(self.c.well(0)) == "mywell"
 
-    def test_container_type_check(self):
-        assert container_type_check(self.c, "96-pcr") is True
-        assert container_type_check(self.c2, "384-echo") is True
-        assert container_type_check([self.c2, self.c], ["384-echo", "96-pcr"]) is True
-        assert len(container_type_check(self.c, "micro-1.5")) > 0
-        assert container_type_check(self.c, "micro-1.5", exclude=True) is True
-        assert len(container_type_check(self.c, "96-pcr", exclude=True)) > 0
+    def test_container_type_checker(self):
+        assert container_type_checker(self.c, "96-pcr") is True
+        assert container_type_checker(self.c2, "384-echo") is True
+        assert container_type_checker([self.c2, self.c], ["384-echo", "96-pcr"]) is True
+        assert len(container_type_checker(self.c, "micro-1.5")) > 0
+        assert container_type_checker(self.c, "micro-1.5", exclude=True) is True
+        assert len(container_type_checker(self.c, "96-pcr", exclude=True)) > 0
 
 
 class TestDataformattingfunctions:
