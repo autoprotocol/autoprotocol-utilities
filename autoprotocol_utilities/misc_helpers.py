@@ -9,7 +9,7 @@ else:
     string_type = basestring
 
 
-def user_errors_group(error_msgs):
+def user_errors_group(error_msgs, info=None):
     """Takes a list error messages and neatly displays as a single UserError
 
     Parameters
@@ -31,7 +31,7 @@ def user_errors_group(error_msgs):
             "%s error(s) found in this protocol: " % len(error_msgs) +
             " ".join(["<Error " +
                       str(i + 1) + "> " +
-                      str(m) for i, m in enumerate(error_msgs)]))
+                      str(m) for i, m in enumerate(error_msgs)]), info=info)
 
 
 def printdatetime():

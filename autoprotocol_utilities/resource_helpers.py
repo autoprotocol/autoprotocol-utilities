@@ -259,3 +259,8 @@ class ResourceIDs(object):
                     "Zymo DH5a": self.zymo_dh5a,
                     "Zymo JM109": self.zymo_jm109}
         return bacteria.get(bact)
+
+    def diluents(self, dil=None):
+        diluents = {"water": self.water,
+                    "TE": self.te}
+        return diluents.get(dil)
