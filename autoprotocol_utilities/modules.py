@@ -330,7 +330,7 @@ def autoseal(protocol, wells, covertype="standard", sealtype="ultra-clear"):
     assert isinstance(protocol, Protocol)
 
     for c in to_seal:
-        if container_type_checker(c, ["96-pcr", "384-pcr", "384-echo"]):
+        if not container_type_checker(c, ["96-pcr", "384-pcr", "384-echo"]):
             protocol.seal(c, type=sealtype)
-        elif container_type_checker(c, ["micro-1.5", "micro-2.0"], exclude=True):
+        elif not container_type_checker(c, ["micro-1.5", "micro-2.0"], exclude=True):
             protocol.cover(c, lid=covertype)

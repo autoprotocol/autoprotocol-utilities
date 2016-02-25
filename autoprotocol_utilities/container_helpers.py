@@ -642,7 +642,7 @@ def container_type_checker(containers, shortname, exclude=False):
     if len(error_messages) > 0:
         return error_messages
     else:
-        return True
+        return None
 
 
 def get_well_list_by_cont(wells):

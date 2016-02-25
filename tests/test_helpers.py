@@ -166,13 +166,13 @@ class TestContainerfunctions:
         assert well_name(self.c.well(0)) == "mywell"
 
     def test_container_type_checker(self):
-        assert container_type_checker(self.c, "96-pcr") is True
-        assert container_type_checker(self.c2, "384-echo") is True
+        assert container_type_checker(self.c, "96-pcr") is None
+        assert container_type_checker(self.c2, "384-echo") is None
         assert container_type_checker([self.c2, self.c], [
-                                      "384-echo", "96-pcr"]) is True
+                                      "384-echo", "96-pcr"]) is None
         assert len(container_type_checker(self.c, "micro-1.5")) > 0
         assert container_type_checker(self.c,
-                                      "micro-1.5", exclude=True) is True
+                                      "micro-1.5", exclude=True) is None
         assert len(container_type_checker(self.c, "96-pcr", exclude=True)) > 0
 
     def test_get_well_list_by_cont(self):
