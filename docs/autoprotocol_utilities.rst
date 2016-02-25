@@ -97,6 +97,9 @@ container_type_checker()
 ~~~~~~~~~~~~~~~~~~~~~~~~
 .. autofunction:: autoprotocol_utilities.container_helpers.container_type_checker
 
+get_well_list_by_cont()
+~~~~~~~~~~~~~~~~~~~~~~~
+.. autofunction:: autoprotocol_utilities.container_helpers.get_well_list_by_cont
 
 Resource helpers
 ----------------

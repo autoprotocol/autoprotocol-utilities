@@ -134,13 +134,13 @@ def return_agar_plates(wells=6):
                   "lb-broth-100ug-ml-amp": "ki17sbb845ssx9",
                   "lb-broth-100ug-ml-specto": "ki17sbb9r7jf98",
                   "lb-broth-100ug-ml-cm": "ki17urn3gg8tmj",
-                  "noAB": "ki17reefwqq3sq"}
+                  "lb-broth-noAB": "ki17reefwqq3sq"}
     elif wells == 1:
         plates = {"lb-broth-50ug-ml-kan": "ki17t8j7kkzc4g",
                   "lb-broth-100ug-ml-amp": "ki17t8jcebshtr",
                   "lb-broth-100ug-ml-specto": "ki17t8jaa96pw3",
                   "lb-broth-100ug-ml-cm": "ki17urn592xejq",
-                  "noAB": "ki17t8jejbea4z"}
+                  "lb-broth-noAB": "ki17t8jejbea4z"}
     else:
         raise ValueError("Wells has to be an integer, either 1 or 6")
     return(plates)
@@ -253,3 +253,9 @@ class ResourceIDs(object):
         # orange g
         self.orange_g_100 = "rs17zw9zsaqd55"
         self.organge_g_500 = "rs17zwe6rux5b7"
+
+    def bacteria(self, bact=None):
+        bacteria = {"Zymo 10B": self.zymo_10b,
+                    "Zymo DH5a": self.zymo_dh5a,
+                    "Zymo JM109": self.zymo_jm109}
+        return bacteria.get(bact)

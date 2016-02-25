@@ -643,3 +643,37 @@ def container_type_checker(containers, shortname, exclude=False):
         return error_messages
     else:
         return True
+
+
+def get_well_list_by_cont(wells):
+    """Get wells sorted by container
+
+    Parameters
+    ----------
+    wells: list, WellGroup
+
+    Returns
+    -------
+    well_map: dict
+        Dict with containers as keys and List of wells as value
+
+    Raises
+    ------
+    ValueError
+        If wells is not of type list or WellGroup
+    ValueError
+        If elements of wells are not of type Well
+
+    """
+    assert isinstance(wells, (list, WellGroup))
+    for well in wells:
+        assert isinstance(well, Well)
+
+    conts = unique_containers(wells)
+    well_map = {}
+    for cont in conts:
+        well_map[cont] = []
+        well_map[cont].extend(
+            [well for well in wells if well.container == cont])
+
+    return well_map

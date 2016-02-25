@@ -2,7 +2,7 @@ import pytest
 from random import sample
 from autoprotocol import Protocol
 from autoprotocol.container import Well, WellGroup, Container
-from autoprotocol_utilities.container_helpers import list_of_filled_wells, first_empty_well, unique_containers, sort_well_group, stamp_shape, is_columnwise, volume_check, set_pipettable_volume, well_name, container_type_checker
+from autoprotocol_utilities.container_helpers import list_of_filled_wells, first_empty_well, unique_containers, sort_well_group, stamp_shape, is_columnwise, volume_check, set_pipettable_volume, well_name, container_type_checker, get_well_list_by_cont
 from autoprotocol_utilities.misc_helpers import make_list, flatten_list, char_limit, recursive_search
 
 
@@ -24,7 +24,8 @@ class TestContainerfunctions:
         (volume_check, ws),
         (volume_check, c),
         (well_name, c),
-        (well_name, ws)
+        (well_name, ws),
+        (get_well_list_by_cont, c)
         ])
     def test_asserts(self, func, arg):
         with pytest.raises(Exception):
@@ -45,7 +46,7 @@ class TestContainerfunctions:
         assert not first_empty_well(self.ws)
 
     def test_unique_containers(self):
-        wells = self.ws
+        wells = self.ws[:]
         assert len(unique_containers(wells)) == 1
         for i in range(4):
             cont = self.p.ref("unique%s" % i, id=None,
@@ -167,10 +168,25 @@ class TestContainerfunctions:
     def test_container_type_checker(self):
         assert container_type_checker(self.c, "96-pcr") is True
         assert container_type_checker(self.c2, "384-echo") is True
-        assert container_type_checker([self.c2, self.c], ["384-echo", "96-pcr"]) is True
+        assert container_type_checker([self.c2, self.c], [
+                                      "384-echo", "96-pcr"]) is True
         assert len(container_type_checker(self.c, "micro-1.5")) > 0
-        assert container_type_checker(self.c, "micro-1.5", exclude=True) is True
+        assert container_type_checker(self.c,
+                                      "micro-1.5", exclude=True) is True
         assert len(container_type_checker(self.c, "96-pcr", exclude=True)) > 0
+
+    def test_get_well_list_by_cont(self):
+        myc = self.p.ref("testplate_pcr23", id=None, cont_type="96-pcr",
+                         discard=True)
+        myc2 = self.p.ref("testplate_pcr24", id=None, cont_type="96-pcr",
+                          discard=True)
+        ws = myc.wells_from(0, 30).set_volume("20:microliter")
+        r = {myc: list(ws)}
+        assert get_well_list_by_cont(ws) == r
+        ws2 = myc2.wells_from(0, 30).set_volume("20:microliter")
+        ws3 = ws + ws2
+        r = {myc: list(ws), myc2: list(ws2)}
+        assert get_well_list_by_cont(ws3) == r
 
 
 class TestDataformattingfunctions:
