@@ -5,6 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/)
 ## Unreleased
 ---
 Added
+ - dispenseWells()
 
 Changed
 - user_error_groups optional info parameter

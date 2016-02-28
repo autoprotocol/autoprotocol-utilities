@@ -1,5 +1,5 @@
-from container_helpers import plates_needed, first_empty_well, unique_containers, container_type_checker
-from misc_helpers import printdate
+from container_helpers import plates_needed, first_empty_well, unique_containers, container_type_checker, get_well_list_by_cont
+from misc_helpers import printdate, flatten_list
 from autoprotocol.container import Container, WellGroup, Well
 from autoprotocol.container_type import _CONTAINER_TYPES
 from autoprotocol.unit import Unit
@@ -334,3 +334,56 @@ def autoseal(protocol, wells, covertype="standard", sealtype="ultra-clear"):
             protocol.seal(c, type=sealtype)
         elif not container_type_checker(c, ["micro-1.5", "micro-2.0"], exclude=True):
             protocol.cover(c, lid=covertype)
+
+
+def dispenseWells(protocol, wells, reagent, volume):
+    """Dispense reagent into plate based on a well list
+
+    Dispensing is columnwise, but often you only have a list of wells. This
+    function determines the columns you need to fill based on the well list
+    and launches the dispense using your protocol instance.
+    If the wells are from different containers it will do so for each
+    container.
+
+    Parameters
+    ----------
+    protocol: Protocol
+        Your protocol instance
+    wells: list, WellGroup
+        WellGroup or list of wells to act on
+    reagent: string
+        Reagent to dispense
+    volume: int, float, Unit
+        Volume to dispense per well
+
+    Raises
+    ------
+    ValueError
+        If wells is not of type list or WellGroup
+    ValueError
+        If items in `wells` are not of type Well
+    ValueError
+        If reagent is not a string
+    ValueError
+        If volume is not of type float, int or Unit
+
+    """
+
+    assert isinstance(wells, (list, WellGroup))
+    if isinstance(wells, list):
+        for well in flatten_list(wells):
+            assert isinstance(well, Well)
+    assert isinstance(reagent, basestring)
+    if isinstance(volume, (int, float)):
+        volume = Unit(volume, "microliter")
+    assert isinstance(volume, Unit)
+
+    cw = get_well_list_by_cont(flatten_list(wells))
+    for ct, ws in cw.iteritems():
+        col_list = [ct.decompose(well.index)[1] for well in ws]
+        col_list = list(set(col_list))
+        columns = [{"column": col, "volume": volume}
+                   for col in col_list]
+        protocol.dispense(ct,
+                          reagent,
+                          columns)
