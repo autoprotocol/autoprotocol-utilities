@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='autoprotocol_utilities',
-      version='1.3.0',
+      version='1.4.0',
       description='Helper methods to construct protocols using autoprotocol-python.',
       url='https://github.com/transcriptic/autoprotocol-utilities',
       author='Conny Scheitz, Vanessa Biggers and all past and present Application Scientists',
