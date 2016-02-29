@@ -34,7 +34,7 @@ def oligo_scale_default(length, scale, label):
     r = namedtuple('Response', 'success error_message')
     ok = True
     error_message = None
-    if scale == '25nm':
+    if scale == '25nm' or scale == '10nm':
         ok = True if (length >= 15 and length <= 60) else False
     elif scale == '100nm':
         ok = True if (length >= 10 and length <= 90) else False

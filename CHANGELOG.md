@@ -5,6 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/)
 ## Unreleased
 ---
 Added
+- 10nm scale to oligo_scale_default
 
 Changed
 - volume_check() can accept a list of wells or WellGroup
