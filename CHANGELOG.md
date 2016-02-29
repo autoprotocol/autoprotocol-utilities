@@ -5,12 +5,22 @@ This project adheres to [Semantic Versioning](http://semver.org/)
 ## Unreleased
 ---
 Added
- - dispenseWells()
+
+Changed
+
+Removed
+
+Fixed
+
+## v1.4.0 - 2016-02-28
+---
+Added
 
 Changed
 - user_error_groups optional info parameter
 
 Removed
+modules - moved to promodules
 
 Fixed
 

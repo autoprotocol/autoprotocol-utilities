@@ -2,21 +2,6 @@
 autoprotocol_utilities
 ======================
 
-Modules
--------
-
-createMastermix
-~~~~~~~~~~~~~~~~~
-.. autofunction:: autoprotocol_utilities.modules.createMastermix
-
-autoseal
-~~~~~~~~~~~~~~~~~~
-.. autofunction:: autoprotocol_utilities.modules.autoseal
-
-autodispenseWellsseal
-~~~~~~~~~~~~~~~~~~
-.. autofunction:: autoprotocol_utilities.modules.dispenseWells
-
 
 General helpers
 ---------------
