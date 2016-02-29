@@ -7,6 +7,10 @@ This project adheres to [Semantic Versioning](http://semver.org/)
 Added
 
 Changed
+- volume_check() can accept a list of wells or WellGroup
+- stamp_shape() now always returns a list. start_well will be of type Well. start_well will be None if no shape is found
+- stamp_shape() also returns included_wells
+- renaming some reactangle functions
 
 Removed
 

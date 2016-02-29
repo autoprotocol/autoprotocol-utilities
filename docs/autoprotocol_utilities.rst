@@ -70,6 +70,18 @@ stamp_shape
 ~~~~~~~~~~~~~~~~~~~~~
 .. autofunction:: autoprotocol_utilities.container_helpers.stamp_shape
 
+Rectangle helper functions
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: autoprotocol_utilities.rectangle.area
+.. autofunction:: autoprotocol_utilities.rectangle.area2rect
+.. autofunction:: autoprotocol_utilities.rectangle.max_histogram_area
+.. autofunction:: autoprotocol_utilities.rectangle.binary_list
+.. autofunction:: autoprotocol_utilities.rectangle.get_quadrant_indices
+.. autofunction:: autoprotocol_utilities.rectangle.get_quadrant_binary_list
+.. autofunction:: autoprotocol_utilities.rectangle.get_well_in_quadrant
+.. autofunction:: autoprotocol_utilities.rectangle.chop_list
+
+
 first_empty_well
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. autofunction:: autoprotocol_utilities.container_helpers.first_empty_well

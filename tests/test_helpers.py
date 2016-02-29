@@ -21,7 +21,6 @@ class TestContainerfunctions:
         (sort_well_group, c),
         (stamp_shape, w),
         (is_columnwise, c),
-        (volume_check, ws),
         (volume_check, c),
         (well_name, c),
         (well_name, ws),
@@ -62,36 +61,36 @@ class TestContainerfunctions:
 
     @pytest.mark.parametrize("wells, full, quad, r", [
         (c.wells_from(0, 16, columnwise=True), False, False,
-         [0, {"rows": 8, "columns": 2}, []]),
-        (c.wells_from(0, 16), False, False, [0, {"rows": 1, "columns": 12},
-         [12, 13, 14, 15]]),
+         [c.well(0), {"rows": 8, "columns": 2}, []]),
+        (c.wells_from(0, 16), False, False, [c.well(0),
+         {"rows": 1, "columns": 12}, [12, 13, 14, 15]]),
         (c.wells(0, 1, 2, 3, 95, 94, 93, 92, 91, 83, 82, 81, 80, 79), False,
-         False, [79, {"rows": 2, "columns": 5}, [0, 1, 2, 3]]),
+         False, [c.well(79), {"rows": 2, "columns": 5}, [0, 1, 2, 3]]),
         (c.wells(0, 1, 2, 3, 95, 94, 93, 92, 91, 83, 82, 81, 80, 79), True,
-         False, [0, {"rows": 0, "columns": 0},
+         False, [None, {"rows": 0, "columns": 0},
          [0, 1, 2, 3, 79, 80, 81, 82, 83, 91, 92, 93, 94, 95]]),
-        (c2.wells_from(0, 4), False, False, [0, {"rows": 1, "columns": 4},
-         []]),
+        (c2.wells_from(0, 4), False, False, [c2.well(0),
+         {"rows": 1, "columns": 4}, []]),
         (c2.wells_from(0, 4), False, True, [
-         [0, {"rows": 1, "columns": 2}, []],
-         [1, {"rows": 1, "columns": 2}, []],
-         [24, {"rows": 0, "columns": 0}, []],
-         [25, {"rows": 0, "columns": 0}, []]]),
+         [c2.well(0), {"rows": 1, "columns": 2}, []],
+         [c2.well(1), {"rows": 1, "columns": 2}, []],
+         [None, {"rows": 0, "columns": 0}, []],
+         [None, {"rows": 0, "columns": 0}, []]]),
         (c2.wells(0, 1, 2, 3, 23), False, True, [
-         [0, {"rows": 1, "columns": 2}, [23]],
-         [1, {"rows": 1, "columns": 2}, [23]],
-         [24, {"rows": 0, "columns": 0}, [23]],
-         [25, {"rows": 0, "columns": 0}, [23]]]),
+         [c2.well(0), {"rows": 1, "columns": 2}, [23]],
+         [c2.well(1), {"rows": 1, "columns": 2}, [23]],
+         [None, {"rows": 0, "columns": 0}, [23]],
+         [None, {"rows": 0, "columns": 0}, [23]]]),
         (c2.wells_from(0, 24), True, True, [
-         [0, {"rows": 1, "columns": 12}, []],
-         [1, {"rows": 1, "columns": 12}, []],
-         [24, {"rows": 0, "columns": 0}, []],
-         [25, {"rows": 0, "columns": 0}, []]]),
+         [c2.well(0), {"rows": 1, "columns": 12}, []],
+         [c2.well(1), {"rows": 1, "columns": 12}, []],
+         [None, {"rows": 0, "columns": 0}, []],
+         [None, {"rows": 0, "columns": 0}, []]]),
         (c2.wells_from(24, 24), True, True, [
-         [0, {"rows": 0, "columns": 0}, []],
-         [1, {"rows": 0, "columns": 0}, []],
-         [24, {"rows": 1, "columns": 12}, []],
-         [25, {"rows": 1, "columns": 12}, []]])
+         [None, {"rows": 0, "columns": 0}, []],
+         [None, {"rows": 0, "columns": 0}, []],
+         [c2.well(24), {"rows": 1, "columns": 12}, []],
+         [c2.well(25), {"rows": 1, "columns": 12}, []]])
     ])
     def test_shape(self, wells, full, quad, r):
         res = stamp_shape(wells, full, quad)
@@ -106,12 +105,12 @@ class TestContainerfunctions:
                     for y, well in enumerate(re.remaining_wells):
                         assert well.index == r[i][2][y]
         else:
-            assert res.start_well == r[0]
-            assert res.shape == r[1]
+            assert res[0].start_well == r[0]
+            assert res[0].shape == r[1]
             if len(r[2]) == 0:
-                assert len(res.remaining_wells) == len(r[2])
+                assert len(res[0].remaining_wells) == len(r[2])
             else:
-                for y, well in enumerate(res.remaining_wells):
+                for y, well in enumerate(res[0].remaining_wells):
                     assert well.index == r[2][y]
 
     @pytest.mark.parametrize("len_wells, columnwise, r", [
@@ -152,8 +151,10 @@ class TestContainerfunctions:
         self.c.wells_from(25, 5).set_volume("1:microliter")
         self.c.wells_from(30, 15).set_volume("4:microliter")
         assert volume_check(self.c.well(0), 1) is None
+        assert volume_check(self.c.wells_from(0, 14), 1) is None
         assert volume_check(self.c.well(0), 18) is not None
         assert volume_check(self.c.well(15), 0) is not None
+        assert volume_check(self.c.wells_from(15, 5), 0) is not None
         assert volume_check(self.c.well(16), 0,
                             use_safe_dead_diff=True) is None
         assert volume_check(self.c.well(25), 0,

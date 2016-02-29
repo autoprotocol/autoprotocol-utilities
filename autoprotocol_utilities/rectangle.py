@@ -103,7 +103,7 @@ def binary_list(wells, length=None):
             yield 0
 
 
-def get_quadrant(quad):
+def get_quadrant_indices(quad):
     """Return a list of well indices that correspond to the correct quadrant
     on a 384 well plate
     """
@@ -127,18 +127,19 @@ def get_quadrant_binary_list(binary_list, quad=[0, 1, 2, 3]):
 
     wells = []
     for q in quad:
-        wells.append([binary_list[i] for i in get_quadrant(q)])
+        wells.append([binary_list[i] for i in get_quadrant_indices(q)])
 
     return wells
 
 
-def get_quadrant_well(quadwells, quad):
-    """Take a well and quadrant and return the correct well in the 384 plate
+def get_well_in_quadrant(quadwells, quad):
+    """Take a well and quadrant and return the correct well index in the 384
+    plate
     """
     assert isinstance(quadwells, list)
     assert quad in [0, 1, 2, 3]
 
-    basewells = get_quadrant(quad)
+    basewells = get_quadrant_indices(quad)
     wells = [basewells[i] for i in quadwells]
 
     return wells

@@ -1,5 +1,5 @@
 import pytest
-from autoprotocol_utilities.rectangle import chop_list, binary_list, max_histogram_area, max_rectangle, get_quadrant_well
+from autoprotocol_utilities.rectangle import chop_list, binary_list, max_histogram_area, max_rectangle, get_well_in_quadrant
 
 
 @pytest.mark.parametrize("wells, chop_length, r", [
@@ -59,5 +59,5 @@ def test_max_rectangle(wells, value, r):
     ([0], 2, 24),
     ([0], 3, 25)
 ])
-def test_get_quadrant_well(well, quad, r):
-    assert(get_quadrant_well(well, quad)[0] == r)
+def test_get_well_in_quadrant(well, quad, r):
+    assert(get_well_in_quadrant(well, quad)[0] == r)

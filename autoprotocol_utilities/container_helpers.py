@@ -2,7 +2,7 @@ from autoprotocol.container import Container, WellGroup, Well
 from autoprotocol.container_type import _CONTAINER_TYPES
 from autoprotocol.unit import Unit
 from misc_helpers import flatten_list
-from rectangle import binary_list, chop_list, max_rectangle, get_quadrant_binary_list, get_quadrant_well
+from rectangle import binary_list, chop_list, max_rectangle, get_quadrant_binary_list, get_well_in_quadrant
 from collections import namedtuple, Counter
 from operator import itemgetter
 import math
@@ -190,17 +190,18 @@ def stamp_shape(wells, full=True, quad=False):
         columns of the container.
     quad: bool, optional
         Set to true if you want to get the stamp shape for a 384 well testing
-        all quadrants.
+        all quadrants. False is used for determining col- vs row-wise. True
+        is used to initiate the correct stamping.
 
     Returns
     -------
-    stamp_shape : namedtuple or list of namedtuple
+    stamp_shape : list of namedtuple
         `start_well` is the top left well for the source stamp group
         `shape` is a dict of rows and columns describing the stamp shape
         `remainging_wells` is a list of wells that are not included in the
         stamp shape.
         If a 384 well plate is provided and quad is True this returns a list
-        of stamp shapes, one for each quadrant.
+        of 4 stamp shapes, one for each quadrant.
 
     Raises
     ------
@@ -227,39 +228,47 @@ def stamp_shape(wells, full=True, quad=False):
         raise RuntimeError("Stamp_shape: wells has to be a list or a "
                            "WellGroup")
 
-    def make_stamp_tuple(r, rows, cols, quad=None):
+    def make_stamp_tuple(r, rows, cols, q=None):
         height = r.height
         width = r.width
         if full:
             if not (r.height == rows or r.width == cols):
                 height = 0
                 width = 0
-
         # Determine start_well and wells not included in the rectangle
-        wells_included = []
         if width != 0 or height != 0:
-            start_well = (r.y * cols) + r.x
+            start_index = (r.y * cols) + r.x
         else:
-            start_well = 0
+            start_index = None
+        # Determine wells_included
+        wells_included = []
         for y in range(height):
             for z in range(width):
-                wells_included.append(start_well + y*cols + z)
-        wells_remaining = [x.index for x in wells if x.index not in
-                           wells_included]
-        # 384 well casing
-        if isinstance(quad, int):
-            wells_included = get_quadrant_well(wells_included, quad)
-            start_well = get_quadrant_well([start_well], quad)[0]
-            wells_remaining = [x.index for x in wells if x.index not in
+                wells_included.append(start_index + y*cols + z)
+        # 384 well case
+        if q is not None:
+            wells_included = get_well_in_quadrant(wells_included, q)
+            if width != 0 or height != 0:
+                start_index = get_well_in_quadrant([start_index], q)[0]
+
+        # Determine wells_idx_remaining
+        wells_idx_remaining = [x.index for x in wells if x.index not in
                                wells_included]
-        # convert indices to wells
-        wells_remaining = [x for x in wells if x.index in wells_remaining]
+        # Convert all indices to wells
+        if start_index is not None:
+            start_well = [x for x in wells if x.index == start_index][0]
+        else:
+            start_well = start_index
+        wells_remaining = [x for x in wells if x.index in wells_idx_remaining]
+        wells_included = [x for x in wells if x.index in wells_included]
         r = stamp_shape(start_well=start_well,
                         shape=dict(rows=height, columns=width),
-                        remaining_wells=wells_remaining)
+                        remaining_wells=wells_remaining,
+                        included_wells=wells_included)
         return r
 
-    stamp_shape = namedtuple('Stamp', 'start_well shape remaining_wells')
+    stamp_shape = namedtuple(
+        'Stamp', 'start_well shape remaining_wells included_wells')
     rows = cont.container_type.row_count()
     cols = cont.container_type.col_count
     well_count = cont.container_type.well_count
@@ -276,7 +285,7 @@ def stamp_shape(wells, full=True, quad=False):
             r = max_rectangle(bnry_mat, value=1)
             temp_shape.append(make_stamp_tuple(r, rows/2, cols/2, i))
             temp_remaining_wells.append(temp_shape[i].remaining_wells)
-        temp_remaining_wells = Counter(flatten_list(remaining_wells))
+        temp_remaining_wells = Counter(flatten_list(temp_remaining_wells))
         for k, v in temp_remaining_wells.iteritems():
             if v == 4:
                 remaining_wells.append(k)
@@ -284,11 +293,12 @@ def stamp_shape(wells, full=True, quad=False):
         for s in temp_shape:
             shape.append(stamp_shape(start_well=s.start_well,
                                      shape=s.shape,
-                                     remaining_wells=remaining_wells))
+                                     remaining_wells=remaining_wells,
+                                     included_wells=s.included_wells))
     else:
         bnry_mat = chop_list(bnry_list, cols)
         r = max_rectangle(bnry_mat, value=1)
-        shape = make_stamp_tuple(r, rows, cols)
+        shape = [make_stamp_tuple(r, rows, cols)]
 
     return shape
 
@@ -346,15 +356,15 @@ def is_columnwise(wells):
 
     cont = unique_containers(wells)[0]
     rows = cont.container_type.row_count()
-    y = stamp_shape(wells, full=False)
+    y = stamp_shape(wells, full=False)[0]
 
     consecutive = False
     if len(y.remaining_wells) == 0:
         consecutive = True
     else:
-        next_well = y.start_well + y.shape["columns"]
-        z = stamp_shape(y.remaining_wells, full=False)
-        if len(z.remaining_wells) == 0 and z.start_well == next_well:
+        next_well = y.start_well.index + y.shape["columns"]
+        z = stamp_shape(y.remaining_wells, full=False)[0]
+        if len(z.remaining_wells) == 0 and z.start_well.index == next_well:
             consecutive = True
 
     shape = False
@@ -464,7 +474,7 @@ def set_pipettable_volume(well, use_safe_vol=False):
         return well
 
 
-def volume_check(aliquot, usage_volume=0, use_safe_vol=False,
+def volume_check(well, usage_volume=0, use_safe_vol=False,
                  use_safe_dead_diff=False):
     """Basic Volume check
 
@@ -475,8 +485,8 @@ def volume_check(aliquot, usage_volume=0, use_safe_vol=False,
 
     Parameters
     ----------
-    aliquot : Well
-        Well to test
+    well : Well, WellGroup, list
+        Well(s) to test
     usage_volume : Unit, str, int, optional
         Volume to test for. If 0 the aliquot will be tested against the
         container dead volume.
@@ -495,44 +505,54 @@ def volume_check(aliquot, usage_volume=0, use_safe_vol=False,
     Raises
     ------
     ValueError
-        If aliquot is not of type Well
+        If well is not of type Well, list or WellGroup
+    ValueError
+        If elements of well are not of type Well
 
     """
-    assert isinstance(aliquot, Well)
 
-    if isinstance(usage_volume, Unit):
-        usage_volume = usage_volume.value
-    if isinstance(usage_volume, string_type):
-        usage_volume = int(usage_volume.split(":microliter")[0])
+    assert isinstance(well, (Well, WellGroup, list))
+    if isinstance(well, Well):
+        well = [well]
 
-    correction_vol = aliquot.container.container_type.dead_volume_ul
-    message_string = "dead volume"
-    volume = aliquot.volume.value
-    if use_safe_vol:
-        correction_vol = aliquot.container.container_type.safe_min_volume_ul
-        message_string = "safe minimum volume"
-        volume = aliquot.volume.value
-    elif use_safe_dead_diff:
-        correction_vol = aliquot.container.container_type.safe_min_volume_ul - \
-            aliquot.container.container_type.dead_volume_ul
-        message_string = "safe minimum volume"
-        volume = aliquot.volume.value + \
-            aliquot.container.container_type.dead_volume_ul
-    test_vol = correction_vol + usage_volume
+    error_message = []
+    for aliquot in well:
+        assert isinstance(aliquot, Well)
+        if isinstance(usage_volume, Unit):
+            usage_volume = usage_volume.value
+        if isinstance(usage_volume, string_type):
+            usage_volume = int(usage_volume.split(":microliter")[0])
+        if not aliquot.volume:
+            error_message.append(
+                "Your aliquot does not have a volume. (%s) We assume 0 uL "
+                "for this test." % aliquot)
 
-    error_message = None
-    if test_vol > aliquot.volume.value:
-        if usage_volume == 0:
-            error_message = ("You want to pipette from a container with %s uL"
-                             " %s. However, you aliquot only has "
-                             "%s uL.") % (
-                correction_vol, message_string, volume)
-        else:
-            error_message = ("You want to pipette %s uL from a container with"
-                             " %s uL %s (%s uL total). However, your"
-                             " aliquot only has %s uL.") % (
-                usage_volume, correction_vol, message_string,
-                usage_volume + correction_vol, volume)
+        correction_vol = aliquot.container.container_type.dead_volume_ul
+        message_string = "dead volume"
+        volume = 0 if not aliquot.volume else aliquot.volume.value
+        if use_safe_vol:
+            correction_vol = aliquot.container.container_type.safe_min_volume_ul
+            message_string = "safe minimum volume"
+        elif use_safe_dead_diff:
+            correction_vol = aliquot.container.container_type.safe_min_volume_ul - \
+                aliquot.container.container_type.dead_volume_ul
+            message_string = "safe minimum volume"
+            volume = volume + aliquot.container.container_type.dead_volume_ul
+        test_vol = correction_vol + usage_volume
+
+        if test_vol > volume:
+            if usage_volume == 0:
+                error_message.append(
+                    "You want to pipette from a container with %s uL %s. "
+                    "However, you aliquot only has %s uL." %
+                    (correction_vol, message_string, volume))
+            else:
+                error_message.append(
+                    "You want to pipette %s uL from a container with %s uL %s"
+                    " (%s uL total). However, your aliquot only has %s uL." %
+                    (usage_volume, correction_vol, message_string,
+                     usage_volume + correction_vol, volume))
+    error_message = error_message if len(error_message) > 0 else None
     return error_message
 
 
