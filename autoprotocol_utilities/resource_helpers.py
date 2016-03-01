@@ -236,6 +236,7 @@ class ResourceIDs(object):
     """
 
     def __init__(self):
+        # diluent
         self.water = "rs17gmh5wafm5p"
         self.te = "rs17pwyc754v9t"
         # competent cells
@@ -246,10 +247,40 @@ class ResourceIDs(object):
         self.ampicillin_100mg_ml = "rs17msfk8ujkca"
         self.chloramphenicol_34mg_ml = "rs17p6t8ty2ny4"
         self.kanamycin_50mg_ml = "rs17msfpgpbqyv"
-        # dna polymerases
+        # mytaq dna polymerase resources
         self.mytaq_poly = "rs16pcbhquhaz3"
+        self.mytaq_red_poly = "rs16r3h6umutcg"
+        self.mytaq_hs_red_mix = "rs17kj4vnh5xm3"
+        self.mytaq_red_mix = "rs17kj4j9vgh4x"
+        self.mytaq_buffer = "rs16pcbhqurzpa"
+        # phusion dna polymerase resources
         self.phusion_poly = "rs16pcc3mgay64"
+        self.phusion_mgcl_50 = "rs16pcc3mgzy4r"
+        self.phusion_gc_buffer = "rs16pcc3mgs9eh"
+        self.phusion_hf_buffer = "rs16pcc3mgjnub"
+        # kapa dna polymerase master mixes
+        self.kapa_hifi_hs_mix = "rs18esg5hz25cm"
+        self.kapa_2g_hs_mix = "rs18esfy3xqvut"
+        # velocity dna polymerase resources
+        self.velocity_poly = "rs16pcckjgaxdt"
+        self.velocity_hifi_buffer = "rs16pcckjghhyz"
+        self.velocity_mgcl = "rs16pcckjgs8p8"
+        self.velocity_dmso = "rs16pcckjgyu9e"
+        # la taq dna polymerase resources
+        self.lataq_poly = "rs16pcbdc5dfw6"
+        self.lataq_poly_gc1 = "rs16pcb53zwxjz"
+        self.la_buffer_2_10x = "rs16pcbdc5n6kd"
+        self.lataq_poly_gc = "rs16pcb53zp8vs"
+        self.lataq_poly_gc2 = "rs16pcb5425j67"
+        self.lataq_dntp25 = "rs16pcbdc5us6k"
+        # pcr components
+        self.dntps_25 = "rs16pcb542c5rd"
+        self.dntps_10 = "rs186wj7fvknsr"
+        self.mgcl = "rs16pca93rjwgq"
+        self.dmso = "rs186hr8m38ntw"
+        # restriction enzyme resources
         self.dpn_neb = "rs18kfcmf5xvxz"
+        self.cutsmart_buffer = "rs17ta93g3y85t"
         # orange g
         self.orange_g_100 = "rs17zw9zsaqd55"
         self.organge_g_500 = "rs17zwe6rux5b7"
