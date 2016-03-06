@@ -60,7 +60,7 @@ napoleon_use_rtype = True
 master_doc = 'index'
 
 # General information about the project.
-project = u'Autoprotocol Utilities'
+project = u'autoprotocol utilities'
 copyright = u'2016, Transcriptic Application Scientists'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -130,16 +130,16 @@ html_theme = 'default'
 #html_title = None
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
-#html_short_title = None
+html_short_title = "Autoprotocol-Utils Docs"
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-#html_logo = None
+html_logo = "transcriptic.svg"
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
 # pixels large.
-#html_favicon = None
+html_favicon = "favicon.ico"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -262,15 +262,6 @@ texinfo_documents = [
    'Miscellaneous'),
 ]
 
-# on_rtd is whether we are on readthedocs.org
-import os
-on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
-
-if not on_rtd:  # only import and set the theme if we're building docs locally
-    import sphinx_rtd_theme
-    html_theme = 'sphinx_rtd_theme'
-    html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
-
 # Documents to append as an appendix to all manuals.
 #texinfo_appendices = []
 
@@ -282,3 +273,25 @@ if not on_rtd:  # only import and set the theme if we're building docs locally
 
 # If true, do not generate a @detailmenu in the "Top" node's menu.
 #texinfo_no_detailmenu = False
+
+
+# on_rtd is whether we are on readthedocs.org
+import os
+on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
+
+if not on_rtd:  # only import and set the theme if we're building docs locally
+    import sphinx_rtd_theme
+    html_theme = 'sphinx_rtd_theme'
+    html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+
+    def setup(app):
+        app.add_stylesheet('transcriptic.css')
+
+else:
+    html_context = {
+        'css_files': [
+            'https://media.readthedocs.org/css/sphinx_rtd_theme.css',
+            'https://media.readthedocs.org/css/readthedocs-doc-embed.css',
+            '_static/transcriptic.css'
+        ]
+    }

@@ -206,11 +206,13 @@ def ref_kit_container(protocol, name, container, kit_id, discard=True,
 
 class ResourceIDs(object):
 
-    """
+    """Common resource ids
+
     A list of resource identification numbers used to provision
     resources using Autoprotocol.
 
-    Example Usage:
+    Example
+    -------
 
     .. code-block:: python
 
@@ -286,12 +288,36 @@ class ResourceIDs(object):
         self.organge_g_500 = "rs17zwe6rux5b7"
 
     def bacteria(self, bact=None):
+        """Return competent bacteria id
+        Parameters
+        ----------
+        bact: string
+            Bacteria name, one of Zymo 10B, Zymo DH5a, Zymo JM109
+
+        Returns
+        -------
+        string
+            resource id for the bacteria requested, `None` if bact could not
+            be found
+        """
         bacteria = {"Zymo 10B": self.zymo_10b,
                     "Zymo DH5a": self.zymo_dh5a,
                     "Zymo JM109": self.zymo_jm109}
         return bacteria.get(bact)
 
     def diluents(self, dil=None):
+        """Return diluent id
+        Parameters
+        ----------
+        dil: string
+            Diluent name, one of water, TE
+
+        Returns
+        -------
+        string
+            resource id for the diluent requested, `None` if dil could not
+            be found
+        """
         diluents = {"water": self.water,
                     "TE": self.te}
         return diluents.get(dil)

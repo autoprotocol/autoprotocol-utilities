@@ -1,3 +1,1 @@
 sphinxcontrib-napoleon
---extra-index-url https://rZzsY1ZxQC6RiyZapa21@repo.fury.io/transcriptic/
-autoprotocol_utilities==1.4.0
