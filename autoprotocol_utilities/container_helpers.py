@@ -102,7 +102,7 @@ def unique_containers(wells):
 
     Parameters
     ----------
-    wells : list, WellGroup
+    wells : Well, list, WellGroup
         List of wells
 
     Returns
@@ -116,8 +116,10 @@ def unique_containers(wells):
         If wells are not of type list or WellGroup
 
     """
+    if isinstance(wells, Well):
+        wells = [wells]
     assert isinstance(wells, (list, WellGroup)), "unique_containers requires"
-    " a list of wells or a WellGroup"
+    " a Well, list of wells or a WellGroup"
     wells = flatten_list(wells)
     cont = list(set([well.container for well in wells]))
     return cont
@@ -306,7 +308,7 @@ def stamp_shape(wells, full=True, quad=False):
 def is_columnwise(wells):
     """Detect if input wells are in a columnwise format.
 
-    This function only triggers if the first column is full and only
+    This function only triggers if the first column is full and only a
     consecutive fractionally filled columns exist. It is used to determine
     whether `columnwise` should be used in a pipette operation.
 
@@ -314,64 +316,90 @@ def is_columnwise(wells):
 
     .. code-block:: none
 
-        x x x | x x x  | x
-        x     | x x x  | x
-        x     | x x x  | x
-        x     | x x x  | x
+        x x   | x x x  | x | x
+        x     | x x x  | x | x
+        x     | x x x  | x | x
+        x     | x x x  | x |
 
     Patterns NOT detected (4x6 plate):
 
     .. code-block:: none
 
-        x x x  | x      | x
-          x x  | x      | x
-          x x  | x      | x
+        x x x  | x      |
+          x x  | x      |
+          x x  | x      |
           x x  | x x x  |
 
     Parameters
     ----------
-    wells: list, WellGroup
+    wells: Well, list, WellGroup
         List of wells or well_group containing the wells in question.
 
     Returns
     -------
-    shape : bool
-        True if columnwise
+    shape : bool or list
+        True if columnwise. False if rowwise. List of strings if errors were
+        encountered.
+
+    Example
+    -------
+    Only accepts wells that belong to 1 container. Use unique_containers or
+    get_well_list_by_cont to assure you submit only wells from one container.
+
+    .. code-block:: python
+        wells_by_container = get_well_list_by_cont(mywells)
+        for wells in wells_by_container.values():
+            is_columnwise(wells)
 
     Raises
     ------
     ValueError
-        If wells are not of type list or WellGroup
+        If wells are not of type Well, list or WellGroup
     ValueError
         If elements of wells are not of type Well
 
     """
-    assert isinstance(wells, (list, WellGroup)), "is_columnwise: wells has to"
-    " be a list or a WellGroup"
-    assert len(unique_containers(wells)) == 1, "is_columnwise: wells have to"
-    " come from one container"
-    for well in wells:
-        assert isinstance(well, (Well)), "is_columnwise: elements of wells"
-        " have to be of type Well"
 
-    cont = unique_containers(wells)[0]
-    rows = cont.container_type.row_count()
-    y = stamp_shape(wells, full=False)[0]
-
-    consecutive = False
-    if len(y.remaining_wells) == 0:
-        consecutive = True
+    # call with full=True for the first round
+    # # special case for less than 8 wells.
+    em = []
+    if isinstance(wells, Well):
+        colwise = False
     else:
-        next_well = y.start_well.index + y.shape["columns"]
-        z = stamp_shape(y.remaining_wells, full=False)[0]
-        if len(z.remaining_wells) == 0 and z.start_well.index == next_well:
-            consecutive = True
+        assert isinstance(wells, (list, WellGroup)), "is_columnwise: wells"
+        " has to be a list or a WellGroup"
+        for well in wells:
+            assert isinstance(well, (Well)), "is_columnwise: elements of "
+            "wells have to be of type Well"
+        if len(unique_containers(wells)) != 1:
+            em.append("is_columnwise: wells have to come from one container")
 
-    shape = False
-    if y.shape["rows"] == rows and consecutive:
-        shape = True
+    # lets not make this per container - but just assume one comes in. show
+    # the example with using get_well_list_by_cont
+    cont = unique_containers(wells)[0]
 
-    return shape
+    all_wells = list(cont.all_wells(columnwise=True))
+    top_wells = list(cont.wells_from(0, cont.container_type.col_count))
+    wells = sort_well_group(wells, columnwise=True)
+
+    if wells[0] in top_wells:
+        top_well = top_wells[top_wells.index(wells[0])]
+        start = all_wells.index(top_well)
+        for x in range(len(wells)):
+            if wells[x] == all_wells[start]:
+                colwise = True
+                start += 1
+            else:
+                colwise = False
+                break
+    else:
+        colwise = False
+
+    em = filter(None, em)
+    if len(em) > 0:
+        return em
+    else:
+        return colwise
 
 
 def plates_needed(wells_needed, wells_available):
@@ -435,6 +463,16 @@ def set_pipettable_volume(well, use_safe_vol=False):
     -------
     well : Container, WellGroup, list, Well
         Will return the same type as was received
+
+    Example
+    -------
+    This function needs all wells to be on one container. Use
+    `get_well_list_by_cont` or `unique_containers` to ensure this.
+
+    ..code-block::python
+        wells_by_cont = get_well_list_by_cont(mywells)
+        for wells in wells_by_cont.values():
+            set_pipettable_volume(wells)
 
     Raises
     ------

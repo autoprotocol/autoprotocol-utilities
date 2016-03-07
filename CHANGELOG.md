@@ -12,6 +12,8 @@ Changed
 - stamp_shape() now always returns a list. start_well will be of type Well. start_well will be None if no shape is found
 - stamp_shape() also returns included_wells
 - renaming some reactangle functions
+- unique_containers can also deal with single well
+- rewrite is_columnwise
 
 Removed
 
