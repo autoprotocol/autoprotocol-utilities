@@ -382,6 +382,7 @@ def is_columnwise(wells):
     get_well_list_by_cont to assure you submit only wells from one container.
 
     .. code-block:: python
+
         wells_by_container = get_well_list_by_cont(mywells)
         for wells in wells_by_container.values():
             is_columnwise(wells)
@@ -504,7 +505,8 @@ def set_pipettable_volume(well, use_safe_vol=False):
     This function needs all wells to be on one container. Use
     `get_well_list_by_cont` or `unique_containers` to ensure this.
 
-    ..code-block::python
+    .. code-block:: python
+
         wells_by_cont = get_well_list_by_cont(mywells)
         for wells in wells_by_cont.values():
             set_pipettable_volume(wells)

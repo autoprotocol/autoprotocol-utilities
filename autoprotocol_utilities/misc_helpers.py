@@ -224,11 +224,10 @@ def recursive_search(params, class_name=None, method=None, args={}):
     Example
     -------
 
-            .. code-block:: python
+    .. code-block:: python
 
-            recursive_search(params, Well, volume_check,
-                             args={"usage_volume": 1500})
-
+        recursive_search(params, Well, volume_check,
+                         args={"usage_volume": 1500})
 
     """
 
