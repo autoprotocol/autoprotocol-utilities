@@ -291,9 +291,12 @@ class ResourceIDs(object):
         self.control_kan = "rs17tcqmncjfsh" # needs a kan plasmid id and needs the right dilutions
         # other
         self.exosap = "rs18dnrskds4t6"
+        self.thermot4ligasebuffer = "rs16pc8u4dmsbg"
+        self.thermot4ligase = "rs16pc8u4dd3n9"
 
     def bacteria(self, bact=None):
         """Return competent bacteria id
+
         Parameters
         ----------
         bact: string
@@ -312,6 +315,7 @@ class ResourceIDs(object):
 
     def diluents(self, dil=None):
         """Return diluent id
+
         Parameters
         ----------
         dil: string
@@ -328,6 +332,20 @@ class ResourceIDs(object):
         return diluents.get(dil)
 
     def transformation_controls(self, media=None):
+        """Return transformation controls
+
+        Parameters
+        ----------
+        media: string
+            Media for which to select the control. One of
+            `lb-broth-50ug-ml-kan` or `lb-broth-100ug-ml-amp`
+
+        Returns
+        -------
+        string
+            resource id for the positive control requested, `None` if media
+            could not be found
+        """
         controls = {"lb-broth-50ug-ml-kan": self.control_kan,
                     "lb-broth-100ug-ml-amp": self.control_amp}
         return controls.get(media)
