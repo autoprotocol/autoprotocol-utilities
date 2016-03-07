@@ -12,6 +12,17 @@ Removed
 
 Fixed
 
+## v1.4.3 - 2016-03-06
+---
+Added
+- ligase reagents and better documentation
+
+Changed
+
+Removed
+
+Fixed
+
 ## v1.4.2 - 2016-03-06
 ---
 Added
