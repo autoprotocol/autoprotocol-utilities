@@ -2,8 +2,12 @@ import pytest
 from random import sample
 from autoprotocol import Protocol
 from autoprotocol.container import Well, WellGroup, Container
-from autoprotocol_utilities.container_helpers import list_of_filled_wells, first_empty_well, unique_containers, sort_well_group, stamp_shape, is_columnwise, volume_check, set_pipettable_volume, well_name, container_type_checker, get_well_list_by_cont
-from autoprotocol_utilities.misc_helpers import make_list, flatten_list, char_limit, recursive_search, transfer_properties
+from autoprotocol_utilities.container_helpers import list_of_filled_wells, \
+    first_empty_well, unique_containers, sort_well_group, stamp_shape, \
+    is_columnwise, volume_check, set_pipettable_volume, well_name, \
+    container_type_checker, get_well_list_by_cont
+from autoprotocol_utilities.misc_helpers import make_list, flatten_list, \
+    char_limit, recursive_search, transfer_properties
 
 
 class TestContainerfunctions:
@@ -263,7 +267,8 @@ class TestPropertyFunctions:
          "Concentration": "bla"}, {}, {"Sequence": "aaaaaaaaaa",
          "Concentration": "bla"}),
         (c.well(2), c2.well(2), {"Sequence": "aaaaaaaaaa",
-         "Concentration": "bla"}, {"Sequence": None}, {"Sequence": "aaaaaaaaaa"})
+         "Concentration": "bla"}, {"Sequence": None},
+         {"Sequence": "aaaaaaaaaa"})
     ])
     def test_transfer_properties(self, src_well, dest_well, setproperty,
                                  prop, r):
