@@ -6,12 +6,14 @@ This project adheres to [Semantic Versioning](http://semver.org/)
 ---
 Added
 - 10nm scale to oligo_scale_default
+- transfer_properties
 
 Changed
 - volume_check() can accept a list of wells or WellGroup
 - stamp_shape() now always returns a list. start_well will be of type Well. start_well will be None if no shape is found
 - stamp_shape() also returns included_wells
 - renaming some reactangle functions
+- add transformation controls
 - stamp_shape() does not break anymore when presented with a container that is not 96 or 384 well. returns all wells as remaining
 - unique_containers can also deal with single well
 - rewrite is_columnwise

@@ -286,6 +286,9 @@ class ResourceIDs(object):
         # orange g
         self.orange_g_100 = "rs17zw9zsaqd55"
         self.organge_g_500 = "rs17zwe6rux5b7"
+        # control plasmids
+        self.control_amp = "rs17tcqmncjfsh"
+        self.control_kan = "rs17tcqmncjfsh" # needs a kan plasmid id and needs the right dilutions
         # other
         self.exosap = "rs18dnrskds4t6"
 
@@ -323,3 +326,8 @@ class ResourceIDs(object):
         diluents = {"water": self.water,
                     "TE": self.te}
         return diluents.get(dil)
+
+    def transformation_controls(self, media=None):
+        controls = {"lb-broth-50ug-ml-kan": self.control_kan,
+                    "lb-broth-100ug-ml-amp": self.control_amp}
+        return controls.get(media)

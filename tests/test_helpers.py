@@ -3,7 +3,7 @@ from random import sample
 from autoprotocol import Protocol
 from autoprotocol.container import Well, WellGroup, Container
 from autoprotocol_utilities.container_helpers import list_of_filled_wells, first_empty_well, unique_containers, sort_well_group, stamp_shape, is_columnwise, volume_check, set_pipettable_volume, well_name, container_type_checker, get_well_list_by_cont
-from autoprotocol_utilities.misc_helpers import make_list, flatten_list, char_limit, recursive_search
+from autoprotocol_utilities.misc_helpers import make_list, flatten_list, char_limit, recursive_search, transfer_properties
 
 
 class TestContainerfunctions:
@@ -15,20 +15,21 @@ class TestContainerfunctions:
     w = c.well(0)
 
     @pytest.mark.parametrize("func, arg", [
-        (list_of_filled_wells, w),
-        (first_empty_well, w),
-        (unique_containers, c),
-        (sort_well_group, c),
-        (stamp_shape, w),
-        (is_columnwise, c),
-        (volume_check, c),
-        (well_name, c),
-        (well_name, ws),
-        (get_well_list_by_cont, c)
+        (list_of_filled_wells, [w]),
+        (first_empty_well, [w]),
+        (unique_containers, [c]),
+        (sort_well_group, [c]),
+        (stamp_shape, [w]),
+        (is_columnwise, [c]),
+        (volume_check, [c]),
+        (well_name, [c]),
+        (well_name, [ws]),
+        (get_well_list_by_cont, [c]),
+        (transfer_properties, [c, c])
         ])
     def test_asserts(self, func, arg):
         with pytest.raises(Exception):
-            func(arg)
+            func(*arg)
 
     def test_filled_wells(self):
         assert len(list_of_filled_wells(self.c)) == 30
@@ -248,3 +249,33 @@ class TestRecursiveParams:
     ])
     def test_recursive_search_instance(self, params, cl, expected):
         assert len(recursive_search(params, cl)) == expected
+
+
+class TestPropertyFunctions:
+    p = Protocol()
+    c = p.ref("testplate_pcr", id=None, cont_type="96-pcr", discard=True)
+    c2 = p.ref("testplate_echo", id=None, cont_type="384-echo", discard=True)
+
+    @pytest.mark.parametrize("src_well, dest_well, setproperty, prop, r", [
+        (c.well(0), c2.well(0), {"Sequence": "aaaaaaaaaa"}, {},
+         {"Sequence": "aaaaaaaaaa"}),
+        (c.well(1), c2.well(1), {"Sequence": "aaaaaaaaaa",
+         "Concentration": "bla"}, {}, {"Sequence": "aaaaaaaaaa",
+         "Concentration": "bla"}),
+        (c.well(2), c2.well(2), {"Sequence": "aaaaaaaaaa",
+         "Concentration": "bla"}, {"Sequence": None}, {"Sequence": "aaaaaaaaaa"})
+    ])
+    def test_transfer_properties(self, src_well, dest_well, setproperty,
+                                 prop, r):
+        src_well.set_properties(setproperty)
+        res = transfer_properties(src_well, dest_well, prop)
+        assert res is None
+        assert dest_well.properties == r
+
+    @pytest.mark.parametrize("src_well, dest_well, prop, r", [
+        (c.well(3), c2.well(3), {"Sequence": None}, 1)
+    ])
+    def test_transfer_properties_errors(self, src_well, dest_well,
+                                        prop, r):
+        res = transfer_properties(src_well, dest_well, prop)
+        assert len(res) == r

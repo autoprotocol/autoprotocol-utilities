@@ -1,5 +1,6 @@
 from autoprotocol import UserError
 from collections import namedtuple
+from autoprotocol.container import Well, WellGroup
 import datetime
 import sys
 
@@ -263,3 +264,86 @@ def recursive_search(params, class_name=None, method=None, args={}):
             return found_instances
     else:
         return all_fields
+
+
+def transfer_properties(src_wells, dest_wells, properties={}, args={},
+                        pset=False):
+    """Transfer all or select propeties from one well to another
+
+    Uses add_properties to transfer the properties from one well to another
+
+    Parameters
+    ----------
+    src_wells: well, list of wells, WellGroup
+    dest_wells: well, list of wells, WellGroup
+    properties: dict, optional
+        Dict with properties to transfer as keys and a function to modify
+        property as value. If no modification is required, put None.
+        If the dict is empty all propeties will be transferred.
+    args: dict, optional
+        Dict of dicts where the key is the property used to indicate the
+        function and the value another dict containging the arguments.
+    pset: bool, optional
+        Indicate where to set or add the property, defaults to add.
+
+    Returns
+    -------
+    error_messages: list, None
+        None if no messages were found
+        List of strings if some properties could not be found
+
+    Raises
+    ------
+    ValueError
+        If src_wells or dest_wells are not of type well
+    ValueError
+        If src_wells and dest_wells are not of equal length
+    ValueError
+        If properties is not of type dict
+    """
+
+    if isinstance(src_wells, Well):
+        src_wells = [src_wells]
+    if isinstance(dest_wells, Well):
+        dest_wells = [dest_wells]
+
+    assert isinstance(src_wells, (list, WellGroup))
+    assert isinstance(dest_wells, (list, WellGroup))
+    assert len(src_wells) == len(dest_wells)
+    assert isinstance(properties, dict)
+    for well in list(src_wells) + list(dest_wells):
+        assert isinstance(well, Well)
+
+    def dummy(prop):
+        return prop
+
+    error_messages = []
+
+    if len(properties) == 0:
+        for i, well in enumerate(src_wells):
+            if pset:
+                dest_wells[i].set_properties(well.properties)
+            else:
+                dest_wells[i].add_properties(well.properties)
+    else:
+        for prop, func in properties.iteritems():
+            if func is None:
+                func = dummy
+            for i, well in enumerate(src_wells):
+                if prop in well.properties:
+                    if pset:
+                        dest_wells[i].set_properties(
+                            {prop: func(well.properties[prop],
+                                        **args.get(prop, {}))})
+                    else:
+                        dest_wells[i].add_properties(
+                            {prop: func(well.properties[prop],
+                                        **args.get(prop, {}))})
+                else:
+                    error_messages.append("Could not find property %s on "
+                                          "well%s." % (prop, well))
+
+    if len(error_messages) > 0:
+        return error_messages
+    else:
+        return None
