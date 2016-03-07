@@ -181,6 +181,8 @@ def stamp_shape(wells, full=True, quad=False):
 
     Find biggest reactangle that can be stamped from a list of wells. Can be
     any rectangle, or enforce full row or column span.
+    If a list of wells from a container that cannot be stamped is provided,
+    all wells will be returned in `remaining_wells` of the stamp shape.
 
     Parameters
     ----------
@@ -197,13 +199,37 @@ def stamp_shape(wells, full=True, quad=False):
 
     Returns
     -------
-    stamp_shape : list of namedtuple
-        `start_well` is the top left well for the source stamp group
-        `shape` is a dict of rows and columns describing the stamp shape
-        `remainging_wells` is a list of wells that are not included in the
-        stamp shape.
-        If a 384 well plate is provided and quad is True this returns a list
-        of 4 stamp shapes, one for each quadrant.
+    stamp_shape : list of namedtuples
+        start_well: well
+            is the top left well for the source stamp group
+        shape: dict
+            is a dict of `rows` and `columns` describing the stamp shape
+        remainging_wells: list
+            is a list of wells that are not included in the stamp shape
+        included_wells: list
+            is a list of wells that is included in the stamp shape
+
+    Example
+    -------
+
+    .. code-block:: python
+
+        p = Protocol()
+        plate = p.ref("myplate", cont_type="96-pcr", storage="cold_4")
+        dest_plate  = p.ref("newplate", cont_type="96-pcr", storage="cold_4")
+        src_wells = plate.wells_from(0, 40)
+        shape = stamp_shape(src_wells)
+        remaining_wells = []
+        for s in shape:
+            p.stamp(s.start_well, dest_plate.well(0),
+                    "10:microliter", s.shape)
+            remaining_wells.append(s.remaining_wells)
+        next_dest = first_empty_well(dest_plate)
+        p.transer(remaining_wells,
+                  dest_plate.wells_from(next_dest, len(remaining_wells)),
+                  "10:microliter"
+                  )
+
 
     Raises
     ------
@@ -275,6 +301,14 @@ def stamp_shape(wells, full=True, quad=False):
     cols = cont.container_type.col_count
     well_count = cont.container_type.well_count
     indices = [x.index for x in wells]
+
+    # If the container is not a 96 or 384 well plate we cannot stamp at all
+    if well_count not in (96, 384):
+        shape = stamp_shape(start_well=None,
+                            shape=dict(rows=0, columns=0),
+                            remaining_wells=wells,
+                            included_wells=[])
+        return [shape]
 
     bnry_list = [bnry for bnry in binary_list(indices, length=well_count)]
     if well_count == 384 and quad:
