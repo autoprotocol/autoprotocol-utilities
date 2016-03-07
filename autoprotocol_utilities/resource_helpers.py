@@ -286,6 +286,8 @@ class ResourceIDs(object):
         # orange g
         self.orange_g_100 = "rs17zw9zsaqd55"
         self.organge_g_500 = "rs17zwe6rux5b7"
+        # other
+        self.exosap = "rs18dnrskds4t6"
 
     def bacteria(self, bact=None):
         """Return competent bacteria id
