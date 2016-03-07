@@ -5,6 +5,16 @@ This project adheres to [Semantic Versioning](http://semver.org/)
 ## Unreleased
 ---
 Added
+
+Changed
+
+Removed
+
+Fixed
+
+## v1.4.2 - 2016-03-06
+---
+Added
 - 10nm scale to oligo_scale_default
 - transfer_properties
 
