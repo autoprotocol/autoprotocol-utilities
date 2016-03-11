@@ -13,6 +13,9 @@ else:
 def user_errors_group(error_msgs, info=None):
     """Takes a list error messages and neatly displays as a single UserError
 
+    Will automatically remove instances of None and only report errors if list
+    is not empty.
+
     Parameters
     ----------
     error_msgs : list
@@ -27,6 +30,8 @@ def user_errors_group(error_msgs, info=None):
     assert isinstance(error_msgs, list), ("Error messages must be in the form"
                                           " of a list to properly format the "
                                           "grouped message.")
+
+    error_msgs = filter(None, error_msgs)
     if len(error_msgs) != 0:
         raise UserError(
             "%s error(s) found in this protocol: " % len(error_msgs) +

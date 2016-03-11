@@ -7,7 +7,7 @@ from autoprotocol_utilities.container_helpers import list_of_filled_wells, \
     is_columnwise, volume_check, set_pipettable_volume, well_name, \
     container_type_checker, get_well_list_by_cont
 from autoprotocol_utilities.misc_helpers import make_list, flatten_list, \
-    char_limit, recursive_search, transfer_properties
+    char_limit, recursive_search, transfer_properties, user_errors_group
 
 
 class TestContainerfunctions:
@@ -193,6 +193,9 @@ class TestContainerfunctions:
         ws3 = ws + ws2
         r = {myc: list(ws), myc2: list(ws2)}
         assert get_well_list_by_cont(ws3) == r
+
+    def test_user_errors_group(self):
+        assert user_errors_group([None]) is None
 
 
 class TestDataformattingfunctions:

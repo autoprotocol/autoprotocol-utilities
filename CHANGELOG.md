@@ -74,6 +74,7 @@ Fixed
 Added
 
 Changed
+- user_errors_group automatically filters out None
 
 Removed
 
