@@ -5,7 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/)
 ## Unreleased
 ---
 Added
+
+Changed
+
+Removed
+
+Fixed
+
+## v1.4.4 - 2016-03-011
+---
+Added
 - t4_ligase() method for ResourceIDs
+- adjust media strings
+- documentation
 
 Changed
 

@@ -164,7 +164,9 @@ def return_dispense_media():
              "lb_miller_50ug_ml_kan_25ug_ml_cm",
              "15_ug/ml_Tetracycline": "lb_miller_15ug_ml_tet",
              "25_ug/ml_Chloramphenicol": "lb_miller_25ug_ml_cm",
-             "LB_miller": "lb_miller_noAB"}
+             "LB_miller": "lb_miller_noAB",
+             "TB_100_ug/ml_Ampicillin": "tb_100ug_ml_amp",
+             "TB_50_ug/ml_Kanamycin": "tb_50ug_ml_kan"}
     return(media)
 
 
