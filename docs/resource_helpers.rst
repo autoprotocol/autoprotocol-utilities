@@ -10,6 +10,8 @@ ResourceIDs methods
 ^^^^^^^^^^^^^^^^^^^
 .. automethod:: autoprotocol_utilities.resource_helpers.ResourceIDs.bacteria
 .. automethod:: autoprotocol_utilities.resource_helpers.ResourceIDs.diluents
+.. automethod:: autoprotocol_utilities.resource_helpers.ResourceIDs.transformation_controls
+.. automethod:: autoprotocol_utilities.resource_helpers.ResourceIDs.t4_ligase
 
 oligo_scale_default
 ~~~~~~~~~~~~~~~~~~~~~~~

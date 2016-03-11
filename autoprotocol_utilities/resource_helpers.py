@@ -130,17 +130,17 @@ def return_agar_plates(wells=6):
 
     """
     if wells == 6:
-        plates = {"lb-broth-50ug-ml-kan": "ki17rs7j799zc2",
-                  "lb-broth-100ug-ml-amp": "ki17sbb845ssx9",
-                  "lb-broth-100ug-ml-specto": "ki17sbb9r7jf98",
-                  "lb-broth-100ug-ml-cm": "ki17urn3gg8tmj",
-                  "lb-broth-noAB": "ki17reefwqq3sq"}
+        plates = {"lb_miller_50ug_ml_kan": "ki17rs7j799zc2",
+                  "lb_miller_100ug_ml_amp": "ki17sbb845ssx9",
+                  "lb_miller_100ug_ml_specto": "ki17sbb9r7jf98",
+                  "lb_miller_100ug_ml_cm": "ki17urn3gg8tmj",
+                  "lb_miller_noAB": "ki17reefwqq3sq"}
     elif wells == 1:
-        plates = {"lb-broth-50ug-ml-kan": "ki17t8j7kkzc4g",
-                  "lb-broth-100ug-ml-amp": "ki17t8jcebshtr",
-                  "lb-broth-100ug-ml-specto": "ki17t8jaa96pw3",
-                  "lb-broth-100ug-ml-cm": "ki17urn592xejq",
-                  "lb-broth-noAB": "ki17t8jejbea4z"}
+        plates = {"lb_miller_50ug_ml_kan": "ki17t8j7kkzc4g",
+                  "lb_miller_100ug_ml_amp": "ki17t8jcebshtr",
+                  "lb_miller_100ug_ml_specto": "ki17t8jaa96pw3",
+                  "lb_miller_100ug_ml_cm": "ki17urn592xejq",
+                  "lb_miller_noAB": "ki17t8jejbea4z"}
     else:
         raise ValueError("Wells has to be an integer, either 1 or 6")
     return(plates)
@@ -156,15 +156,15 @@ def return_dispense_media():
     as value
 
     """
-    media = {"50_ug/ml_Kanamycin": "lb-broth-50ug-ml-kan",
-             "100_ug/ml_Ampicillin": "lb-broth-100ug-ml-amp",
-             "100_ug/mL_Spectinomycin": "lb-broth-100ug-ml-specto",
-             "30_ug/ml_Kanamycin": "lb-broth-30ug-ml-kan",
+    media = {"50_ug/ml_Kanamycin": "lb_miller_50ug_ml_kan",
+             "100_ug/ml_Ampicillin": "lb_miller_100ug_ml_amp",
+             "100_ug/mL_Spectinomycin": "lb_miller_100ug_ml_specto",
+             "30_ug/ml_Kanamycin": "lb_miller_30ug_ml_kan",
              "50_ug/ml_Kanamycin_25_ug/ml_Chloramphenicol":
-             "lb-broth-50ug-ml-kan-25ug-ml-cm",
-             "15_ug/ml_Tetracycline": "lb-broth-15ug-ml-tet",
-             "25_ug/ml_Chloramphenicol": "lb-broth-25ug-ml-cm",
-             "LB_broth": "lb-broth-noAB"}
+             "lb_miller_50ug_ml_kan_25ug_ml_cm",
+             "15_ug/ml_Tetracycline": "lb_miller_15ug_ml_tet",
+             "25_ug/ml_Chloramphenicol": "lb_miller_25ug_ml_cm",
+             "LB_miller": "lb_miller_noAB"}
     return(media)
 
 
@@ -249,6 +249,10 @@ class ResourceIDs(object):
         self.ampicillin_100mg_ml = "rs17msfk8ujkca"
         self.chloramphenicol_34mg_ml = "rs17p6t8ty2ny4"
         self.kanamycin_50mg_ml = "rs17msfpgpbqyv"
+        # media
+        self.lb_miller_50ug_ml_kan = "rs18s8x88zz9ee"
+        self.lb_miller_100ug_ml_amp = "rs18s8x4qbsvjz"
+        self.lb_miller_noAB = "rs17bafcbmyrmh"
         # mytaq dna polymerase resources
         self.mytaq_poly = "rs16pcbhquhaz3"
         self.mytaq_red_poly = "rs16r3h6umutcg"
@@ -287,12 +291,15 @@ class ResourceIDs(object):
         self.orange_g_100 = "rs17zw9zsaqd55"
         self.organge_g_500 = "rs17zwe6rux5b7"
         # control plasmids
-        self.control_amp = "rs17tcqmncjfsh"
-        self.control_kan = "rs17tcqmncjfsh" # needs a kan plasmid id and needs the right dilutions
-        # other
-        self.exosap = "rs18dnrskds4t6"
+        self.control_amp = "rs18rx59spw2t8"
+        self.control_kan = "rs18rx6a44qss7"
+        # ligases
         self.thermot4ligasebuffer = "rs16pc8u4dmsbg"
         self.thermot4ligase = "rs16pc8u4dd3n9"
+        self.nebt4ligasebuffer = "rs17sh5rzz79ct"
+        self.nebt4ligase = "rs16pc8krr6ag7"
+        # other
+        self.exosap = "rs18dnrskds4t6"
 
     def bacteria(self, bact=None):
         """Return competent bacteria id
@@ -338,7 +345,7 @@ class ResourceIDs(object):
         ----------
         media: string
             Media for which to select the control. One of
-            `lb-broth-50ug-ml-kan` or `lb-broth-100ug-ml-amp`
+            `lb_miller_50ug_ml_kan` or `lb_miller_100ug_ml_amp`
 
         Returns
         -------
@@ -346,6 +353,27 @@ class ResourceIDs(object):
             resource id for the positive control requested, `None` if media
             could not be found
         """
-        controls = {"lb-broth-50ug-ml-kan": self.control_kan,
-                    "lb-broth-100ug-ml-amp": self.control_amp}
+        controls = {"lb_miller_50ug_ml_kan": self.control_kan,
+                    "lb_miller_100ug_ml_amp": self.control_amp}
         return controls.get(media)
+
+    def t4_ligase(self, ligase_type=None):
+        """Return T4 ligase reagents
+
+        Parameters
+        ----------
+        media: string
+            Company to use. `neb` or `thermo`.
+
+        Returns
+        -------
+        dict
+            `buffer` - resource id for the buffer
+            `ligase` - resource id for the ligase
+
+        """
+        ligases = {"neb": {"buffer": self.nebt4ligasebuffer,
+                           "ligase": self.nebt4ligase},
+                   "thermo": {"buffer": self.thermot4ligasebuffer,
+                              "ligase": self.thermot4ligase}}
+        return ligases.get(ligase_type)
