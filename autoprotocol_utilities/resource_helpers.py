@@ -321,6 +321,10 @@ class ResourceIDs(object):
         self.ligase_control = "rs18sfjf96tkwe"
         # other
         self.exosap = "rs18dnrskds4t6"
+        # assembly reagents
+        self.nebuilder2x = "rs18pc86ykcep6"
+        self.gibson2x = "rs16pfatkggmk5"
+        self.infusion5x = "rs16pfv7qw5ytj"
 
     def bacteria(self, bact=None):
         """Return competent bacteria id
