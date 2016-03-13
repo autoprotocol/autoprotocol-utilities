@@ -286,9 +286,27 @@ class ResourceIDs(object):
         self.dntps_10 = "rs186wj7fvknsr"
         self.mgcl = "rs16pca93rjwgq"
         self.dmso = "rs186hr8m38ntw"
-        # restriction enzyme resources
-        self.dpn_neb = "rs18kfcmf5xvxz"
+        # restriction enzymes
+        #  buffers
         self.cutsmart_buffer = "rs17ta93g3y85t"
+        self.neb21_buffer = "rs17sh6krrzjqu"
+        self.neb31_buffer = "rs18jwyqebdsdu"
+        self.fastdigest_buffer = "rs18a8uvv7us8t"
+        #  enzymes
+        self.ncoi_hf = "rs183kfrjt4svz"
+        self.psti_hf = "rs17usrub943jf"
+        self.ecori_hf = "rs17ta8xftpdk6"
+        self.bamhi_hf = "rs17ta8tz5ffby"
+        self.bbsi = "rs17rrdaz88sz5"
+        self.bsmbi = "rs17px7f9yg3kn"
+        self.pvuii_hf = "rs17ta9v88fgpd"
+        self.bsai = "rs17px78jjr2fq"
+        self.ndei = "rs186h3y9nuqzb"
+        self.xhoi = "rs186h4bcgjtyu"
+        self.dpni_neb = "rs18kfcmf5xvxz"
+        self.mfei_hf = "rs18nw6ta6d5bn"
+        self.esp3i = "rs18a8ttpm8hxk"
+        self.hindiii_hf = "rs18nw6kpnp44v"
         # orange g
         self.orange_g_100 = "rs17zw9zsaqd55"
         self.organge_g_500 = "rs17zwe6rux5b7"
@@ -380,3 +398,71 @@ class ResourceIDs(object):
                    "thermo": {"buffer": self.thermo_t4ligase_buffer,
                               "ligase": self.thermo_t4ligase}}
         return ligases.get(ligase_type)
+
+    def restriction_enzyme_buffers(self, enzyme):
+        """Returns a tuple of enzyme_id and buffer_id for a given enzyme
+
+        Restriction enzymes need to be digested with a certain buffer.
+        This function returns the correct resource id for the enzyme as well
+        as for the matching buffer.
+
+        Parameters
+        ----------
+        enzyme: string
+            name of enzyme, all lower caps such as `dpni_neb` or `ncoi_hf`
+
+        Returns
+        -------
+        namedtuple
+            enzyme_id
+            buffer_id
+            errors
+        """
+        em = []
+        resset = namedtuple('RestrictionSet', 'enzyme_id buffer_id errors')
+
+        enzymes = {"ncoi_hf": self.ncoi_hf,
+                   "psti_hf": self.psti_hf,
+                   "ecori_hf": self.ecori_hf,
+                   "bamhi_hf": self.bamhi_hf,
+                   "bbsi": self.bbsi,
+                   "bsmbi": self.bsmbi,
+                   "pvuii_hf": self.pvuii_hf,
+                   "bsai": self.bsai,
+                   "ndei": self.ndei,
+                   "xhoi": self.xhoi,
+                   "dpni_neb": self.dpni_neb,
+                   "mfei_hf": self.mfei_hf,
+                   "esp3i": self.esp3i,
+                   "hindiii_hf": self.hindiii_hf}
+
+        buffer_map = {}
+        buffer_map["cutsmart"] = {
+            "buffer_id": self.cutsmart_buffer, "enzymes": [
+                "pvuii_hf", "ecori_hf", "hindiii_hf",
+                "bamhi_hf", "psti_hf", "ncoi_hf",
+                "bsai", "ndei", "xhoi",
+                "dpni_neb", "mfei_hf"]}
+        buffer_map["neb_21"] = {
+            "buffer_id": self.neb21_buffer, "enzymes": ["bbsi"]}
+        buffer_map["new_31"] = {
+            "buffer_id": self.neb31_buffer, "enzymes": ["bsmbi"]}
+        buffer_map["fast_digest"] = {
+            "buffer_id": self.fastdigest_buffer, "enzymes": ["esp3i"]}
+
+        enzyme_id = enzymes.get(enzyme, None)
+        if not enzyme_id:
+            em.append("The enzyme (%s) cannot be found." % enzyme)
+        buffer_id = None
+        for resbuffer in buffer_map.itervalues():
+            if enzyme in resbuffer["enzymes"]:
+                buffer_id = resbuffer["buffer_id"]
+        if not buffer_id:
+            em.append("The enzyme specified (%s) doesn't have a corresponding"
+                      " buffer." % enzyme)
+
+        em = filter(None, em)
+        if len(em) == 0:
+            em = None
+
+        return resset(enzyme_id=enzyme_id, buffer_id=buffer_id, errors=em)

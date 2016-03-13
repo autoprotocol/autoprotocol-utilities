@@ -5,6 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/)
 ## Unreleased
 ---
 Added
+- add `restriction_enzyme_buffers` method to ResourceIDs
 - resource id adjustments
 
 Changed

@@ -12,6 +12,7 @@ ResourceIDs methods
 .. automethod:: autoprotocol_utilities.resource_helpers.ResourceIDs.diluents
 .. automethod:: autoprotocol_utilities.resource_helpers.ResourceIDs.transformation_controls
 .. automethod:: autoprotocol_utilities.resource_helpers.ResourceIDs.t4_ligase
+.. automethod:: autoprotocol_utilities.resource_helpers.ResourceIDs.restriction_enzyme_buffers
 
 oligo_scale_default
 ~~~~~~~~~~~~~~~~~~~~~~~
