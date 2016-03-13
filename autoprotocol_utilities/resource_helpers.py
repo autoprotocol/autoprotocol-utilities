@@ -296,10 +296,11 @@ class ResourceIDs(object):
         self.control_amp = "rs18rx59spw2t8"
         self.control_kan = "rs18rx6a44qss7"
         # ligases
-        self.thermot4ligasebuffer = "rs16pc8u4dmsbg"
-        self.thermot4ligase = "rs16pc8u4dd3n9"
-        self.nebt4ligasebuffer = "rs17sh5rzz79ct"
-        self.nebt4ligase = "rs16pc8krr6ag7"
+        self.thermo_t4ligase_buffer = "rs16pc8u4dmsbg"
+        self.thermo_t4ligase = "rs16pc8u4dd3n9"
+        self.neb_t4ligase_buffer = "rs17sh5rzz79ct"
+        self.neb_t4ligase = "rs16pc8krr6ag7"
+        self.ligase_control = "rs18sfjf96tkwe"
         # other
         self.exosap = "rs18dnrskds4t6"
 
@@ -374,8 +375,8 @@ class ResourceIDs(object):
             `ligase` - resource id for the ligase
 
         """
-        ligases = {"neb": {"buffer": self.nebt4ligasebuffer,
-                           "ligase": self.nebt4ligase},
-                   "thermo": {"buffer": self.thermot4ligasebuffer,
-                              "ligase": self.thermot4ligase}}
+        ligases = {"neb": {"buffer": self.neb_t4ligase_buffer,
+                           "ligase": self.neb_t4ligase},
+                   "thermo": {"buffer": self.thermo_t4ligase_buffer,
+                              "ligase": self.thermo_t4ligase}}
         return ligases.get(ligase_type)
