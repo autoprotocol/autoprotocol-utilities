@@ -5,8 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/)
 ## Unreleased
 ---
 Added
+
+Changed
+
+Removed
+
+Fixed
+
+## v2.0.0 - 2016-03-18
+---
+Added
 - add `restriction_enzyme_buffers` method to ResourceIDs
 - resource id adjustments
+- use new unit system (pint) with autoprotocol-python 3.0
 
 Changed
 

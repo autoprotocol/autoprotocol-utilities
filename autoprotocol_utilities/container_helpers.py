@@ -539,7 +539,7 @@ def set_pipettable_volume(well, use_safe_vol=False):
         correction_vol = cont.container_type.safe_min_volume_ul
 
     for x in well:
-        x.set_volume(Unit(x.volume.value - correction_vol, "microliter"))
+        x.set_volume(x.volume - correction_vol)
 
     if r == 'cont':
         return cont
@@ -562,9 +562,10 @@ def volume_check(well, usage_volume=0, use_safe_vol=False,
     ----------
     well : Well, WellGroup, list
         Well(s) to test
-    usage_volume : Unit, str, int, optional
+    usage_volume : Unit, str, int, float, optional
         Volume to test for. If 0 the aliquot will be tested against the
-        container dead volume.
+        container dead volume. If int or float is used, microliter will be
+        assumed.
     use_safe_vol : bool, optional
         Use safe minimum volume instead of dead volume
     use_safe_dead_diff : bool, optional
@@ -593,8 +594,8 @@ def volume_check(well, usage_volume=0, use_safe_vol=False,
     error_message = []
     for aliquot in well:
         assert isinstance(aliquot, Well)
-        if isinstance(usage_volume, Unit):
-            usage_volume = usage_volume.value
+        if isinstance(usage_volume, (int, float)):
+            usage_volume = Unit(usage_volume, "microliter")
         if isinstance(usage_volume, string_type):
             usage_volume = int(usage_volume.split(":microliter")[0])
         if not aliquot.volume:
@@ -604,7 +605,9 @@ def volume_check(well, usage_volume=0, use_safe_vol=False,
 
         correction_vol = aliquot.container.container_type.dead_volume_ul
         message_string = "dead volume"
-        volume = 0 if not aliquot.volume else aliquot.volume.value
+        volume = Unit(0, "microliter")
+        if aliquot.volume:
+            volume = aliquot.volume
         if use_safe_vol:
             correction_vol = aliquot.container.container_type.safe_min_volume_ul
             message_string = "safe minimum volume"

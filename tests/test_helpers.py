@@ -2,6 +2,7 @@ import pytest
 from random import sample
 from autoprotocol import Protocol
 from autoprotocol.container import Well, WellGroup, Container
+from autoprotocol.unit import Unit
 from autoprotocol_utilities.container_helpers import list_of_filled_wells, \
     first_empty_well, unique_containers, sort_well_group, stamp_shape, \
     is_columnwise, volume_check, set_pipettable_volume, well_name, \
@@ -133,22 +134,22 @@ class TestContainerfunctions:
         assert is_columnwise(wells) is False
 
     def test_set_pipettable_volume(self):
-        old_vol = 20
+        old_vol = Unit(20, "microliter")
         new_well = set_pipettable_volume(self.c.well(95))
         assert isinstance(new_well, Well)
-        assert new_well.volume.value == old_vol - 3
+        assert new_well.volume == old_vol - Unit(3, "microliter")
         new_well = set_pipettable_volume(self.c.well(45), use_safe_vol=True)
         assert isinstance(new_well, Well)
-        assert new_well.volume.value == old_vol - 5
+        assert new_well.volume == old_vol - Unit(5, "microliter")
         new_well = set_pipettable_volume(self.c.wells_from(90, 4))
         assert isinstance(new_well, WellGroup)
         for well in new_well:
-            assert well.volume.value == old_vol - 3
+            assert well.volume == old_vol - Unit(3, "microliter")
         self.c.all_wells().set_volume("20:microliter")
         new_well = set_pipettable_volume(self.c)
         assert isinstance(new_well, Container)
         for well in new_well.all_wells():
-            assert well.volume.value == old_vol - 3
+            assert well.volume == old_vol - Unit(3, "microliter")
 
     def test_volume_check(self):
         self.c.all_wells().set_volume("20:microliter")

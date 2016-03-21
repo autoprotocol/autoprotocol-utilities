@@ -61,20 +61,17 @@ def thermocycle_ramp(start_temp, end_temp, total_duration, step_duration):
         containing thermocycling steps
 
     """
-    assert Unit.fromstring(
-        total_duration).unit == Unit.fromstring(
-        step_duration).unit, ("Thermocycle_ramp durations"
-                              " must be specified using the"
-                              " same unit of time.")
     thermocycle_steps = []
-    start_temp = Unit.fromstring(start_temp).value
+    start_temp = Unit.fromstring(start_temp).to('degC')
+    end_temp = Unit.fromstring(end_temp).to('degC')
     num_steps = int(
-        Unit.fromstring(total_duration).value // Unit.fromstring(
-            step_duration).value)
-    step_size = (Unit.fromstring(end_temp).value - start_temp) // num_steps
-    for i in xrange(0, num_steps):
+        Unit.fromstring(total_duration).to_base_units() // Unit.fromstring(
+            step_duration).to_base_units())
+    step_size = (end_temp - start_temp) // num_steps
+    for i in range(num_steps + 1):
         thermocycle_steps.append({
-            "temperature": "%d:celsius" % (start_temp + i * step_size),
-                           "duration": step_duration
+            "temperature": "%s:celsius" % (
+                start_temp + i * step_size).magnitude,
+            "duration": step_duration
         })
     return thermocycle_steps
