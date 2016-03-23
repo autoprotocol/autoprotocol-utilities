@@ -367,6 +367,18 @@ class ResourceIDs(object):
                     "TE": self.te}
         return diluents.get(dil)
 
+    def exoassembly_kits(self, kit=None):
+        kit_dict = {"NEBuilder": {"name": "NEBuilder",
+                                  "dil_fact": 2,
+                                  "resource": self.nebuilder2x},
+                    "Gibson": {"name": "Gibson",
+                               "dil_fact": 2,
+                               "resource": self.gibson2x},
+                    "InFusion": {"name": "InFusion",
+                                 "dil_fact": 5,
+                                 "resource": self.infusion5x}}
+        return kit_dict.get(kit)
+
     def transformation_controls(self, media=None):
         """Return transformation controls
 
