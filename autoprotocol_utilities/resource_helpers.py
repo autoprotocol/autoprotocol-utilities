@@ -325,6 +325,10 @@ class ResourceIDs(object):
         self.nebuilder2x = "rs18pc86ykcep6"
         self.gibson2x = "rs16pfatkggmk5"
         self.infusion5x = "rs16pfv7qw5ytj"
+        # QuantIt
+        self.quantItLambda = "rs18qstca8ksrt"
+        self.quantItTE = "rs18qst9znacdy"
+        self.quantItPico = "rs18qst83met3g"
 
     def bacteria(self, bact=None):
         """Return competent bacteria id
