@@ -255,6 +255,11 @@ class ResourceIDs(object):
         self.lb_miller_50ug_ml_kan = "rs18s8x88zz9ee"
         self.lb_miller_100ug_ml_amp = "rs18s8x4qbsvjz"
         self.lb_miller_noAB = "rs17bafcbmyrmh"
+        # kunkel resources
+        self.t7_poly = "rs16pca2urcz74"
+        self.t4_pnk = "rs16pc9rd5hsf6"
+        self.t4_pnk_buffer = "rs16pc9rd5sg5d"
+        self.atp_100mM = "rs16pccshb6cb4"
         # mytaq dna polymerase resources
         self.mytaq_poly = "rs16pcbhquhaz3"
         self.mytaq_red_poly = "rs16r3h6umutcg"
