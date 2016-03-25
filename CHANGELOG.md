@@ -7,6 +7,7 @@ This project adheres to [Semantic Versioning](http://semver.org/)
 Added
 
 Changed
+- allow set_pipettable_volume() to process wells from many containers
 
 Removed
 

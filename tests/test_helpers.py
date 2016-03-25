@@ -145,11 +145,18 @@ class TestContainerfunctions:
         assert isinstance(new_well, WellGroup)
         for well in new_well:
             assert well.volume == old_vol - Unit(3, "microliter")
-        self.c.all_wells().set_volume("20:microliter")
+        self.c.all_wells().set_volume(old_vol)
         new_well = set_pipettable_volume(self.c)
         assert isinstance(new_well, Container)
         for well in new_well.all_wells():
             assert well.volume == old_vol - Unit(3, "microliter")
+        self.c.all_wells().set_volume(old_vol)
+        self.c2.all_wells().set_volume(old_vol)
+        new_wells = [self.c.well(0), self.c2.well(0)]
+        new_well = set_pipettable_volume(new_wells)
+        assert isinstance(new_well, list)
+        assert new_well[0].volume == old_vol - Unit(3, "microliter")
+        assert new_well[1].volume == old_vol - Unit(15, "microliter")
 
     def test_volume_check(self):
         self.c.all_wells().set_volume("20:microliter")

@@ -500,53 +500,24 @@ def set_pipettable_volume(well, use_safe_vol=False):
     well : Container, WellGroup, list, Well
         Will return the same type as was received
 
-    Example
-    -------
-    This function needs all wells to be on one container. Use
-    `get_well_list_by_cont` or `unique_containers` to ensure this.
-
-    .. code-block:: python
-
-        wells_by_cont = get_well_list_by_cont(mywells)
-        for wells in wells_by_cont.values():
-            set_pipettable_volume(wells)
-
-    Raises
-    ------
-    RuntimeError
-        If wells are spread across multiple containers
-
     """
 
+    cont = {}
     if isinstance(well, (list, WellGroup)):
-        cont = unique_containers(well)
-        if len(cont) > 1:
-            raise RuntimeError("Wells can only be from one container")
-        else:
-            cont = cont[0]
-        r = 'list'
+        cont = get_well_list_by_cont(well)
     elif isinstance(well, Container):
-        cont = well
-        well = list_of_filled_wells(cont)
-        r = 'cont'
+        cont[well] = list_of_filled_wells(well)
     elif isinstance(well, Well):
-        cont = well.container
-        well = [well]
-        r = 'well'
+        cont[well.container] = [well]
 
-    correction_vol = cont.container_type.dead_volume_ul
-    if use_safe_vol:
-        correction_vol = cont.container_type.safe_min_volume_ul
+    for c, w in cont.iteritems():
+        correction_vol = c.container_type.dead_volume_ul
+        if use_safe_vol:
+            correction_vol = c.container_type.safe_min_volume_ul
+        for x in w:
+            x.set_volume(x.volume - correction_vol)
 
-    for x in well:
-        x.set_volume(x.volume - correction_vol)
-
-    if r == 'cont':
-        return cont
-    elif r == 'well':
-        return well[0]
-    else:
-        return well
+    return well
 
 
 def volume_check(well, usage_volume=0, use_safe_vol=False,
