@@ -592,15 +592,16 @@ def volume_check(well, usage_volume=0, use_safe_vol=False,
         if test_vol > volume:
             if usage_volume == 0:
                 error_message.append(
-                    "You want to pipette from a container with %s uL %s. "
-                    "However, you aliquot only has %s uL." %
-                    (correction_vol, message_string, volume))
+                    "You want to pipette from a container with {:~P} {!s}. "
+                    "However, you aliquot only has {:~P}.".format(
+                        correction_vol, message_string, volume))
             else:
                 error_message.append(
-                    "You want to pipette %s uL from a container with %s uL %s"
-                    " (%s uL total). However, your aliquot only has %s uL." %
-                    (usage_volume, correction_vol, message_string,
-                     usage_volume + correction_vol, volume))
+                    "You want to pipette {:~P} from a container with {:~P} "
+                    "{!s} ({:~P} total). However, your aliquot only has "
+                    "{:~P}.".format(
+                        usage_volume, correction_vol, message_string,
+                        usage_volume + correction_vol, volume))
     error_message = error_message if len(error_message) > 0 else None
     return error_message
 
