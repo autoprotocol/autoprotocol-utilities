@@ -7,7 +7,19 @@ This project adheres to [Semantic Versioning](http://semver.org/)
 Added
 
 Changed
+
+Removed
+
+Fixed
+
+## v2.0.1
+---
+Added
+
+Changed
 - allow set_pipettable_volume() to process wells from many containers
+- improvements in documentation
+- add resources for exonuclease and picrogreen assays
 
 Removed
 
