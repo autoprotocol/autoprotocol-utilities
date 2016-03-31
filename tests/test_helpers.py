@@ -9,6 +9,8 @@ from autoprotocol_utilities.container_helpers import list_of_filled_wells, \
     container_type_checker, get_well_list_by_cont
 from autoprotocol_utilities.misc_helpers import make_list, flatten_list, \
     char_limit, recursive_search, transfer_properties, user_errors_group
+from autoprotocol_utilities.magnetic_helpers import get_mag_frequency, \
+    get_mag_amplicenter
 
 
 class TestContainerfunctions:
@@ -295,3 +297,18 @@ class TestPropertyFunctions:
                                         prop, r):
         res = transfer_properties(src_well, dest_well, prop)
         assert len(res) == r
+
+
+class TestMagneticHelperFunctions:
+    p = Protocol()
+    c = p.ref("testplate_pcr", id=None, cont_type="96-deep-kf", discard=True)
+
+    def test_get_mag_frequency(self):
+        assert get_mag_frequency(self.c, "fast") == "2.5:Hz"
+        assert get_mag_frequency(self.c, "slow") == "0.15:Hz"
+
+    def test_get_mag_amplicenter(self):
+        self.c.well(45).set_volume("500:microliter")
+        resp = get_mag_amplicenter(self.c)
+        assert resp.center == 0.25
+        assert resp.amplitude == 0.25
