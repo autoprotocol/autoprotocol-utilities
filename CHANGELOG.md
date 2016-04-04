@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](http://semver.org/)
 ---
 Added
 - magnetic helper functions
+- allow container type strings for wells_available in plates_needed
 
 Changed
 

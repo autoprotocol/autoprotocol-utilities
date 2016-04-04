@@ -441,7 +441,7 @@ def is_columnwise(wells):
 def plates_needed(wells_needed, wells_available):
     """
     Takes wells needed as a numbers (int or float)
-    and wells_available as a container or a well number
+    and wells_available as a container, container type string or a well number
     (int or float) and calculates how many plates are
     needed to accomodate the wells_needed.
 
@@ -449,8 +449,9 @@ def plates_needed(wells_needed, wells_available):
     ----------
     wells_needed: float, int
         How many you need
-    wells_available: Container, float, int
-        How many you have available per unit. If container, then all wells of
+    wells_available: Container, float, int, string
+        How many you have available per unit. If container or a string
+        identifying a container type, then all wells of
         this container will be considered
 
     Returns
@@ -470,10 +471,19 @@ def plates_needed(wells_needed, wells_available):
         raise RuntimeError("wells_needed has to be an int or a float")
     if isinstance(wells_available, Container):
         wells_available = float(wells_available.container_type.well_count)
+    elif isinstance(wells_available, string_type):
+        cont = _CONTAINER_TYPES.get(wells_available, None)
+        if cont:
+            wells_available = float(cont.well_count)
+        else:
+            raise RuntimeError("If `wells_available` is a string, it has to "
+                               "match a valid `container_type`. %s does not "
+                               "match any container type" % wells_available)
     elif isinstance(wells_available, int):
         wells_available = float(wells_available)
-    elif not isinstance(wells_available, (float, int, Container)):
-        raise RuntimeError("wells_available has to be a container,"
+    elif not isinstance(wells_available, (float, int, Container, string_type)):
+        raise RuntimeError("wells_available has to be a container, a string "
+                           "uniquely identifying a container type, "
                            "int or float")
     return int(math.ceil(wells_needed / wells_available))
 
