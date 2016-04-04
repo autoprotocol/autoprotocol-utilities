@@ -334,6 +334,13 @@ class ResourceIDs(object):
         self.quantItLambda = "rs18qstca8ksrt"
         self.quantItTE = "rs18qst9znacdy"
         self.quantItPico = "rs18qst83met3g"
+        # MagJet
+        self.lysozyme = "rs18u5sv3y8haj"
+        self.dtt = "rs18umvdgu69su"
+        self.MagJETRNALysisBuffer = "rs18umvv99scva"
+        self.MagJETRNABeads = "rs18umvxjtubpw"
+        self.MagJETRNAReactionBuffer = "rs18umwewhmmvr"
+        self.MagJETRNADNase = "rs18umwj7mmmdc"
 
     def bacteria(self, bact=None):
         """Return competent bacteria id
