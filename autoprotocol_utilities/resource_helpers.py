@@ -344,6 +344,9 @@ class ResourceIDs(object):
         self.MagJETRNABeads = "rs18umvxjtubpw"
         self.MagJETRNAReactionBuffer = "rs18umwewhmmvr"
         self.MagJETRNADNase = "rs18umwj7mmmdc"
+        # genotyping lysis buffers
+        self.geno_lysis = "rs17krffpwfyrq"
+        self.geno_neut = "rs17krfgz55nqq"
 
     def bacteria(self, bact=None):
         """Return competent bacteria id
