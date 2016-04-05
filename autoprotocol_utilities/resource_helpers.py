@@ -260,6 +260,9 @@ class ResourceIDs(object):
         self.t4_pnk = "rs16pc9rd5hsf6"
         self.t4_pnk_buffer = "rs16pc9rd5sg5d"
         self.atp_100mM = "rs16pccshb6cb4"
+        # SYBR green qPCR enzyme
+        self.sensifast = "rs17knkh7526ha"
+        self.itaq = "rs18fabf4h5se8"
         # mytaq dna polymerase resources
         self.mytaq_poly = "rs16pcbhquhaz3"
         self.mytaq_red_poly = "rs16r3h6umutcg"
