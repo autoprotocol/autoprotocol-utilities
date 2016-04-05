@@ -178,6 +178,7 @@ class TestContainerfunctions:
     def test_well_name(self):
         assert well_name(self.c.well(0)) == "testplate_pcr-0"
         assert well_name(self.c.well(0), 'pytest') == "pytest-0"
+        assert well_name(self.c.well(0), 'pytest', True) == "pytest-A1"
         self.c.well(0).set_name("mywell")
         assert well_name(self.c.well(0)) == "mywell"
 
