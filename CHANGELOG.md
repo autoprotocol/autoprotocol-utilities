@@ -5,6 +5,17 @@ This project adheres to [Semantic Versioning](http://semver.org/)
 ## Unreleased
 ---
 Added
+
+Changed
+
+Removed
+
+Fixed
+
+## v2.1.1 - 2016-04-05
+---
+Added
+- additional resources
 - magnetic helper functions
 - allow container type strings for wells_available in plates_needed
 
@@ -14,7 +25,7 @@ Removed
 
 Fixed
 
-## v2.0.1
+## v2.0.1 - 2016-03-29
 ---
 Added
 

@@ -304,11 +304,11 @@ class TestMagneticHelperFunctions:
     c = p.ref("testplate_pcr", id=None, cont_type="96-deep-kf", discard=True)
 
     def test_get_mag_frequency(self):
-        assert get_mag_frequency(self.c, "fast") == "2.5:Hz"
-        assert get_mag_frequency(self.c, "slow") == "0.15:Hz"
+        assert get_mag_frequency(self.c, "fast") == "2.5:hertz"
+        assert get_mag_frequency(self.c, "slow") == "0.15:hertz"
 
     def test_get_mag_amplicenter(self):
         self.c.well(45).set_volume("500:microliter")
         resp = get_mag_amplicenter(self.c)
-        assert resp.center == 0.25
-        assert resp.amplitude == 0.25
+        assert resp["center"] == 0.25
+        assert resp["amplitude"] == 0.25
