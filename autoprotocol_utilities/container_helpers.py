@@ -616,7 +616,7 @@ def volume_check(well, usage_volume=0, use_safe_vol=False,
     return error_message
 
 
-def well_name(well, alternate_name=None):
+def well_name(well, alternate_name=None, humanize=False):
     """Determine new well name
 
     Determine the a name that a new well is getting based on old well
@@ -649,12 +649,17 @@ def well_name(well, alternate_name=None):
     if alternate_name:
         assert isinstance(alternate_name, string_type)
 
+    if humanize:
+        well_index = well.container.humanize(well.index)
+    else:
+         well_index = well.index
+
     if well.name is not None:
         base_name = well.name
     elif alternate_name:
-        base_name = "%s-%s" % (alternate_name, well.index)
+        base_name = "%s-%s" % (alternate_name, well_index)
     else:
-        base_name = "%s-%s" % (well.container.name, well.index)
+        base_name = "%s-%s" % (well.container.name, well_index)
 
     return base_name
 

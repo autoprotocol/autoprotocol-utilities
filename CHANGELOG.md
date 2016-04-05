@@ -12,6 +12,17 @@ Removed
 
 Fixed
 
+## v2.1.2 - 2016-04-05
+---
+Added
+
+Changed
+ - well_name now takes and argument `humanize` which results in the index being printed as `A1` as opposed to `0`
+
+Removed
+
+Fixed
+
 ## v2.1.1 - 2016-04-05
 ---
 Added
