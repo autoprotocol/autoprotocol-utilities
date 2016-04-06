@@ -4,7 +4,7 @@ Autoprotocol Utils documentation
 
 Autoprotocol Utilities are helper functions and modules to generate autoprotocol faster and include on-the-fly verifications. It can only be used in conjunction with `autoprotocol-python <http://public.readthedocs.com/docs/transcriptic-autoprotocol-python/en/latest/>`_ and automatically installs its required version.
 
-Protocol modules and helper functions such as `createMastermix` can be found in `promodules <https://readthedocs.com/docs/transcriptic-promodules/en/latest/>`_. In contracts to `autoprotocol-utlities` these do require instances of `Protocol` and return autoprotocol instructions.
+Protocol modules and helper functions such as `createMastermix` can be found in `promodules <https://readthedocs.com/docs/transcriptic-promodules/en/latest/>`_. In contrast to `autoprotocol-utlities`, these do require instances of `Protocol` and return autoprotocol instructions.
 
 .. toctree::
     :maxdepth: 2
