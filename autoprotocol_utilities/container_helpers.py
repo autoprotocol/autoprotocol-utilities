@@ -556,8 +556,8 @@ def volume_check(well, usage_volume=0, use_safe_vol=False,
 
     Returns
     -------
-    list or None
-        list of strings if volume check failed
+    str or None
+        string of errors if volume check failed
 
     Raises
     ------
@@ -603,16 +603,19 @@ def volume_check(well, usage_volume=0, use_safe_vol=False,
             if usage_volume == 0:
                 error_message.append(
                     "You want to pipette from a container with {:~P} {!s}. "
-                    "However, you aliquot only has {:~P}.".format(
-                        correction_vol, message_string, volume))
+                    "However, you aliquot: {!s}, only has {:~P}.".format(
+                        correction_vol, message_string,  well_name(aliquot), volume))
             else:
                 error_message.append(
                     "You want to pipette {:~P} from a container with {:~P} "
-                    "{!s} ({:~P} total). However, your aliquot only has "
+                    "{!s} ({:~P} total). However, your aliquot: {!s}, only has "
                     "{:~P}.".format(
                         usage_volume, correction_vol, message_string,
-                        usage_volume + correction_vol, volume))
-    error_message = error_message if len(error_message) > 0 else None
+                        usage_volume + correction_vol, well_name(aliquot), volume))
+    if error_message:
+        error_message = str(len(error_message)) + " volume errors: " + ", ".join(error_message)
+    else:
+        error_message = None
     return error_message
 
 
@@ -652,7 +655,7 @@ def well_name(well, alternate_name=None, humanize=False):
     if humanize:
         well_index = well.container.humanize(well.index)
     else:
-         well_index = well.index
+        well_index = well.index
 
     if well.name is not None:
         base_name = well.name
