@@ -677,8 +677,8 @@ def container_type_checker(containers, shortname, exclude=False):
         Verify container is NOT of specified container_type.
     Returns
     -------
-    error_message : list of strings or True
-        List containing containers failing container_type_check or True.
+    error_message : str or None
+        String of containers failing container_type_check or None.
 
     Raises
     ------
@@ -712,22 +712,24 @@ def container_type_checker(containers, shortname, exclude=False):
             "container_type_check: containers to check must be of type "
             "Container")
 
-    error_messages = []
+    error_containers = []
+    error_message = None
 
     for cont in containers:
         if exclude:
             if cont.container_type.shortname in shortname:
-                error_messages.append(
-                    "%s is of the excluded type %s" % (cont, shortname))
-
+                error_containers.append(str(cont))
         else:
             if cont.container_type.shortname not in shortname:
-                error_messages.append("%s not of type %s" % (cont, shortname))
+                error_containers.append(str(cont))
 
-    if len(error_messages) > 0:
-        return error_messages
-    else:
-        return None
+    if error_containers:
+        message_ending = ' not of the required type(s): ' + ', '.join(shortname)
+        if exclude:
+            message_ending = ' of the excluded type(s): ' + ', '.join(shortname)
+        error_message = "Incompatible container(s) found : " + ', '.join(error_containers) + message_ending
+
+    return error_message
 
 
 def get_well_list_by_cont(wells):

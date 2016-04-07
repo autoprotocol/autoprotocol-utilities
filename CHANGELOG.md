@@ -13,6 +13,17 @@ Removed
 
 Fixed
 
+## v2.1.3 - 2016-04-07
+---
+Added
+
+Changed
+ - check_container_type now returns consolidated string of all container errors found
+
+Removed
+
+Fixed
+
 ## v2.1.2 - 2016-04-05
 ---
 Added
