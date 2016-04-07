@@ -19,6 +19,7 @@ Added
 
 Changed
  - check_container_type now returns consolidated string of all container errors found
+ - added additional information to oligo scale limit error messages
 
 Removed
 

@@ -34,22 +34,26 @@ def oligo_scale_default(length, scale, label):
     r = namedtuple('Response', 'success error_message')
     ok = True
     error_message = None
-    if scale == '25nm' or scale == '10nm':
-        ok = True if (length >= 15 and length <= 60) else False
-    elif scale == '100nm':
-        ok = True if (length >= 10 and length <= 90) else False
-    elif scale == '250nm':
-        ok = True if (length >= 5 and length <= 100) else False
-    elif scale == '1um':
-        ok = True if (length >= 5 and length <= 100) else False
+    scale_ranges = {
+        '10nm': [15, 60],
+        '25nm': [15, 60],
+        '100nm': [10, 90],
+        '250nm': [5, 100],
+        '1um': [5, 100]
+    }
+
+    if scale not in scale_ranges.keys():
+        error_message = ("The specified oligo, '%s', does not have a recognized scale "
+                         "of %s""" % (', '.join(scale_ranges.keys)))
     else:
-        ok = False
+        ok = True if (length >= scale_ranges[scale][0] and length <= scale_ranges[scale][1]) else False
+
     if not ok:
-        error_message = """The specified oligo, '%s', is %s base pairs long.
-                         This sequence length is invalid for the scale
-                         of synthesis chosen (%s).""" % (label,
-                                                         length,
-                                                         scale)
+        error_message = ("The specified oligo, '%s', is %s base pairs long. This sequence"
+                         " length is invalid for the scale of synthesis chosen (%s). The "
+                         "acceptable range for this scale is %s - %s base pairs long"
+                         % (label, length, scale, scale_ranges[scale][0], scale_ranges[scale][1]))
+
     return r(success=ok, error_message=error_message)
 
 
