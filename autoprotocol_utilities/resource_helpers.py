@@ -315,6 +315,7 @@ class ResourceIDs(object):
         self.mfei_hf = "rs18nw6ta6d5bn"
         self.esp3i = "rs18a8ttpm8hxk"
         self.hindiii_hf = "rs18nw6kpnp44v"
+        self.sali = "rs18trptum9gc4"
         # orange g
         self.orange_g_100 = "rs17zw9zsaqd55"
         self.organge_g_500 = "rs17zwe6rux5b7"
@@ -472,7 +473,8 @@ class ResourceIDs(object):
                    "dpni_neb": self.dpni_neb,
                    "mfei_hf": self.mfei_hf,
                    "esp3i": self.esp3i,
-                   "hindiii_hf": self.hindiii_hf}
+                   "hindiii_hf": self.hindiii_hf,
+                   "sali": self.sali}
 
         buffer_map = {}
         buffer_map["cutsmart"] = {
@@ -484,7 +486,7 @@ class ResourceIDs(object):
         buffer_map["neb_21"] = {
             "buffer_id": self.neb21_buffer, "enzymes": ["bbsi"]}
         buffer_map["new_31"] = {
-            "buffer_id": self.neb31_buffer, "enzymes": ["bsmbi"]}
+            "buffer_id": self.neb31_buffer, "enzymes": ["bsmbi", "sali"]}
         buffer_map["fast_digest"] = {
             "buffer_id": self.fastdigest_buffer, "enzymes": ["esp3i"]}
 

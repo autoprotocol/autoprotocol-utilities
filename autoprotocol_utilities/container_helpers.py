@@ -556,8 +556,8 @@ def volume_check(well, usage_volume=0, use_safe_vol=False,
 
     Returns
     -------
-    error_message : str or None
-        String if volume check failed
+    list or None
+        list of strings if volume check failed
 
     Raises
     ------
