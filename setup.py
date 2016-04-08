@@ -9,5 +9,5 @@ setup(name='autoprotocol_utilities',
       license='MIT',
       packages=['autoprotocol_utilities'],
       tests_require=['pytest'],
-      install_requires=['autoprotocol>=3.1'],
+      install_requires=['autoprotocol>=3.2'],
       zip_safe=False)

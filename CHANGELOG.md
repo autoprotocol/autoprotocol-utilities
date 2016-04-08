@@ -5,7 +5,6 @@ This project adheres to [Semantic Versioning](http://semver.org/)
 ## Unreleased
 ---
 Added
- - documentation improvements
 
 Changed
 
@@ -21,6 +20,7 @@ Changed
  - check_container_type now returns consolidated string of all container errors found
  - added additional information to oligo scale limit error messages
  - volume_check now returns consolidated string of errors
+ - documentation improvements
 
 Removed
 
