@@ -9,11 +9,14 @@ if sys.version_info[0] >= 3:
 else:
     string_type = basestring
 
-# ## Returning containers or data
-
 
 def oligo_scale_default(length, scale, label):
     """Detects if the oligo length matches the selected scale
+
+    Every oligo provider has a length limit on the oligos based on the
+    selected scale. The larger the scale, the longer or shorter the oligo
+    can be.
+    This function checks for IDT limits
 
     Parameters
     ----------
@@ -26,7 +29,7 @@ def oligo_scale_default(length, scale, label):
 
     Returns
     -------
-    Response : namedtuple
+    namedtuple
         `success` (bool) and `error_message` (string) that is empty on success
 
     """
@@ -43,16 +46,21 @@ def oligo_scale_default(length, scale, label):
     }
 
     if scale not in scale_ranges.keys():
-        error_message = ("The specified oligo, '%s', does not have a recognized scale "
-                         "of %s""" % (', '.join(scale_ranges.keys)))
+        error_message = ("The specified oligo, '{0!s}', does not have a "
+                         "recognized scale of {0!s}".format(
+                             ', '.join(scale_ranges.keys)))
     else:
-        ok = True if (length >= scale_ranges[scale][0] and length <= scale_ranges[scale][1]) else False
+        ok = True if (length >= scale_ranges[scale][0] and
+                      length <= scale_ranges[scale][1]) else False
 
     if not ok:
-        error_message = ("The specified oligo, '%s', is %s base pairs long. This sequence"
-                         " length is invalid for the scale of synthesis chosen (%s). The "
-                         "acceptable range for this scale is %s - %s base pairs long"
-                         % (label, length, scale, scale_ranges[scale][0], scale_ranges[scale][1]))
+        error_message = ("The specified oligo, '{0!s}', is {1!s} base pairs "
+                         "long. This sequence length is invalid for the scale"
+                         " of synthesis chosen ({2!s}). The acceptable range "
+                         "for this scale is {3!s} - {4!s} base pairs "
+                         "long".format(label, length, scale,
+                                       scale_ranges[scale][0],
+                                       scale_ranges[scale][1]))
 
     return r(success=ok, error_message=error_message)
 
@@ -74,9 +82,30 @@ def oligo_dilution_table(conc=None, sc=None):
 
     Returns
     -------
-    dilution_table : dict
-        This is a dict of dicts to determine the volume to add for each
-        concentration (level 1) and scale (level 2).
+    int
+        If concentration and scale are given this returns the dilution volume
+        only
+    dict
+        If only one of concentration or scale is provided this function
+        returns a dict. If a concentration is selected it returns a dict where
+        scales are the keys and dilution volumes the values.
+        If a scale is selected it returns a dict with concentrations as keys
+        and dicts of scale (key) and dilution volume (value).
+        If nothing is selected the full dict of concentrations with dicts of
+        scales and dilution volumes is returned.
+
+    Example
+    -------
+
+    .. code-block:: python
+
+        oligo_dilution_table(conc="100uM")
+        # {"100uM": {"10nm":60, "25nm": 250, "100nm": 1000, "250nm": 2500,
+        #            "1um": 10000}}
+
+        oligo_dilution_table(conc="100uM", scale="25nm")
+        # 250
+
 
     Raises
     ------
@@ -115,7 +144,7 @@ def oligo_dilution_table(conc=None, sc=None):
 
 
 def return_agar_plates(wells=6):
-    """Dicts of all plates available that can be purchased.
+    """Returns a dict of all agar plates available that can be purchased.
 
     Parameters
     ----------
@@ -124,7 +153,7 @@ def return_agar_plates(wells=6):
 
     Returns
     -------
-    plates : dict
+    dict
         plates with plate identity as key and kit_id as value
 
     Raises
@@ -151,13 +180,22 @@ def return_agar_plates(wells=6):
 
 
 def return_dispense_media():
-    """Dict of media for reagent dispenser.
+    """Returns a dict of media for reagent dispenser.
 
     Returns
     -------
-    media : dict
-        Media with common display_name as key and identifier for code
-    as value
+    dict
+        Media with common `display_name` as key and identifier for code
+        as value
+
+    Example
+    -------
+
+    .. code-block:: python
+
+        media = return_dispense_media()[params["media]]
+        plate = protocol.ref("myplate", cont_type="96-flat", discard=True)
+        protocol.dispense_full_plate(plate, media, "200:microliter")
 
     """
     media = {"50_ug/ml_Kanamycin": "lb_miller_50ug_ml_kan",
@@ -193,11 +231,22 @@ def ref_kit_container(protocol, name, container, kit_id, discard=True,
     discard : bool
         Determine if plate is discarded after use.
     store : str
-        If the plate is not discarded, indicate storage condition.
+        If the plate is not discarded, indicate valid storage condition.
 
     Returns
     -------
-    kit_item : Container
+    Container
+
+    Example
+    -------
+
+    .. code-block:: python
+
+        media = return_dispense_media()[params["media]]
+        agar_id = return_agar_plates()[media]
+        agar_plate = ref_kit_container(protocol, "my_agar_plate", "6-flat",
+                                       agar_id, discard=False,
+                                       storage="cold_4")
 
     """
     kit_item = Container(None, protocol.container_type(container), name)
