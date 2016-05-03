@@ -12,6 +12,7 @@ Protocol modules and helper functions such as `createMastermix` can be found in 
     General helpers <general_helpers>
     Resource helpers <resource_helpers>
     Container helpers <container_helpers>
+    Magnetic helpers <magnetic_helpers>
     Thermocyling helpers <thermocycle_helpers>
     AUTHORS
 

@@ -308,6 +308,10 @@ class ResourceIDs(object):
         self.lb_miller_50ug_ml_kan = "rs18s8x88zz9ee"
         self.lb_miller_100ug_ml_amp = "rs18s8x4qbsvjz"
         self.lb_miller_noAB = "rs17bafcbmyrmh"
+        self.tb_50ug_ml_kan = "rs18xqzy4ftdy3"
+        self.tb_100ug_ml_amp = "rs18xr22jq7vtz"
+        self.tb_100ug_ml_spec = "rs18xr25bpakgs"
+        self.tb_25ug_ml_cm = "rs18xr28t3z8nx"
         # kunkel resources
         self.t7_poly = "rs16pca2urcz74"
         self.t4_pnk = "rs16pc9rd5hsf6"
@@ -369,6 +373,10 @@ class ResourceIDs(object):
         self.esp3i = "rs18a8ttpm8hxk"
         self.hindiii_hf = "rs18nw6kpnp44v"
         self.sali = "rs18trptum9gc4"
+        self.smai = "rs18vvr4tgrghh"
+        self.xbai = "rs18x6ja5k75ev"
+        self.hincii = "rs18x6jrxfxtut"
+        self.bbvCi = "rs18x6k25qmr6k"
         # orange g
         self.orange_g_100 = "rs17zw9zsaqd55"
         self.organge_g_500 = "rs17zwe6rux5b7"
@@ -470,6 +478,31 @@ class ResourceIDs(object):
                     "lb_miller_100ug_ml_amp": self.control_amp}
         return controls.get(media)
 
+    def growth_media(self, media=None):
+        """Return growth media resource id
+
+        Parameters
+        ----------
+        media: string
+            Media for which to select the media.
+
+        Returns
+        -------
+        string
+            resource id for the media requested, `None` if media
+            could not be found
+        """
+        media_dict = {
+            "lb_miller_50ug_ml_kan": self.lb_miller_50ug_ml_kan,
+            "lb_miller_100ug_ml_amp": self.lb_miller_100ug_ml_amp,
+            "lb_miller_noAB": self.lb_miller_noAB,
+            "tb_50ug_ml_kan": self.tb_50ug_ml_kan,
+            "tb_100ug_ml_amp": self.tb_100ug_ml_amp,
+            "tb_100ug_ml_specto": self.tb_100ug_ml_spec,
+            "tb_25ug_ml_cm": self.tb_25ug_ml_cm,
+        }
+        return media_dict.get(media)
+
     def t4_ligase(self, ligase_type=None):
         """Return T4 ligase reagents
 
@@ -527,19 +560,24 @@ class ResourceIDs(object):
                    "mfei_hf": self.mfei_hf,
                    "esp3i": self.esp3i,
                    "hindiii_hf": self.hindiii_hf,
-                   "sali": self.sali}
+                   "sali": self.sali,
+                   "smai": self.smai,
+                   "bbvCi": self.bbvCi,
+                   "xbai": self.xbai,
+                   "hincii": self.hincii}
 
         buffer_map = {}
         buffer_map["cutsmart"] = {
             "buffer_id": self.cutsmart_buffer, "enzymes": [
                 "pvuii_hf", "ecori_hf", "hindiii_hf",
-                "bamhi_hf", "psti_hf", "ncoi_hf",
-                "bsai", "ndei", "xhoi",
+                "bamhi_hf", "psti_hf", "ncoi_hf", "xbai",
+                "bsai", "ndei", "xhoi", "smai", "bbvCi",
                 "dpni_neb", "mfei_hf"]}
         buffer_map["neb_21"] = {
             "buffer_id": self.neb21_buffer, "enzymes": ["bbsi"]}
         buffer_map["new_31"] = {
-            "buffer_id": self.neb31_buffer, "enzymes": ["bsmbi", "sali"]}
+            "buffer_id": self.neb31_buffer, "enzymes": [
+                "bsmbi", "sali", "hincii"]}
         buffer_map["fast_digest"] = {
             "buffer_id": self.fastdigest_buffer, "enzymes": ["esp3i"]}
 

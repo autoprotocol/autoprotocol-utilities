@@ -46,7 +46,7 @@ def printdatetime():
 
     Returns
     -------
-    printdate : str
+    str
 
     """
     printdate = datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
@@ -59,7 +59,7 @@ def printdate():
 
     Returns
     -------
-    printdate : str
+    str
 
     """
     printdate = datetime.datetime.now().strftime('%Y-%m-%d')
@@ -80,7 +80,7 @@ def make_list(my_str, integer=False):
 
     Returns
     -------
-    my_str : list
+    list
         List of strings or integers
 
     Raises
@@ -89,7 +89,8 @@ def make_list(my_str, integer=False):
         If my_str is not of type string
 
     """
-    assert isinstance(my_str, string_type), "Input needs to be of type string"
+    assert isinstance(my_str, string_type), (
+        "Input needs to be of type string")
     if integer:
         my_str = [int(x.strip()) for x in my_str.split(",")]
     else:
@@ -108,10 +109,16 @@ def flatten_list(l):
 
     Returns
     -------
-    list : list
+    list
         Flat list
 
+    Raises
+    ------
+    ValueError
+        If l is not of type list
+
     """
+    assert isinstance(l, list), "Needs a list."
     if l == []:
         return l
     if isinstance(l[0], list):
@@ -134,7 +141,7 @@ def det_new_group(i, base=0):
 
     Returns
     -------
-    new_group : bool
+    bool
 
     Raises
     ------
@@ -174,7 +181,7 @@ def char_limit(label, length=22, trunc=False, clip=False):
 
     Returns
     -------
-    Response : namedtuple
+    namedtuple
         `label` (str) and `error_message` (string) that is empty on success
         `label` is the unmodified, truncated to clipped label as indicated
 
@@ -221,7 +228,7 @@ def recursive_search(params, class_name=None, method=None, args={}):
 
     Returns
     -------
-    found_fields : list
+    list
         Will return a list of all items, or the found items of a specified
         class, or the
         response (if not None) from a method called on found items.
@@ -292,9 +299,10 @@ def transfer_properties(src_wells, dest_wells, properties={}, args={},
 
     Returns
     -------
-    error_messages: list, None
-        None if no messages were found
+    list
         List of strings if some properties could not be found
+    None
+        If no messages were found
 
     Raises
     ------

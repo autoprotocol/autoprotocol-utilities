@@ -18,7 +18,7 @@ def melt_curve(start=65, end=95, inc=0.5, rate=5):
 
     .. code-block:: python
 
-        melt_params = melt_params()
+        melt_params = melt_curve()
         protocol.thermocycle(dest_plate,
                              thermocycle_dict,
                              volume="15:microliter",

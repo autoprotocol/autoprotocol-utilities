@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](http://semver.org/)
 ---
 Added
  - additonal tests and documentation
+ - media types and restriction enzymes
 Changed
 
 Removed

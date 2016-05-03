@@ -28,7 +28,7 @@ def list_of_filled_wells(wells, empty=False):
 
     Returns
     -------
-    return_wells : list
+    list
         list of wells
 
     Raises
@@ -66,9 +66,12 @@ def first_empty_well(wells, return_index=True):
 
     Returns
     -------
-    well : well or int
-        Either the first empty well or the index of the first empty well.
-        None when no empty well was found.
+    well
+        The first empty well OR
+    int
+        The index of the first empty well when return_index=True OR
+    None
+        when no empty well was found.
 
     Raises
     ------
@@ -108,7 +111,7 @@ def unique_containers(wells):
 
     Returns
     -------
-    cont : list
+    list
         List of Containers
 
     Raises
@@ -142,7 +145,7 @@ def sort_well_group(wells, columnwise=False):
 
     Returns
     -------
-    sorted_well_group : WellGroup
+    WellGroup
         Sorted list of wells
 
     Raises
@@ -200,15 +203,17 @@ def stamp_shape(wells, full=True, quad=False):
 
     Returns
     -------
-    stamp_shape : list of namedtuples
-        start_well: well
-            is the top left well for the source stamp group
-        shape: dict
-            is a dict of `rows` and `columns` describing the stamp shape
-        remainging_wells: list
-            is a list of wells that are not included in the stamp shape
-        included_wells: list
-            is a list of wells that is included in the stamp shape
+    list
+        contains namedtuples where each tuple has the following parameters
+
+    start_well: well
+        is the top left well for the source stamp group
+    shape: dict
+        is a dict of `rows` and `columns` describing the stamp shape
+    remainging_wells: list
+        is a list of wells that are not included in the stamp shape
+    included_wells: list
+        is a list of wells that is included in the stamp shape
 
     Example
     -------
@@ -372,9 +377,10 @@ def is_columnwise(wells):
 
     Returns
     -------
-    shape : bool or list
-        True if columnwise. False if rowwise. List of strings if errors were
-        encountered.
+    bool
+        True if columnwise. False if rowwise.
+    list
+        List of strings if errors were encountered.
 
     Example
     -------
@@ -456,7 +462,7 @@ def plates_needed(wells_needed, wells_available):
 
     Returns
     -------
-    i : int
+    int
         How many of unit you will need to accomodate all wells_needed
 
     Raises
@@ -507,8 +513,8 @@ def set_pipettable_volume(well, use_safe_vol=False):
 
     Returns
     -------
-    well : Container, WellGroup, list, Well
-        Will return the same type as was received
+    Will return the same type as was received
+    (Container, WellGroup, list, Well)
 
     """
 
@@ -556,8 +562,10 @@ def volume_check(well, usage_volume=0, use_safe_vol=False,
 
     Returns
     -------
-    str or None
-        string of errors if volume check failed
+    str
+        string of errors if volume check failed OR
+    None
+        If no errors are detected
 
     Raises
     ------
@@ -590,10 +598,12 @@ def volume_check(well, usage_volume=0, use_safe_vol=False,
         if aliquot.volume:
             volume = aliquot.volume
         if use_safe_vol:
-            correction_vol = aliquot.container.container_type.safe_min_volume_ul
+            correction_vol = \
+                aliquot.container.container_type.safe_min_volume_ul
             message_string = "safe minimum volume"
         elif use_safe_dead_diff:
-            correction_vol = aliquot.container.container_type.safe_min_volume_ul - \
+            correction_vol = \
+                aliquot.container.container_type.safe_min_volume_ul - \
                 aliquot.container.container_type.dead_volume_ul
             message_string = "safe minimum volume"
             volume = volume + aliquot.container.container_type.dead_volume_ul
@@ -604,16 +614,19 @@ def volume_check(well, usage_volume=0, use_safe_vol=False,
                 error_message.append(
                     "You want to pipette from a container with {:~P} {!s}. "
                     "However, you aliquot: {!s}, only has {:~P}.".format(
-                        correction_vol, message_string,  well_name(aliquot), volume))
+                        correction_vol, message_string,
+                        well_name(aliquot), volume))
             else:
                 error_message.append(
                     "You want to pipette {:~P} from a container with {:~P} "
-                    "{!s} ({:~P} total). However, your aliquot: {!s}, only has "
-                    "{:~P}.".format(
+                    "{!s} ({:~P} total). However, your aliquot: {!s}, only has"
+                    " {:~P}.".format(
                         usage_volume, correction_vol, message_string,
-                        usage_volume + correction_vol, well_name(aliquot), volume))
+                        usage_volume + correction_vol,
+                        well_name(aliquot), volume))
     if error_message:
-        error_message = str(len(error_message)) + " volume errors: " + ", ".join(error_message)
+        error_message = str(len(error_message)) + " volume errors: " + \
+            ", ".join(error_message)
     else:
         error_message = None
     return error_message
@@ -636,7 +649,7 @@ def well_name(well, alternate_name=None, humanize=False):
 
     Returns
     -------
-    base_name: str
+    str
         well name in the format `name` if the well had a name or `name-index`
         if the name is derived from the container name or alternate_name
 
@@ -680,8 +693,10 @@ def container_type_checker(containers, shortname, exclude=False):
         Verify container is NOT of specified container_type.
     Returns
     -------
-    error_message : str or None
-        String of containers failing container_type_check or None.
+    str
+        String of containers failing container_type_check OR
+    None
+        If no container fails
 
     Raises
     ------
@@ -727,10 +742,13 @@ def container_type_checker(containers, shortname, exclude=False):
                 error_containers.append(str(cont))
 
     if error_containers:
-        message_ending = ' not of the required type(s): ' + ', '.join(shortname)
+        message_ending = ' not of the required type(s): ' + \
+            ', '.join(shortname)
         if exclude:
-            message_ending = ' of the excluded type(s): ' + ', '.join(shortname)
-        error_message = "Incompatible container(s) found : " + ', '.join(error_containers) + message_ending
+            message_ending = ' of the excluded type(s): ' + \
+                ', '.join(shortname)
+        error_message = "Incompatible container(s) found : " + \
+            ', '.join(error_containers) + message_ending
 
     return error_message
 
@@ -744,7 +762,7 @@ def get_well_list_by_cont(wells):
 
     Returns
     -------
-    well_map: dict
+    dict
         Dict with containers as keys and List of wells as value
 
     Raises
