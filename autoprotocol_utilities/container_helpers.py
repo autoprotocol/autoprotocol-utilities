@@ -124,6 +124,8 @@ def unique_containers(wells):
         wells = [wells]
     assert isinstance(wells, (list, WellGroup)), "unique_containers requires"
     " a Well, list of wells or a WellGroup"
+    if isinstance(wells, WellGroup):
+        wells = list(wells)
     wells = flatten_list(wells)
     cont = list(set([well.container for well in wells]))
     return cont

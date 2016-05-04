@@ -55,6 +55,8 @@ class TestContainerfunctions:
     def test_unique_containers(self):
         wells = self.ws[:]
         assert len(unique_containers(wells)) == 1
+        wells = self.ws
+        assert len(unique_containers(wells)) == 1
         for i in range(4):
             cont = self.p.ref("unique%s" % i, id=None,
                               cont_type="micro-1.5", discard=True)
