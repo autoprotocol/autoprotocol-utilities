@@ -5,6 +5,16 @@ This project adheres to [Semantic Versioning](http://semver.org/)
 ## Unreleased
 ---
 Added
+
+Changed
+
+Removed
+
+Fixed
+
+## v2.1.4 - 2016-05-11
+---
+Added
  - additonal tests and documentation
  - media types and restriction enzymes
 Changed
