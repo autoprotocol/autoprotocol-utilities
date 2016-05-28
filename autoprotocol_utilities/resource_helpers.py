@@ -1,5 +1,6 @@
 from autoprotocol.container import Container
 from autoprotocol.protocol import Ref
+from autoprotocol import Unit
 from collections import namedtuple
 import sys
 
@@ -393,8 +394,11 @@ class ResourceIDs(object):
         self.exosap = "rs18dnrskds4t6"
         # assembly reagents
         self.nebuilder2x = "rs18pc86ykcep6"
+        self.nebuilderpc = "rs192pqa2jua9v"
         self.gibson2x = "rs16pfatkggmk5"
         self.infusion5x = "rs16pfv7qw5ytj"
+        self.infusionpuc = "rs192pqw2nuef8"
+        self.infusioninsert = "rs192pqxnx9gm2"
         # QuantIt
         self.quantItLambda = "rs18qstca8ksrt"
         self.quantItTE = "rs18qst9znacdy"
@@ -450,13 +454,16 @@ class ResourceIDs(object):
     def exoassembly_kits(self, kit=None):
         kit_dict = {"NEBuilder": {"name": "NEBuilder",
                                   "dil_fact": 2,
-                                  "resource": self.nebuilder2x},
+                                  "resource": self.nebuilder2x,
+                                  "pc": {self.nebuilderpc: 2}},
                     "Gibson": {"name": "Gibson",
                                "dil_fact": 2,
                                "resource": self.gibson2x},
                     "InFusion": {"name": "InFusion",
                                  "dil_fact": 5,
-                                 "resource": self.infusion5x}}
+                                 "resource": self.infusion5x,
+                                 "pc": {self.infusionpuc: Unit(1, "uL"),
+                                        self.infusioninsert: Unit(2, "uL")}}}
         return kit_dict.get(kit)
 
     def transformation_controls(self, media=None):
