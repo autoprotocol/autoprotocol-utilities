@@ -250,7 +250,7 @@ def ref_kit_container(protocol, name, container, kit_id, discard=True,
                                        storage="cold_4")
 
     """
-    kit_item = Container(None, protocol.container_type(container), name)
+    kit_item = Container(None, protocol.container_type(container), name, storage=store if store else None)
     if store:
         protocol.refs[name] = Ref(
             name, {"reserve": kit_id, "store": {"where": store}}, kit_item)

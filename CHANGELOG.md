@@ -12,6 +12,7 @@ Changed
 Removed
 
 Fixed
+- Container storage for ref_kit_items()
 
 ## v2.1.4 - 2016-05-11
 ---
