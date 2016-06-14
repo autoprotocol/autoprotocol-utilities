@@ -12,6 +12,17 @@ Changed
 Removed
 
 Fixed
+
+## v2.1.5 - 2016-06-14
+---
+Added
+- include positive control reagents for exonuclease assembly kits
+
+Changed
+
+Removed
+
+Fixed
 - Container storage for ref_kit_items()
 
 ## v2.1.4 - 2016-05-11
