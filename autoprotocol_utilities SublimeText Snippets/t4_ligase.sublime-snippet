@@ -1,0 +1,8 @@
+<snippet>
+    <content><![CDATA[
+t4_ligase(ligase_type="{1:Str media_company}")
+]]></content>
+    <tabTrigger>t4_ligase</tabTrigger>
+    <scope>source.python</scope>
+    <description>Returns T4 ligase reagents</description>
+</snippet>

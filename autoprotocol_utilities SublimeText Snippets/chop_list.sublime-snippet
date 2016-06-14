@@ -1,0 +1,8 @@
+<snippet>
+    <content><![CDATA[
+chop_list(lst={1:List original}, chop_length={2:Int length})
+]]></content>
+    <tabTrigger>chop_list</tabTrigger>
+    <scope>source.python</scope>
+    <description>Chops original into pieces</description>
+</snippet>

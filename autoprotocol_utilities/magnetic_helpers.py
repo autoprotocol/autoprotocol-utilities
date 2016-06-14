@@ -24,6 +24,18 @@ def get_mag_amplicenter(plate, amplitude_fraction=1.0):
         By default the full available amplitude will be used (from center to
         bottom of well). Use this parameter to reduce the amplitude.
 
+    .. code-block:: python
+
+            from autoprotocol import Protocol
+            from autoprotocol_utilities.magnetic_helpers import get_mag_amplicenter
+
+            p = Protocol()
+            example_plate = p.ref(name="Example", id=None, cont_type="96-pcr", storage="ambient")
+            p.dispense(ref=example_plate, reagent="water", columns=[{"column": 4, "volume": "100:microliters"},])
+
+            result = get_mag_amplicenter(plate=example_plate)
+
+
     Returns
     -------
     nametuple
@@ -43,9 +55,9 @@ def get_mag_amplicenter(plate, amplitude_fraction=1.0):
     max_cont_vol = plate.container_type.well_volume_ul
     max_vol = max([x.volume for x in list_of_filled_wells(plate)])
 
-    ratio = float(max_vol.to_base_units()/max_cont_vol.to_base_units())
+    ratio = float(max_vol.to_base_units() / max_cont_vol.to_base_units())
 
-    return {"center": ratio/2, "amplitude": ratio/2/amplitude_fraction}
+    return {"center": ratio / 2, "amplitude": ratio / 2 / amplitude_fraction}
 
 
 def get_mag_frequency(plate, speed):
@@ -60,6 +72,16 @@ def get_mag_frequency(plate, speed):
         Container that is being used
     speed: string
         String defining the speed - can be `slow`, `medium`, `fast`
+
+    .. code-block:: python
+
+            from autoprotocol import Protocol
+            from autoprotocol_utilities.magnetic_helpers import get_mag_frequency
+
+            p = Protocol()
+            example_plate = p.ref(name="Example", id=None, cont_type="96-pcr", storage="ambient")
+            result = get_mag_frequency(plate=example_plate, speed="slow")
+
 
     Returns
     -------

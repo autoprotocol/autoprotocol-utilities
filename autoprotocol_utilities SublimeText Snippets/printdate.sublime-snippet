@@ -1,0 +1,8 @@
+<snippet>
+	<content><![CDATA[
+printdate()
+]]></content>
+	<tabTrigger>printdate</tabTrigger>
+	<scope>source.python</scope>
+	<description>Returns current date string</description>
+</snippet>

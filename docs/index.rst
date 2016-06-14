@@ -4,8 +4,6 @@ Autoprotocol Utils documentation
 
 Autoprotocol Utilities are helper functions and modules to generate autoprotocol faster and include on-the-fly verifications. It can only be used in conjunction with `autoprotocol-python <http://public.readthedocs.com/docs/transcriptic-autoprotocol-python/en/latest/>`_ and automatically installs its required version.
 
-Protocol modules and helper functions such as `createMastermix` can be found in `promodules <https://readthedocs.com/docs/transcriptic-promodules/en/latest/>`_. In contrast to `autoprotocol-utlities`, these do require instances of `Protocol` and return autoprotocol instructions.
-
 .. toctree::
     :maxdepth: 2
 
@@ -30,19 +28,33 @@ or
 
 .. code-block:: none
 
-    $ pip install autoprotocol_utils --extra-index-url https://rZzsY1ZxQC6RiyZapa21@repo.fury.io/transcriptic/
+    $ pip install autoprotocol_utils
 
 
 ************
 Contributing
 ************
 
-Use Phabricator to contribute code. 
+The easiest way to contribute is to fork this repository and submit a pull request. You can also write an email to us if you want to discuss ideas or bugs.The easiest way to contribute is to fork this repository and submit a pull
+request.  You can also write an email to us if you want to discuss ideas or
+bugs.
+
+- Vanessa Biggers: vanessa@transcriptic.com
+- Cornelia Scheitz: conny@transcriptic.com
+
+autoprotocol-utilities is BSD licensed (see LICENSE). Before we can accept your
+pull request, we require that you sign a CLA (Contributor License Agreement)
+allowing us to distribute your work under the BSD license. Email one of the
+authors listed above for more details.
+
 Source Code: https://work.r23s.net/diffusion/APUTILS/
 
 
-* :ref:`genindex`
+************
+Search the Docs
+************
 
+* :ref:`genindex`
 
 :copyright: 2016 by The Autoprotocol Development Team, see AUTHORS
     for more details.

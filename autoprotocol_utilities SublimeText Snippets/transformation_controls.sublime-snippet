@@ -1,0 +1,8 @@
+<snippet>
+    <content><![CDATA[
+transformation_controls(media="{1:Str media_name}")
+]]></content>
+    <tabTrigger>transformation_controls</tabTrigger>
+    <scope>source.python</scope>
+    <description>Returns transformation control</description>
+</snippet>

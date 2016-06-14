@@ -1,0 +1,8 @@
+<snippet>
+    <content><![CDATA[
+ref_kit_container(protocol={1:Protocol}, name="{2:Str name}", container="{3:Str container}", kit_id="{4:Str id)", discard={5:Bool True}, store="{6:Str None}")
+]]></content>
+    <tabTrigger>ref_kit_container</tabTrigger>
+    <scope>source.python</scope>
+    <description>Reserves agar plates</description>
+</snippet>

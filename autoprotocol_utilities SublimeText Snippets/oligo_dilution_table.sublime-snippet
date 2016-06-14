@@ -1,0 +1,8 @@
+<snippet>
+    <content><![CDATA[
+oligo_dilution_table()
+]]></content>
+    <tabTrigger>oligo_dilution_table</tabTrigger>
+    <scope>source.python</scope>
+    <description>Returns oligo dilution amount</description>
+</snippet>

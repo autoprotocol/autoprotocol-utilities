@@ -1,0 +1,8 @@
+<snippet>
+	<content><![CDATA[
+unique_containers(wells=${1:WellGroup wells})
+]]></content>
+	<tabTrigger>unique_containers</tabTrigger>
+	<scope>source.python</scope>
+	<description>Returns list of contained unique containers</description>
+</snippet>

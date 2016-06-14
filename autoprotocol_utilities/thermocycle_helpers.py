@@ -1,7 +1,6 @@
 from autoprotocol.unit import Unit
 import sys
 
-
 if sys.version_info[0] >= 3:
     string_type = str
 else:
@@ -64,7 +63,7 @@ def melt_curve(start=65, end=95, inc=0.5, rate=5):
 def thermocycle_ramp(start_temp, end_temp, total_duration, step_duration):
     """Create a ramp instruction for the thermocyler.
 
-    Create a multi-temperature thermocycling programm commonly used in
+    Create a multi-temperature thermocycling program commonly used in
     annealing protocols. Based on total time and the step duration this
     function computes the temperature increment required for each step within
     the start and the end temperature.

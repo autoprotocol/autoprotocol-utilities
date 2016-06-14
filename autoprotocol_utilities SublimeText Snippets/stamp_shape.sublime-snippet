@@ -1,0 +1,8 @@
+<snippet>
+	<content><![CDATA[
+stamp_shape(wells=${1:Container wells})
+]]></content>
+	<tabTrigger>stamp_shape</tabTrigger>
+	<scope>source.python</scope>
+	<description>Returns biggest stampable shape</description>
+</snippet>

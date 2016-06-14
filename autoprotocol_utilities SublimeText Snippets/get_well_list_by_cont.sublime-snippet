@@ -1,0 +1,8 @@
+<snippet>
+	<content><![CDATA[
+get_well_list_by_cont(wells=${1:WellGroup wells})
+]]></content>
+	<tabTrigger>get_well_list_by_cont</tabTrigger>
+	<scope>source.python</scope>
+	<description>Returns dictionary of wells</description>
+</snippet>

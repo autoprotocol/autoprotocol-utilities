@@ -1,0 +1,8 @@
+<snippet>
+	<content><![CDATA[
+make_list(my_str="${1:Str num,num")
+]]></content>
+	<tabTrigger>make_list</tabTrigger>
+	<scope>source.python</scope>
+	<description>Returns list separated by ','</description>
+</snippet>

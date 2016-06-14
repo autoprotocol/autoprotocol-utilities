@@ -1,0 +1,8 @@
+<snippet>
+	<content><![CDATA[
+flatten_list(l=${1:[List l]})
+]]></content>
+	<tabTrigger>flatten_list</tabTrigger>
+	<scope>source.python</scope>
+	<description>Converts 2D list into 1D</description>
+</snippet>

@@ -1,0 +1,8 @@
+<snippet>
+    <content><![CDATA[
+max_rectangle(mat="{1:mat}")
+]]></content>
+    <tabTrigger>max_rectangle</tabTrigger>
+    <scope>source.python</scope>
+    <description>Returns the max rectangle</description>
+</snippet>

@@ -46,7 +46,8 @@ def printdatetime():
 
     Returns
     -------
-    str
+    Str
+        The current date and time formatted as: YYYY-MM-DD_HH-MM-SS
 
     """
     printdate = datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
@@ -59,7 +60,8 @@ def printdate():
 
     Returns
     -------
-    str
+    Str
+        The current date formatted as: YYYY-MM-DD
 
     """
     printdate = datetime.datetime.now().strftime('%Y-%m-%d')
@@ -107,6 +109,18 @@ def flatten_list(l):
     l : list
         List to flatten
 
+    Example Usage:
+        .. code-block:: python
+
+            from autoprotocol_utilities.misc_helpers import flatten_list
+
+            temp_flattened_list = flatten_list(params["source"])
+            milliq_water_id = "rs17gmh5wafm5p"
+            lysis_buffer = createMastermix(protocol, "Water", "micro-1.5",\
+                reactions=len(temp_flattened_list),resources={milliq_water_id: Unit(50, "ul")})
+            protocol.transfer(source=lysis_buffer, dest=temp_flattened_list, volume="50:ul")
+
+
     Returns
     -------
     list
@@ -118,12 +132,10 @@ def flatten_list(l):
         If l is not of type list
 
     """
-    assert isinstance(l, list), "Needs a list."
-    if l == []:
-        return l
-    if isinstance(l[0], list):
-        return flatten_list(l[0]) + flatten_list(l[1:])
-    return l[:1] + flatten_list(l[1:])
+    if isinstance(l, list):
+        return [x for sublist in l for x in flatten_list(sublist)]
+    else:
+        return [l]
 
 
 def det_new_group(i, base=0):
@@ -212,7 +224,8 @@ def recursive_search(params, class_name=None, method=None, args={}):
     """Recursive params checker
 
     Iterates through all items of a passed in dict, tuple, or list
-    and returns all, optional subset or calls a method on a subset
+    and either returns everything as a list, returns an optional subset of them
+    or calls a specified method on the subset
 
     Parameters
     ----------
@@ -230,16 +243,36 @@ def recursive_search(params, class_name=None, method=None, args={}):
     -------
     list
         Will return a list of all items, or the found items of a specified
-        class, or the
-        response (if not None) from a method called on found items.
+        class, or the response (if not None) from a method called on found items.
 
     Example
     -------
 
     .. code-block:: python
+        from autoprotocol import Protocol
+        from autoprotocol_utilities.misc_helpers import recursive_search
+        from autoprotocol.container import Well
+        from autoprotocol_utilities import volume_check
 
-        recursive_search(params, Well, volume_check,
-                         args={"usage_volume": 1500})
+        p = Protocol()
+        example_container = p.ref(name="example", id=None, cont_type="96-pcr", storage="ambient")
+        #dispense liquid into first two columns
+        p.dispense(ref=example_container, reagent="water", 
+            columns=[
+            {"column": 0, "volume": "20:microliters"},
+            {"column": 1, "volume": "20:microliters"}
+            ])
+
+        #create the well_list, so volume_check can be called on each well individually
+        wells = example_container.wells_from(start=0, num=17, columnwise=True)
+        well_list = []
+        for well in wells:
+            well_list.append(well)
+
+        #calls volume_check on the first 17 wells of example_container, going columnwise
+        result = recursive_search(params=well_list, class_name=Well, method=volume_check)
+        for error in result:
+            print(error)
 
     """
 
@@ -270,6 +303,8 @@ def recursive_search(params, class_name=None, method=None, args={}):
                     response = method(found, **args)
                     if response is not None:
                         method_msgs.append(response)
+            else:
+                raise Exception("Method called has no method __call__")
             return method_msgs
         else:
             return found_instances

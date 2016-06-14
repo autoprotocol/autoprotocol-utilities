@@ -1,0 +1,8 @@
+<snippet>
+    <content><![CDATA[
+return_dispense_media()
+]]></content>
+    <tabTrigger>return_dispense_media</tabTrigger>
+    <scope>source.python</scope>
+    <description>Returns media for reagent dispenser</description>
+</snippet>

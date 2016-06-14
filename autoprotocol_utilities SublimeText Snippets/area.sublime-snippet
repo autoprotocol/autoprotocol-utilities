@@ -1,0 +1,8 @@
+<snippet>
+    <content><![CDATA[
+area(rect="{1:Rectangle rect}")
+]]></content>
+    <tabTrigger>area</tabTrigger>
+    <scope>source.python</scope>
+    <description>Returns area</description>
+</snippet>

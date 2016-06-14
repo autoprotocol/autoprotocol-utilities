@@ -1,0 +1,8 @@
+<snippet>
+	<content><![CDATA[
+list_of_filled_wells(wells={1:Container wells})
+]]></content>
+	<tabTrigger>list_of_filled_wells</tabTrigger>
+	<scope>source.python</scope>
+	<description>Determines which wells are filled</description>
+</snippet>

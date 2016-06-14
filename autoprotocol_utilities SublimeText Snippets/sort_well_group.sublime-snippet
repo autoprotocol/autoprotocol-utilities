@@ -1,0 +1,8 @@
+<snippet>
+	<content><![CDATA[
+sort_well_group(wells=${1:WellGroup wells})
+]]></content>
+	<tabTrigger>sort_well_group</tabTrigger>
+	<scope>source.python</scope>
+	<description>Sorts WellGroup</description>
+</snippet>

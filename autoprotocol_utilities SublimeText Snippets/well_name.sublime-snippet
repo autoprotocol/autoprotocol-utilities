@@ -1,0 +1,8 @@
+<snippet>
+	<content><![CDATA[
+well_name(well=${1:WellGroup container})
+]]></content>
+	<tabTrigger>volume_check</tabTrigger>
+	<scope>source.python</scope>
+	<description>Returns well name</description>
+</snippet>

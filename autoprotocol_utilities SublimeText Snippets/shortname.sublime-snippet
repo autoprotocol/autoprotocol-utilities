@@ -1,0 +1,8 @@
+<snippet>
+	<content><![CDATA[
+container_type_checker(containers=${1:Container containers}, shortname="${2:Str container_type}")
+]]></content>
+	<tabTrigger>container_type_checker</tabTrigger>
+	<scope>source.python</scope>
+	<description>Verifies that containers is specified type</description>
+</snippet>

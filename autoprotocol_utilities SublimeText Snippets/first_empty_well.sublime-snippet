@@ -1,0 +1,8 @@
+<snippet>
+	<content><![CDATA[
+first_empty_well(wells=${1:Container wells})
+]]></content>
+	<tabTrigger>first_empty_well</tabTrigger>
+	<scope>source.python</scope>
+	<description>Get first well after last filled well</description>
+</snippet>

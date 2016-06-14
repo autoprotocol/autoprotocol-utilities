@@ -165,13 +165,13 @@ def sort_well_group(wells, columnwise=False):
     assert isinstance(wells, WellGroup), "wells must be an instance"
     " of the WellGroup class or of type list"
     well_list = [(
-        well,
-        well.container.id,
-        well.container.name,
-        well.container.decompose(well)[0],
-        well.container.decompose(well)[1]
-    ) for well in wells
-    ]
+                     well,
+                     well.container.id,
+                     well.container.name,
+                     well.container.decompose(well)[0],
+                     well.container.decompose(well)[1]
+                 ) for well in wells
+                 ]
 
     if columnwise:
         sorted_well_list = sorted(well_list, key=itemgetter(1, 2, 4, 3))
@@ -256,7 +256,7 @@ def stamp_shape(wells, full=True, quad=False):
         assert len(unique_containers(wells)) == 1, "Stamp_shape: wells have "
         "to come from one container"
         for well in wells:
-            assert isinstance(well, (Well)), "Stamp_shape: elements of wells"
+            assert isinstance(well, Well), "Stamp_shape: elements of wells"
             " have to be of type Well"
         wells = sort_well_group(wells)
         cont = unique_containers(wells)[0]
@@ -271,26 +271,21 @@ def stamp_shape(wells, full=True, quad=False):
             if not (r.height == rows or r.width == cols):
                 height = 0
                 width = 0
-        # Determine start_well and wells not included in the rectangle
         if width != 0 or height != 0:
             start_index = (r.y * cols) + r.x
         else:
             start_index = None
-        # Determine wells_included
         wells_included = []
         for y in range(height):
             for z in range(width):
-                wells_included.append(start_index + y*cols + z)
-        # 384 well case
+                wells_included.append(start_index + y * cols + z)
         if q is not None:
             wells_included = get_well_in_quadrant(wells_included, q)
             if width != 0 or height != 0:
                 start_index = get_well_in_quadrant([start_index], q)[0]
 
-        # Determine wells_idx_remaining
         wells_idx_remaining = [x.index for x in wells if x.index not in
                                wells_included]
-        # Convert all indices to wells
         if start_index is not None:
             start_well = [x for x in wells if x.index == start_index][0]
         else:
@@ -310,7 +305,6 @@ def stamp_shape(wells, full=True, quad=False):
     well_count = cont.container_type.well_count
     indices = [x.index for x in wells]
 
-    # If the container is not a 96 or 384 well plate we cannot stamp at all
     if well_count not in (96, 384):
         shape = stamp_shape(start_well=None,
                             shape=dict(rows=0, columns=0),
@@ -327,7 +321,7 @@ def stamp_shape(wells, full=True, quad=False):
         for i, bnry_list in enumerate(bnry_list_list):
             bnry_mat = chop_list(bnry_list, 12)
             r = max_rectangle(bnry_mat, value=1)
-            temp_shape.append(make_stamp_tuple(r, rows/2, cols/2, i))
+            temp_shape.append(make_stamp_tuple(r, rows / 2, cols / 2, i))
             temp_remaining_wells.append(temp_shape[i].remaining_wells)
         temp_remaining_wells = Counter(flatten_list(temp_remaining_wells))
         for k, v in temp_remaining_wells.iteritems():
@@ -404,9 +398,8 @@ def is_columnwise(wells):
 
     """
 
-    # call with full=True for the first round
-    # # special case for less than 8 wells.
     em = []
+    colwise = False
     if isinstance(wells, Well):
         colwise = False
     else:
@@ -418,8 +411,6 @@ def is_columnwise(wells):
         if len(unique_containers(wells)) != 1:
             em.append("is_columnwise: wells have to come from one container")
 
-    # lets not make this per container - but just assume one comes in. show
-    # the example with using get_well_list_by_cont
     cont = unique_containers(wells)[0]
 
     all_wells = list(cont.all_wells(columnwise=True))
@@ -542,10 +533,23 @@ def volume_check(well, usage_volume=0, use_safe_vol=False,
                  use_safe_dead_diff=False):
     """Basic Volume check
 
-    Takes an aliquot and if usaage_volume is 0 checks if that aliquot
-    is above the dead volume for its well type.
-    If the usage_volume is set it will check if there is enough volume
-    above the dead_volume to execute the pipette.
+    Checks to see if the designated well has usage_volume above the well's
+    dead volume. In other words, this method checks if usage_volume can be
+    pipetted out of well.
+    
+    Example Usage:
+        .. code-block:: python
+            from autoprotocol import Protocol
+            from autoprotocol_utilities.container_helpers import volume_check
+
+            p = Protocol()
+            example_container = p.ref(name="exampleplate", id=None, cont_type="96-pcr", storage="warm_37")
+            p.dispense(ref=example_container, reagent="water", columns=[{"column": 0, "volume": "10:microliters"}])
+            
+            #Checks if there are 5 microliters above the dead volume available in well 0
+            assert (volume_check(well=example_container.well(0), usage_volume=5)) is None
+            #Checks if the volume in well 0 is at least the safe minimum volume
+            assert (volume_check(well=example_container.well(0), usage_volume=0, use_safe_vol=True) is None
 
     Parameters
     ----------
@@ -583,6 +587,7 @@ def volume_check(well, usage_volume=0, use_safe_vol=False,
         well = [well]
 
     error_message = []
+    # noinspection PyTypeChecker
     for aliquot in well:
         assert isinstance(aliquot, Well)
         if isinstance(usage_volume, (int, float)):
@@ -615,7 +620,7 @@ def volume_check(well, usage_volume=0, use_safe_vol=False,
             if usage_volume == 0:
                 error_message.append(
                     "You want to pipette from a container with {:~P} {!s}. "
-                    "However, you aliquot: {!s}, only has {:~P}.".format(
+                    "However, your aliquot: {!s}, only has {:~P}.".format(
                         correction_vol, message_string,
                         well_name(aliquot), volume))
             else:
@@ -628,7 +633,7 @@ def volume_check(well, usage_volume=0, use_safe_vol=False,
                         well_name(aliquot), volume))
     if error_message:
         error_message = str(len(error_message)) + " volume errors: " + \
-            ", ".join(error_message)
+                        ", ".join(error_message)
     else:
         error_message = None
     return error_message
@@ -745,12 +750,12 @@ def container_type_checker(containers, shortname, exclude=False):
 
     if error_containers:
         message_ending = ' not of the required type(s): ' + \
-            ', '.join(shortname)
+                         ', '.join(shortname)
         if exclude:
             message_ending = ' of the excluded type(s): ' + \
-                ', '.join(shortname)
+                             ', '.join(shortname)
         error_message = "Incompatible container(s) found : " + \
-            ', '.join(error_containers) + message_ending
+                        ', '.join(error_containers) + message_ending
 
     return error_message
 
@@ -761,6 +766,7 @@ def get_well_list_by_cont(wells):
     Parameters
     ----------
     wells: list, WellGroup
+        The list of wells to be sorted by the containers that they are in
 
     Returns
     -------

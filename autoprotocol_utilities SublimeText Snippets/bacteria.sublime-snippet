@@ -1,0 +1,8 @@
+<snippet>
+    <content><![CDATA[
+bacteria(bact="{1:Str bacteria_name}")
+]]></content>
+    <tabTrigger>bacteria</tabTrigger>
+    <scope>source.python</scope>
+    <description>Returns bacteria id</description>
+</snippet>

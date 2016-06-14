@@ -1,0 +1,8 @@
+<snippet>
+    <content><![CDATA[
+exoassembly_kits(kit="{1:Str kit_name}")
+]]></content>
+    <tabTrigger>exoassembly_kits</tabTrigger>
+    <scope>source.python</scope>
+    <description>Returns exoassembly kit id</description>
+</snippet>

@@ -4,7 +4,6 @@ from autoprotocol import Unit
 from collections import namedtuple
 import sys
 
-
 if sys.version_info[0] >= 3:
     string_type = str
 else:
@@ -48,11 +47,9 @@ def oligo_scale_default(length, scale, label):
 
     if scale not in scale_ranges.keys():
         error_message = ("The specified oligo, '{0!s}', does not have a "
-                         "recognized scale of {0!s}".format(
-                             ', '.join(scale_ranges.keys)))
+                         "recognized scale of {0!s}".format(', '.join(scale_ranges.keys)))
     else:
-        ok = True if (length >= scale_ranges[scale][0] and
-                      length <= scale_ranges[scale][1]) else False
+        ok = True if ((length >= scale_ranges[scale][0]) & (length <= scale_ranges[scale][1])) else False
 
     if not ok:
         error_message = ("The specified oligo, '{0!s}', is {1!s} base pairs "
@@ -128,7 +125,7 @@ def oligo_dilution_table(conc=None, sc=None):
     dilution_table = {}
     for i, y in enumerate(concentration):
         dilution_table[y] = dict(
-            zip(scale, volumes[i*len(scale):i*len(scale)+len(scale)]))
+            zip(scale, volumes[i * len(scale):i * len(scale) + len(scale)]))
 
     if conc and sc:
         return dilution_table[conc][sc]
@@ -177,7 +174,7 @@ def return_agar_plates(wells=6):
                   "lb_miller_noAB": "ki17t8jejbea4z"}
     else:
         raise ValueError("Wells has to be an integer, either 1 or 6")
-    return(plates)
+    return (plates)
 
 
 def return_dispense_media():
@@ -203,14 +200,13 @@ def return_dispense_media():
              "100_ug/ml_Ampicillin": "lb_miller_100ug_ml_amp",
              "100_ug/mL_Spectinomycin": "lb_miller_100ug_ml_specto",
              "30_ug/ml_Kanamycin": "lb_miller_30ug_ml_kan",
-             "50_ug/ml_Kanamycin_25_ug/ml_Chloramphenicol":
-             "lb_miller_50ug_ml_kan_25ug_ml_cm",
              "15_ug/ml_Tetracycline": "lb_miller_15ug_ml_tet",
+             "50_ug/ml_Kanamycin_25_ug/ml_Chloramphenicol": "lb_miller_50ug_ml_kan_25ug_ml_cm",
              "25_ug/ml_Chloramphenicol": "lb_miller_25ug_ml_cm",
              "LB_miller": "lb_miller_noAB",
              "TB_100_ug/ml_Ampicillin": "tb_100ug_ml_amp",
              "TB_50_ug/ml_Kanamycin": "tb_50ug_ml_kan"}
-    return(media)
+    return (media)
 
 
 def ref_kit_container(protocol, name, container, kit_id, discard=True,
@@ -257,11 +253,10 @@ def ref_kit_container(protocol, name, container, kit_id, discard=True,
     else:
         protocol.refs[name] = Ref(
             name, {"reserve": kit_id, "discard": discard}, kit_item)
-    return(kit_item)
+    return kit_item
 
 
 class ResourceIDs(object):
-
     """Common resource ids
 
     A list of resource identification numbers used to provision

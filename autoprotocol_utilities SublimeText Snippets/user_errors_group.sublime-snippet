@@ -1,0 +1,8 @@
+<snippet>
+	<content><![CDATA[
+user_errors_group(error_msgs=${1:["Str list"]})
+]]></content>
+	<tabTrigger>user_errors_group</tabTrigger>
+	<scope>source.python</scope>
+	<description>Displays list of errors as one error</description>
+</snippet>

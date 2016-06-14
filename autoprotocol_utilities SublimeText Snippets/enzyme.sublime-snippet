@@ -1,0 +1,8 @@
+<snippet>
+    <content><![CDATA[
+restriction_enzyme_buffers(enzyme="{1:Str enzyme_name}")
+]]></content>
+    <tabTrigger>restriction_enzyme_buffers</tabTrigger>
+    <scope>source.python</scope>
+    <description>Returns enzyme_id and buffer_id</description>
+</snippet>

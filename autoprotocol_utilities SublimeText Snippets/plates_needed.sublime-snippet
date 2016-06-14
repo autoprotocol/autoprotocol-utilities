@@ -1,0 +1,8 @@
+<snippet>
+	<content><![CDATA[
+plates_needed(wells_needed=${1:Int wells_needed}, wells_available=${2:Container wells_available})
+]]></content>
+	<tabTrigger>plates_needed</tabTrigger>
+	<scope>source.python</scope>
+	<description>Returns the number of plates needed</description>
+</snippet>

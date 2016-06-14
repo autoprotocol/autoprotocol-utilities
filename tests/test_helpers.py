@@ -5,10 +5,10 @@ from autoprotocol.container import Well, WellGroup, Container
 from autoprotocol.unit import Unit
 from autoprotocol_utilities.container_helpers import list_of_filled_wells, \
     first_empty_well, unique_containers, sort_well_group, stamp_shape, \
-    is_columnwise, volume_check, set_pipettable_volume, well_name, \
+    is_columnwise, plates_needed, volume_check, set_pipettable_volume, well_name, \
     container_type_checker, get_well_list_by_cont
 from autoprotocol_utilities.misc_helpers import make_list, flatten_list, \
-    char_limit, recursive_search, transfer_properties, user_errors_group
+    char_limit, det_new_group, recursive_search, transfer_properties, user_errors_group
 from autoprotocol_utilities.magnetic_helpers import get_mag_frequency, \
     get_mag_amplicenter
 
@@ -38,7 +38,7 @@ class TestContainerfunctions:
         with pytest.raises(Exception):
             func(*arg)
 
-    def test_filled_wells(self):
+    def test_list_of_filled_wells(self):
         assert len(list_of_filled_wells(self.c)) == 30
         assert len(list_of_filled_wells(self.c, empty=True)) == 66
         assert isinstance(list_of_filled_wells(self.c)[0], Well)
@@ -102,7 +102,7 @@ class TestContainerfunctions:
          [c2.well(24), {"rows": 1, "columns": 12}, []],
          [c2.well(25), {"rows": 1, "columns": 12}, []]])
     ])
-    def test_shape(self, wells, full, quad, r):
+    def test_stamp_shape(self, wells, full, quad, r):
         res = stamp_shape(wells, full, quad)
         print res
         if quad:
@@ -136,6 +136,11 @@ class TestContainerfunctions:
         wells = self.c.wells_from(0, 8, columnwise=True)
         wells.append(self.c.well(14))
         assert is_columnwise(wells) is False
+
+    def test_plates_needed(self):
+        assert plates_needed(35, self.c) == 1
+        assert plates_needed(350, self.c2) == 1
+        assert plates_needed(234, "384-flat") == 1
 
     def test_set_pipettable_volume(self):
         old_vol = Unit(20, "microliter")
@@ -223,6 +228,11 @@ class TestDataformattingfunctions:
         l = [[1, 2], [3, 4], [[5, 6], [[7, 8], [9, 10], 11], 12], 13]
         assert flatten_list(l) == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
 
+    def test_det_new_group(self):
+        base = 12
+        for x in range(0,13):
+            assert (det_new_group(i=x, base=12)) == (x==12)
+
     @pytest.mark.parametrize("string, length, trunc, clip, r", [
         ('ILoveThis', 6, False, False, ['ILoveThis', 'The specified label']),
         ('ILoveThis', 6, False, True, ['veThis', None]),
@@ -306,12 +316,12 @@ class TestMagneticHelperFunctions:
     p = Protocol()
     c = p.ref("testplate_pcr", id=None, cont_type="96-deep-kf", discard=True)
 
-    def test_get_mag_frequency(self):
-        assert get_mag_frequency(self.c, "fast") == "2.5:hertz"
-        assert get_mag_frequency(self.c, "slow") == "0.15:hertz"
-
     def test_get_mag_amplicenter(self):
         self.c.well(45).set_volume("500:microliter")
         resp = get_mag_amplicenter(self.c)
         assert resp["center"] == 0.25
         assert resp["amplitude"] == 0.25
+
+    def test_get_mag_frequency(self):
+        assert get_mag_frequency(self.c, "fast") == "2.5:hertz"
+        assert get_mag_frequency(self.c, "slow") == "0.15:hertz"

@@ -1,0 +1,8 @@
+<snippet>
+    <content><![CDATA[
+get_quadrant_indices(quad={1:Int})
+]]></content>
+    <tabTrigger>get_quadrant_indices</tabTrigger>
+    <scope>source.python</scope>
+    <description>Returns well indices in quadrant</description>
+</snippet>

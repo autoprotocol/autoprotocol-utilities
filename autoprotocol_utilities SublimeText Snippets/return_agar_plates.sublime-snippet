@@ -1,0 +1,8 @@
+<snippet>
+    <content><![CDATA[
+return_agar_plates()
+]]></content>
+    <tabTrigger>return_agar_plates</tabTrigger>
+    <scope>source.python</scope>
+    <description>Returns available agar plates</description>
+</snippet>

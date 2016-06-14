@@ -1,0 +1,8 @@
+<snippet>
+    <content><![CDATA[
+diluents(dil="{1:Str diluent_name}")
+]]></content>
+    <tabTrigger>diluents</tabTrigger>
+    <scope>source.python</scope>
+    <description>Returns diluent id</description>
+</snippet>

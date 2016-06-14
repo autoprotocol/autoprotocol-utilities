@@ -1,0 +1,8 @@
+<snippet>
+	<content><![CDATA[
+get_mag_amplicenter(plate=${1:Container plate})
+]]></content>
+	<tabTrigger>get_mag_amplicenter</tabTrigger>
+	<scope>source.python</scope>
+	<description>Returns amplitude and center</description>
+</snippet>

@@ -1,0 +1,8 @@
+<snippet>
+	<content><![CDATA[
+volume_check(well=${1:WellGroup container}, usage_volume=${2:Unit volume})
+]]></content>
+	<tabTrigger>volume_check</tabTrigger>
+	<scope>source.python</scope>
+	<description>Checks if usage_volume is in well</description>
+</snippet>

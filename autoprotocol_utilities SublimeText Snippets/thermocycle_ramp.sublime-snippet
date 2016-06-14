@@ -1,0 +1,8 @@
+<snippet>
+	<content><![CDATA[
+thermocycle_ramp(start_temp=${1:Int temp}, end_temp=${2:Int temp}, total_duration="${3:Str duration}", step_duration="${4:Str step}")
+]]></content>
+	<tabTrigger>thermocycle_ramp</tabTrigger>
+	<scope>source.python</scope>
+	<description>Creates thermocycle ramp instruct</description>
+</snippet>

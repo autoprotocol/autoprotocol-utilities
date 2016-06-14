@@ -1,0 +1,8 @@
+<snippet>
+	<content><![CDATA[
+char_limit(label="${1:Str label}")
+]]></content>
+	<tabTrigger>char_limit</tabTrigger>
+	<scope>source.python</scope>
+	<description>Enforces string limit on label</description>
+</snippet>

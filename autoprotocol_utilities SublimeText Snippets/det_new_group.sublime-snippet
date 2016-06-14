@@ -1,0 +1,8 @@
+<snippet>
+	<content><![CDATA[
+det_new_group(i=${1:Int i}, base=${Int 0})
+]]></content>
+	<tabTrigger>det_new_group</tabTrigger>
+	<scope>source.python</scope>
+	<description>Returns if new group should be added</description>
+</snippet>

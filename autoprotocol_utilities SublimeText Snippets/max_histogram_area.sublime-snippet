@@ -1,0 +1,8 @@
+<snippet>
+    <content><![CDATA[
+max_histogram_area(histogram={1:histogram})
+]]></content>
+    <tabTrigger>max_histogram_area</tabTrigger>
+    <scope>source.python</scope>
+    <description>Returns max rectangle area in histogram</description>
+</snippet>

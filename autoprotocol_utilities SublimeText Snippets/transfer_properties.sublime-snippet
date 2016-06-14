@@ -1,0 +1,8 @@
+<snippet>
+	<content><![CDATA[
+transfer_properties(src_wells={1:Well src_wells}, dest_wells={2:Well dest_wells})
+]]></content>
+	<tabTrigger>transfer_properties</tabTrigger>
+	<scope>source.python</scope>
+	<description>Transfer properties to well</description>
+</snippet>

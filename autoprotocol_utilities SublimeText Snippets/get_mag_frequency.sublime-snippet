@@ -1,0 +1,8 @@
+<snippet>
+	<content><![CDATA[
+get_mag_frequency(plate=${1:Container plate}, speed="${2:Str speed}")
+]]></content>
+	<tabTrigger>get_mag_frequency</tabTrigger>
+	<scope>source.python</scope>
+	<description>Returns frequency</description>
+</snippet>

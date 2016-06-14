@@ -1,0 +1,8 @@
+<snippet>
+    <content><![CDATA[
+binary_list(wells={1:[Sorted wells]}, length={2:Int length})
+]]></content>
+    <tabTrigger>binary_list</tabTrigger>
+    <scope>source.python</scope>
+    <description>Turns wells into a binary list</description>
+</snippet>

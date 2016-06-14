@@ -1,0 +1,8 @@
+<snippet>
+    <content><![CDATA[
+get_quadrant_binary_list(quad={1:Int})
+]]></content>
+    <tabTrigger>get_quadrant_binary_list</tabTrigger>
+    <scope>source.python</scope>
+    <description>Take list of elements and return quadrant</description>
+</snippet>

@@ -1,0 +1,8 @@
+<snippet>
+	<content><![CDATA[
+set_pipettable_volume(well=${1:Container container})
+]]></content>
+	<tabTrigger>set_pipettable_volume</tabTrigger>
+	<scope>source.python</scope>
+	<description>Removes dead volume from well</description>
+</snippet>

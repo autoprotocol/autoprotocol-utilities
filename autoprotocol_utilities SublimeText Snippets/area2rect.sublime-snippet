@@ -1,0 +1,8 @@
+<snippet>
+    <content><![CDATA[
+area2rect(area="{1:Area }")
+]]></content>
+    <tabTrigger>ararea2rectea</tabTrigger>
+    <scope>source.python</scope>
+    <description>Returns the associated rectangle</description>
+</snippet>

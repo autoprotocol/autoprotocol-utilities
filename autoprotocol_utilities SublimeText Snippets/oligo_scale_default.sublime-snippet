@@ -1,0 +1,8 @@
+<snippet>
+    <content><![CDATA[
+oligo_scale_default(length={1:Int len}, scale="{2:Str scale}", label="{3:Str label}")
+]]></content>
+    <tabTrigger>oligo_scale_default</tabTrigger>
+    <scope>source.python</scope>
+    <description>Detects if oligo length matches scale</description>
+</snippet>

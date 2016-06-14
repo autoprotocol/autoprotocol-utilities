@@ -1,0 +1,8 @@
+<snippet>
+	<content><![CDATA[
+is_columnwise(wells=${1:WellGroup wells})
+]]></content>
+	<tabTrigger>is_columnwise</tabTrigger>
+	<scope>source.python</scope>
+	<description>Detects if wells is formatted columnwise</description>
+</snippet>

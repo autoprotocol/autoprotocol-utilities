@@ -1,0 +1,8 @@
+<snippet>
+    <content><![CDATA[
+get_well_in_quadrant(quadwells={1:List wells}, quad={2:Int quadrant})
+]]></content>
+    <tabTrigger>get_well_in_quadrant</tabTrigger>
+    <scope>source.python</scope>
+    <description>Return correct well index</description>
+</snippet>
