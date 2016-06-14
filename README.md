@@ -1,32 +1,47 @@
 # Autoprotocol Utilities
 
+## ** View Autoprotocol-utilities [Documentation](http://autoprotocol-utilities.readthedocs.org/en/latest/ on readthedocs.org)**
+
+[Autoprotocol](http://www.autoprotocol.org) is a standard way to express
+experiments in life science. This repository contains helper functions to be used with the [Autoprotocol-python](https://github.com/autoprotocol/autoprotocol-python) library to generate Autoprotocol.
 
 ## Installation
 
-	$ pip install autoprotocol_utilities --extra-index-url https://rZzsY1ZxQC6RiyZapa21@repo.fury.io/transcriptic/`
+	$ pip install autoprotocol_utilities
 
 	OR
 	
-    $ git clone ssh://vcs@work.r23s.net/diffusion/APUTILS/autoprotocol-utilities.git
+    $ git clone https://github.com/autoprotocol/autoprotocol-utilities
     $ cd autoprotocol-utilities
     $ python setup.py install
 
-## Requirements for development
+ Check the releases tab or the [changelog](https://github.com/autoprotocol/autoprotocol-utilities/blob/master/CHANGELOG.md) in this repository to see the latest release that will be downloaded.
 
-	sphinxcontrib-napoleon
-	sphinx
-	pytest
+## Example Usage
 
-## To build docs locally
-	Install development dependencies
+    .. code-block:: python
+        from autoprotocol import Protocol
+        from autoprotocol_utilities.container_helpers import volume_check
 
-	$ cd docs
-	$ make html
+        p = Protocol()
+        example_container = p.ref(name="exampleplate", id=None, cont_type="96-pcr", storage="warm_37")
+        p.dispense(ref=example_container, reagent="water", columns=[{"column": 0, "volume": "10:microliters"}])
 
-	Open the build folder to open the page
+        # Checks if there are 5 microliters above the dead volume available in well 0
+        assert (volume_check(well=example_container.well(0), usage_volume=5)) is None
+        # Checks if the volume in well 0 is at least the safe minimum volume
+        assert (volume_check(well=example_container.well(0), usage_volume=0, use_safe_vol=True) is None
 
-## To run tests
-	Install development dependencies
-	At the top level folder run
+## Extras
 
-	$ py.test
+A folder of SublimeText snippets for this library is included in this repository.
+
+## Contributing
+
+The easiest way to contribute is to fork this repository and submit a pull
+request.  You can also submit an issue or write an email to us at
+support@transcriptic.com if you want to discuss ideas or bugs.
+
+autoprotocol-utilities is BSD licensed (see [LICENSE](https://github.com/autoprotocol/autoprotocol-utilities/blob/master/LICENSE.rst)).
+Before we can accept your pull request, we require that you sign a CLA (Contributor License Agreement)
+allowing us to distribute your work under the BSD license. Email one of the [AUTHORS](https://github.com/autoprotocol/autoprotocol-utilities/blob/master/AUTHORS.rst) for more details.

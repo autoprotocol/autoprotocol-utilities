@@ -165,13 +165,13 @@ def sort_well_group(wells, columnwise=False):
     assert isinstance(wells, WellGroup), "wells must be an instance"
     " of the WellGroup class or of type list"
     well_list = [(
-                     well,
-                     well.container.id,
-                     well.container.name,
-                     well.container.decompose(well)[0],
-                     well.container.decompose(well)[1]
-                 ) for well in wells
-                 ]
+        well,
+        well.container.id,
+        well.container.name,
+        well.container.decompose(well)[0],
+        well.container.decompose(well)[1]
+        ) for well in wells
+    ]
 
     if columnwise:
         sorted_well_list = sorted(well_list, key=itemgetter(1, 2, 4, 3))
@@ -536,8 +536,9 @@ def volume_check(well, usage_volume=0, use_safe_vol=False,
     Checks to see if the designated well has usage_volume above the well's
     dead volume. In other words, this method checks if usage_volume can be
     pipetted out of well.
-    
+
     Example Usage:
+
         .. code-block:: python
             from autoprotocol import Protocol
             from autoprotocol_utilities.container_helpers import volume_check
@@ -545,7 +546,7 @@ def volume_check(well, usage_volume=0, use_safe_vol=False,
             p = Protocol()
             example_container = p.ref(name="exampleplate", id=None, cont_type="96-pcr", storage="warm_37")
             p.dispense(ref=example_container, reagent="water", columns=[{"column": 0, "volume": "10:microliters"}])
-            
+
             #Checks if there are 5 microliters above the dead volume available in well 0
             assert (volume_check(well=example_container.well(0), usage_volume=5)) is None
             #Checks if the volume in well 0 is at least the safe minimum volume
@@ -633,7 +634,7 @@ def volume_check(well, usage_volume=0, use_safe_vol=False,
                         well_name(aliquot), volume))
     if error_message:
         error_message = str(len(error_message)) + " volume errors: " + \
-                        ", ".join(error_message)
+            ", ".join(error_message)
     else:
         error_message = None
     return error_message

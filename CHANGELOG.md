@@ -5,7 +5,6 @@ This project adheres to [Semantic Versioning](http://semver.org/)
 ## Unreleased
 ---
 Added
-- include positive control reagents for exonuclease assembly kits
 
 Changed
 

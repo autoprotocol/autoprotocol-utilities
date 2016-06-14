@@ -257,7 +257,7 @@ def recursive_search(params, class_name=None, method=None, args={}):
         p = Protocol()
         example_container = p.ref(name="example", id=None, cont_type="96-pcr", storage="ambient")
         #dispense liquid into first two columns
-        p.dispense(ref=example_container, reagent="water", 
+        p.dispense(ref=example_container, reagent="water",
             columns=[
             {"column": 0, "volume": "20:microliters"},
             {"column": 1, "volume": "20:microliters"}
