@@ -1,6 +1,6 @@
 # Autoprotocol Utilities
 
-** View Autoprotocol-utilities [Documentation](http://autoprotocol-utilities.readthedocs.org/en/latest/ on readthedocs.org)**
+>View Autoprotocol-utilities [Documentation](http://autoprotocol-utilities.readthedocs.org/en/latest/ on readthedocs.org)
 
 [Autoprotocol](http://www.autoprotocol.org) is a standard way to express
 experiments in life science. This repository contains helper functions to be used with the [Autoprotocol-python](https://github.com/autoprotocol/autoprotocol-python) library to generate Autoprotocol.
@@ -19,18 +19,18 @@ experiments in life science. This repository contains helper functions to be use
 
 ## Example Usage
 
-    .. code-block:: python
-        from autoprotocol import Protocol
-        from autoprotocol_utilities.container_helpers import volume_check
+	```python
+	from autoprotocol import Protocol
+	from autoprotocol_utilities.container_helpers import volume_check
 
-        p = Protocol()
-        example_container = p.ref(name="exampleplate", id=None, cont_type="96-pcr", storage="warm_37")
-        p.dispense(ref=example_container, reagent="water", columns=[{"column": 0, "volume": "10:microliters"}])
+	p = Protocol()
+	example_container = p.ref(name="exampleplate", id=None, cont_type="96-pcr", storage="warm_37")
+	p.dispense(ref=example_container, reagent="water", columns=[{"column": 0, "volume": "10:microliters"}])
 
-        # Checks if there are 5 microliters above the dead volume available in well 0
-        assert (volume_check(well=example_container.well(0), usage_volume=5)) is None
-        # Checks if the volume in well 0 is at least the safe minimum volume
-        assert (volume_check(well=example_container.well(0), usage_volume=0, use_safe_vol=True) is None
+	# Checks if there are 5 microliters above the dead volume available in well 0
+	assert (volume_check(well=example_container.well(0), usage_volume=5)) is None
+	# Checks if the volume in well 0 is at least the safe minimum volume
+	assert (volume_check(well=example_container.well(0), usage_volume=0, use_safe_vol=True) is None
 
 ## Extras
 
