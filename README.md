@@ -19,7 +19,8 @@ experiments in life science. This repository contains helper functions to be use
 
 ## Example Usage
 
-	```python
+.. code-block:: python
+
 	from autoprotocol import Protocol
 	from autoprotocol_utilities.container_helpers import volume_check
 

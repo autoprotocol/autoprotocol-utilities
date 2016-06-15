@@ -20,7 +20,7 @@ Installation
 ************
 .. code-block:: none
 
-    $ git clone ssh://vcs@work.r23s.net/diffusion/APUTILS/autoprotocol-utilities.git
+    $ git clone https://github.com/autoprotocol/autoprotocol-utilities
     $ cd autoprotocol-utilities
     $ python setup.py install
 
@@ -28,7 +28,7 @@ or
 
 .. code-block:: none
 
-    $ pip install autoprotocol_utils
+    $ pip install autoprotocol_utilities
 
 
 ************
@@ -47,7 +47,7 @@ pull request, we require that you sign a CLA (Contributor License Agreement)
 allowing us to distribute your work under the BSD license. Email one of the
 authors listed above for more details.
 
-Source Code: https://work.r23s.net/diffusion/APUTILS/
+Source Code: https://github.com/autoprotocol/autoprotocol-utilities
 
 
 ************
