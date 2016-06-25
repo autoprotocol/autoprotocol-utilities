@@ -59,10 +59,10 @@ def first_empty_well(wells, return_index=True):
     Parameters
     ----------
     wells : Container, WellGroup, list
-        Can accept a container, WellGroup or list of wells
+        Can accept a container, WellGroup or list of wells.
     return_index : bool, optional
         Default true, if true returns the index of the well, if false the
-        well itself
+        well itself.
 
     Returns
     -------
@@ -104,10 +104,32 @@ def unique_containers(wells):
 
     Get a list of unique containers for a list of wells
 
+    Example Usage:
+
+    .. code-block:: python
+
+        from autoprotocol import Protocol
+        from autoprotocol_utilities import get_well_list_by_cont
+
+        p = Protocol()
+
+        wells_1 = p.ref("plate_1_96", None, "96-flat", discard=True).wells_from("A1", 12)
+        wells_2 = p.ref("plate_2_96", None, "96-flat", discard=True).wells(0, 24, 49)
+        wells_3 = p.ref("plate_3_96", None, "96-flat", discard=True).well("D3")
+
+        many_wells = wells_1 + wells_2 + wells_3
+        unique_containers(many_wells)
+
+    Returns:
+
+    .. code-block:: python
+
+        [Container(plate_1_96), Container(plate_3_96), Container(plate_2_96)]
+
     Parameters
     ----------
     wells : Well, list, WellGroup
-        List of wells
+        List of wells.
 
     Returns
     -------
@@ -135,14 +157,13 @@ def sort_well_group(wells, columnwise=False):
     """Sort a well group in rowwise or columnwise format.
 
     This function sorts first by container id and name, then by row or
-    column, as needed. When the webapp returns aliquot+ inputs, it
-    usually does so as a rowwise sorted well group, so this function
-    can be useful for re-sorting when necessary.
+    column, as needed. This function is useful to sort a list of wells
+    passed in an unknown order (eg. user entered).
 
     Parameters
     ----------
     wells : list, WellGroup
-        List of wells to sort
+        List of wells to sort.
     columnwise : bool, optional
 
     Returns
@@ -190,6 +211,113 @@ def stamp_shape(wells, full=True, quad=False):
     If a list of wells from a container that cannot be stamped is provided,
     all wells will be returned in `remaining_wells` of the stamp shape.
 
+    Example Usage:
+
+    .. code-block:: python
+
+        from autoprotocol import Protocol
+        from autoprotocol_utilities import stamp_shape, first_empty_well, flatten_list
+
+        p = Protocol()
+        plate = p.ref("myplate", cont_type="96-pcr", storage="cold_4")
+        dest_plate = p.ref("newplate", cont_type="96-pcr", storage="cold_4")
+        src_wells = plate.wells_from(0, 40)
+        shape = stamp_shape(src_wells)
+        remaining_wells = []
+        for s in shape:
+            p.stamp(s.start_well, dest_plate.well(0),
+                    "10:microliter", s.shape)
+            remaining_wells.append(s.remaining_wells)
+        next_dest = first_empty_well(dest_plate)
+        remaining_wells = flatten_list(remaining_wells)
+        p.transfer(remaining_wells,
+                   dest_plate.wells_from(next_dest, len(remaining_wells)),
+                   "10:microliter"
+                   )
+
+    Autoprotocol Output:
+
+    .. code-block:: json
+
+        {
+            "refs": {
+                "myplate": {
+                    "new": "96-pcr",
+                    "store": {
+                        "where": "cold_4"
+                    }
+                },
+                "newplate": {
+                    "new": "96-pcr",
+                    "store": {
+                        "where": "cold_4"
+                    }
+                }
+            },
+            "instructions": [
+                {
+                    "groups": [
+                        {
+                            "transfer": [
+                                {
+                                    "volume": "10.0:microliter",
+                                    "to": "newplate/0",
+                                    "from": "myplate/0"
+                                }
+                            ],
+                            "shape": {
+                                "rows": 3,
+                                "columns": 12
+                            },
+                            "tip_layout": 96
+                        }
+                    ],
+                    "op": "stamp"
+                },
+                {
+                    "groups": [
+                        {
+                            "transfer": [
+                                {
+                                    "volume": "10.0:microliter",
+                                    "to": "newplate/36",
+                                    "from": "myplate/36"
+                                }
+                            ]
+                        },
+                        {
+                            "transfer": [
+                                {
+                                    "volume": "10.0:microliter",
+                                    "to": "newplate/37",
+                                    "from": "myplate/37"
+                                }
+                            ]
+                        },
+                        {
+                            "transfer": [
+                                {
+                                    "volume": "10.0:microliter",
+                                    "to": "newplate/38",
+                                    "from": "myplate/38"
+                                }
+                            ]
+                        },
+                        {
+                            "transfer": [
+                                {
+                                    "volume": "10.0:microliter",
+                                    "to": "newplate/39",
+                                    "from": "myplate/39"
+                                }
+                            ]
+                        }
+                    ],
+                    "op": "pipette"
+                }
+            ]
+        }
+
     Parameters
     ----------
     wells: Container, WellGroup, list
@@ -216,27 +344,6 @@ def stamp_shape(wells, full=True, quad=False):
         is a list of wells that are not included in the stamp shape
     included_wells: list
         is a list of wells that is included in the stamp shape
-
-    Example
-    -------
-
-    .. code-block:: python
-
-        p = Protocol()
-        plate = p.ref("myplate", cont_type="96-pcr", storage="cold_4")
-        dest_plate  = p.ref("newplate", cont_type="96-pcr", storage="cold_4")
-        src_wells = plate.wells_from(0, 40)
-        shape = stamp_shape(src_wells)
-        remaining_wells = []
-        for s in shape:
-            p.stamp(s.start_well, dest_plate.well(0),
-                    "10:microliter", s.shape)
-            remaining_wells.append(s.remaining_wells)
-        next_dest = first_empty_well(dest_plate)
-        p.transer(remaining_wells,
-                  dest_plate.wells_from(next_dest, len(remaining_wells)),
-                  "10:microliter"
-                  )
 
 
     Raises
@@ -348,6 +455,9 @@ def is_columnwise(wells):
     consecutive fractionally filled columns exist. It is used to determine
     whether `columnwise` should be used in a pipette operation.
 
+    Only accepts wells that belong to 1 container. Use unique_containers or
+    get_well_list_by_cont to assure you submit only wells from one container.
+
     Patterns detected (4x6 plate):
 
     .. code-block:: none
@@ -366,6 +476,34 @@ def is_columnwise(wells):
           x x  | x      |
           x x  | x x x  |
 
+    Example Usage:
+
+    .. code-block:: python
+
+        from autoprotocol.protocol import Protocol
+        from autoprotocol_utilities import is_columnwise
+
+        p = Protocol()
+        plate = p.ref("plate", None, cont_type="96-flat", storage="cold_4", cover="standard")
+        col_wells = plate.wells_from(start="A1", num=17, columnwise=True)
+        col_wells_2 = plate.wells_from(start="A2", num=17, columnwise=True)
+        row_wells = plate.wells_from(start="A1", num=17, columnwise=False)
+        rand_wells = plate.wells("A2", "B12", "H7")
+
+        is_columnwise(col_wells)
+        is_columnwise(col_wells_2)
+        is_columnwise(row_wells)
+        is_columnwise(rand_wells)
+
+    Returns:
+
+    .. code-block:: python
+
+        True
+        True
+        False
+        False
+
     Parameters
     ----------
     wells: Well, list, WellGroup
@@ -377,17 +515,6 @@ def is_columnwise(wells):
         True if columnwise. False if rowwise.
     list
         List of strings if errors were encountered.
-
-    Example
-    -------
-    Only accepts wells that belong to 1 container. Use unique_containers or
-    get_well_list_by_cont to assure you submit only wells from one container.
-
-    .. code-block:: python
-
-        wells_by_container = get_well_list_by_cont(mywells)
-        for wells in wells_by_container.values():
-            is_columnwise(wells)
 
     Raises
     ------
@@ -500,14 +627,15 @@ def set_pipettable_volume(well, use_safe_vol=False):
     Parameters
     ----------
     well : Container, WellGroup, list, Well
+        Well to set.
     use_safe_vol : bool, optional
         Instead of removing the indicated dead_volume, remove the safe minimum
-        volume
+        volume.
 
     Returns
     -------
-    Will return the same type as was received
-    (Container, WellGroup, list, Well)
+    Container, WellGroup, list, Well
+        Will return the same type as was received
 
     """
 
@@ -643,17 +771,16 @@ def volume_check(well, usage_volume=0, use_safe_vol=False,
 def well_name(well, alternate_name=None, humanize=False):
     """Determine new well name
 
-    Determine the a name that a new well is getting based on old well
-    information
+    Determine the name for a new well based on passed well.
 
     Parameters
     ----------
     well: Well
-        well in question
+        Well to source original name, index properties.
     alternate_name: str, optional
         If this parameter is passed and the well does not have a name, this
         name will be returned instead of the container name, appended with
-        the well index
+        the well index.
 
     Returns
     -------
@@ -763,6 +890,42 @@ def container_type_checker(containers, shortname, exclude=False):
 
 def get_well_list_by_cont(wells):
     """Get wells sorted by container
+
+    Example Usage:
+
+    .. code-block:: python
+
+        from autoprotocol import Protocol
+        from autoprotocol_utilities import get_well_list_by_cont
+
+        p = Protocol()
+
+        wells_1 = p.ref("plate_1_96", None, "96-flat", discard=True).wells_from("A1", 12)
+        wells_2 = p.ref("plate_2_96", None, "96-flat", discard=True).wells(0, 24, 49)
+        wells_3 = p.ref("plate_3_96", None, "96-flat", discard=True).well("D3")
+
+        many_wells = wells_1 + wells_2 + wells_3
+        get_well_list_by_cont(many_wells)
+
+    Returns:
+
+    .. code-block:: python
+
+        {
+            Container(plate_1_96): [
+                Well(Container(plate_1_96), 0, None),
+                Well(Container(plate_1_96), 1, None),
+                Well(Container(plate_1_96), 2, None)
+                ],
+            Container(plate_3_96): [
+                Well(Container(plate_3_96), 38, None)
+                ],
+            Container(plate_2_96): [
+                Well(Container(plate_2_96), 0, None),
+                Well(Container(plate_2_96), 24, None),
+                Well(Container(plate_2_96), 49, None)
+                ]
+        }
 
     Parameters
     ----------

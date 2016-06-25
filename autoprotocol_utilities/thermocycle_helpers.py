@@ -12,18 +12,78 @@ def melt_curve(start=65, end=95, inc=0.5, rate=5):
 
     No inputs neded for a standard melt curve.
 
-    Example
-    -------
+    Example Usage:
 
     .. code-block:: python
 
+        from autoprotocol import Protocol
+        from autoprotocol_utilities import melt_curve
+        protocol = Protocol()
+
+        dest_plate = protocol.ref("plate", None, "96-pcr", discard=True, storage=None)
+        protocol.seal(dest_plate)
         melt_params = melt_curve()
         protocol.thermocycle(dest_plate,
-                             thermocycle_dict,
+                             [{"cycles": 1,
+                               "steps": [
+                                   {"temperature": "37:celsius", "duration": "60:minute"}
+                                   ]
+                               }
+                              ],
                              volume="15:microliter",
                              dataref="data",
-                             dyes={"SYBR":dest_plate.all_wells().indices()},
+                             dyes={"SYBR": dest_plate.wells_from(0, 3).indices()},
                              **melt_params)
+
+    Returns:
+
+    .. code-block:: json
+
+        {
+          "refs": {
+            "plate": {
+              "new": "96-pcr",
+              "discard": true
+            }
+          },
+          "instructions": [
+            {
+              "object": "plate",
+              "type": "ultra-clear",
+              "op": "seal"
+            },
+            {
+              "dataref": "data",
+              "melting": {
+                "start": "65.00:celsius",
+                "rate": "5.00:second",
+                "end": "95.00:celsius",
+                "increment": "0.50:celsius"
+              },
+              "object": "plate",
+              "volume": "15:microliter",
+              "groups": [
+                {
+                  "cycles": 1,
+                  "steps": [
+                    {
+                      "duration": "60:minute",
+                      "temperature": "37:celsius"
+                    }
+                  ]
+                }
+              ],
+              "dyes": {
+                "SYBR": [
+                  "A1",
+                  "A2",
+                  "A3"
+                ]
+              },
+              "op": "thermocycle"
+            }
+          ]
+        }
 
     Parameters
     ----------
@@ -68,6 +128,15 @@ def thermocycle_ramp(start_temp, end_temp, total_duration, step_duration):
     function computes the temperature increment required for each step within
     the start and the end temperature.
 
+    Example Usage:
+
+    .. code-block:: python
+
+        therm = thermocycle_ramp(65, 95, "30:minute", "1:minute")
+        protocol.thermocycle(dest_plate,
+                             therm,
+                             volume="15:microliter")
+
     Parameters
     ----------
     start_temp: string, int, float, Unit
@@ -78,18 +147,6 @@ def thermocycle_ramp(start_temp, end_temp, total_duration, step_duration):
         Total duration of the thermocycle protocol, in the format "1:hour"
     step_duration: string, Unit
         Time that each temperature should be held, in the format "1:minute"
-
-
-    Example
-    -------
-
-    .. code-block:: python
-
-        therm = thermocycle_ramp(65, 95, "30:minute", "1:minute")
-        protocol.thermocycle(dest_plate,
-                             therm,
-                             volume="15:microliter")
-
 
     Returns
     -------

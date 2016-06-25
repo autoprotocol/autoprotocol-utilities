@@ -21,16 +21,16 @@ def oligo_scale_default(length, scale, label):
     Parameters
     ----------
     length : int
-        Length of the oligo in question
+        Length of the oligo in question.
     scale : str
-        Scale of the oligo in question
+        Scale of the oligo in question.
     label : str
-        Name of the oligo
+        Name of the oligo.
 
     Returns
     -------
     namedtuple
-        `success` (bool) and `error_message` (string) that is empty on success
+        'success' (bool) and 'error_message' (string) that is empty upon success
 
     """
 
@@ -70,6 +70,20 @@ def oligo_dilution_table(conc=None, sc=None):
     concentration wanted and scale ordered. This function can return the
     entire dilution table or slices and values as needd
 
+    Example Usage:
+
+    .. code-block:: python
+
+        oligo_dilution_table(conc="100uM")
+        oligo_dilution_table(conc="100uM", scale="25nm")
+
+    Returns:
+
+    .. code-block:: python
+
+        {"100uM": {"10nm":60, "25nm": 250, "100nm": 1000, "250nm": 2500, "1um": 10000}}
+        250
+
     Parameters
     ----------
     conc : str, optional
@@ -92,17 +106,6 @@ def oligo_dilution_table(conc=None, sc=None):
         If nothing is selected the full dict of concentrations with dicts of
         scales and dilution volumes is returned.
 
-    Example
-    -------
-
-    .. code-block:: python
-
-        oligo_dilution_table(conc="100uM")
-        # {"100uM": {"10nm":60, "25nm": 250, "100nm": 1000, "250nm": 2500,
-        #            "1um": 10000}}
-
-        oligo_dilution_table(conc="100uM", scale="25nm")
-        # 250
 
 
     Raises
@@ -142,12 +145,13 @@ def oligo_dilution_table(conc=None, sc=None):
 
 
 def return_agar_plates(wells=6):
-    """Returns a dict of all agar plates available that can be purchased.
+    """Returns a dict of all available agar plates.
 
     Parameters
     ----------
     wells : integer
-        Optional, default 6 for 6-well plate
+        Integer of the number of wells in the plate, 1 or 6.
+        Default: 6 for 6-well plate
 
     Returns
     -------
@@ -157,7 +161,7 @@ def return_agar_plates(wells=6):
     Raises
     ------
     ValueError
-        If wells is not a integer equaling to 1 or 6
+        If wells is not a integer equal to 1 or 6
 
     """
     if wells == 6:
@@ -180,20 +184,95 @@ def return_agar_plates(wells=6):
 def return_dispense_media():
     """Returns a dict of media for reagent dispenser.
 
+    Example Usage:
+
+    .. code-block:: python
+
+        from autoprotocol.protocol import Protocol
+        from autoprotocol-utilities import return_dispense_media
+
+        p = Protocol()
+        media = return_dispense_media()["50_ug/ml_Kanamycin"]
+        plate = p.ref("myplate", cont_type="96-flat", discard=True)
+        p.dispense_full_plate(plate, media, "200:microliter")
+
+    Autoprotocol Output:
+    -------
+
+    .. code-block:: python
+
+        {
+            "refs": {
+                "myplate": {
+                    "new": "96-flat",
+                    "discard": True
+                }
+            },
+            "instructions": [
+                {
+                    "reagent": "lb_miller_50ug_ml_kan",
+                    "object": "myplate",
+                    "columns": [
+                        {
+                            "column": 0,
+                            "volume": "200:microliter"
+                        },
+                        {
+                            "column": 1,
+                            "volume": "200:microliter"
+                        },
+                        {
+                            "column": 2,
+                            "volume": "200:microliter"
+                        },
+                        {
+                            "column": 3,
+                            "volume": "200:microliter"
+                        },
+                        {
+                            "column": 4,
+                            "volume": "200:microliter"
+                        },
+                        {
+                            "column": 5,
+                            "volume": "200:microliter"
+                        },
+                        {
+                            "column": 6,
+                            "volume": "200:microliter"
+                        },
+                        {
+                            "column": 7,
+                            "volume": "200:microliter"
+                        },
+                        {
+                            "column": 8,
+                            "volume": "200:microliter"
+                        },
+                        {
+                            "column": 9,
+                            "volume": "200:microliter"
+                        },
+                        {
+                            "column": 10,
+                            "volume": "200:microliter"
+                        },
+                        {
+                            "column": 11,
+                            "volume": "200:microliter"
+                        }
+                    ],
+                    "op": "dispense"
+                }
+            ]
+        }
+
     Returns
     -------
     dict
         Media with common `display_name` as key and identifier for code
         as value
 
-    Example
-    -------
-
-    .. code-block:: python
-
-        media = return_dispense_media()[params["media]]
-        plate = protocol.ref("myplate", cont_type="96-flat", discard=True)
-        protocol.dispense_full_plate(plate, media, "200:microliter")
 
     """
     media = {"50_ug/ml_Kanamycin": "lb_miller_50ug_ml_kan",
@@ -211,9 +290,26 @@ def return_dispense_media():
 
 def ref_kit_container(protocol, name, container, kit_id, discard=True,
                       store=None):
-    """Reserve agar plates on the fly
+    """Reserve agar plates for use within a protocol.
 
-    In use only to allow booking of agar plates on the fly.
+    In use only to allow booking of agar plates within a protocol.
+
+    Example Usage:
+
+    .. code-block:: python
+
+        from autoprotocol import Protocol
+        from autoprotocol_utilities import return_dispense_media, return_agar_plates, \
+            ref_kit_container
+
+        p = Protocol()
+        bacteria = p.ref(name="test_bact", id=None,
+                         cont_type="micro-1.5", discard=True).well(0)
+        media = return_dispense_media()["50_ug/ml_Kanamycin"]
+        agar_id = return_agar_plates(1)[media]
+        agar_plate = ref_kit_container(p, "my_agar_plate",
+                                       "6-flat", agar_id, discard=False,
+                                       store="cold_4")
 
     Parameters
     ----------
@@ -234,16 +330,6 @@ def ref_kit_container(protocol, name, container, kit_id, discard=True,
     -------
     Container
 
-    Example
-    -------
-
-    .. code-block:: python
-
-        media = return_dispense_media()[params["media]]
-        agar_id = return_agar_plates()[media]
-        agar_plate = ref_kit_container(protocol, "my_agar_plate", "6-flat",
-                                       agar_id, discard=False,
-                                       storage="cold_4")
 
     """
     kit_item = Container(None, protocol.container_type(container), name, storage=store if store else None)
@@ -267,6 +353,8 @@ class ResourceIDs(object):
 
     .. code-block:: python
 
+        from autoprotocol-utilities import ResourceIDs
+
         res = ResourceIDs()
         res.water
         res.te
@@ -284,7 +372,8 @@ class ResourceIDs(object):
 
     Returns
     -------
-    resource_id: str
+    str
+        resource id of the reagent
 
     """
 
@@ -415,7 +504,7 @@ class ResourceIDs(object):
         Parameters
         ----------
         bact: string
-            Bacteria name, one of Zymo 10B, Zymo DH5a, Zymo JM109
+            Bacteria name, one of: 'Zymo 10B', 'Zymo DH5a', 'Zymo JM109'
 
         Returns
         -------
@@ -434,7 +523,7 @@ class ResourceIDs(object):
         Parameters
         ----------
         dil: string
-            Diluent name, one of water, TE
+            Diluent name, one of: 'water', 'TE'
 
         Returns
         -------
@@ -467,8 +556,8 @@ class ResourceIDs(object):
         Parameters
         ----------
         media: string
-            Media for which to select the control. One of
-            `lb_miller_50ug_ml_kan` or `lb_miller_100ug_ml_amp`
+            Media for which to select the control. One of:
+            'lb_miller_50ug_ml_kan', 'lb_miller_100ug_ml_amp'
 
         Returns
         -------
@@ -511,13 +600,13 @@ class ResourceIDs(object):
         Parameters
         ----------
         media: string
-            Company to use. `neb` or `thermo`.
+            Vendor to use. 'neb' or 'thermo'.
 
         Returns
         -------
         dict
-            `buffer` - resource id for the buffer
-            `ligase` - resource id for the ligase
+            'buffer' - resource id for the buffer
+            'ligase' - resource id for the ligase
 
         """
         ligases = {"neb": {"buffer": self.neb_t4ligase_buffer,
@@ -541,9 +630,7 @@ class ResourceIDs(object):
         Returns
         -------
         namedtuple
-            enzyme_id
-            buffer_id
-            errors
+            enzyme_id, buffer_id, errors
         """
         em = []
         resset = namedtuple('RestrictionSet', 'enzyme_id buffer_id errors')

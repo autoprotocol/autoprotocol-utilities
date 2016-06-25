@@ -42,11 +42,11 @@ def user_errors_group(error_msgs, info=None):
 
 def printdatetime():
     """
-    Generate a datetime string
+    Generate a datetime string.
 
     Returns
     -------
-    Str
+    str
         The current date and time formatted as: YYYY-MM-DD_HH-MM-SS
 
     """
@@ -56,11 +56,11 @@ def printdatetime():
 
 def printdate():
     """
-    Generate a date string
+    Generate a date string.
 
     Returns
     -------
-    Str
+    str
         The current date formatted as: YYYY-MM-DD
 
     """
@@ -70,15 +70,16 @@ def printdate():
 
 def make_list(my_str, integer=False):
     """
-    Sometimes you need a list of a type that is not supported.
+    Return a list of strings (or ints) from a string containing
+    comma separated elements.
 
     Parameters
     ----------
-    my_str : string
-        String with individual elements separated by comma
+    my_str : str
+        String with individual elements separated by comma.
     interger : bool
         If true list of integers instead of list of strings
-        is returned.
+        is returned. Default: False.
 
     Returns
     -------
@@ -104,21 +105,25 @@ def flatten_list(l):
     """
     Flatten a list recursively without for loops or additional modules
 
+    Example Usage:
+
+    .. code-block:: python
+
+            from autoprotocol_utilities.misc_helpers import flatten_list
+
+            l = [-1, 0, [1,2], "string", [3, [4, 5]]]
+            flatten_list(l)
+
+    Returns:
+
+    .. code-block:: python
+
+            [-1, 0, 1, 2, 'string', 3, 4, 5]
+
     Parameters
     ---------
     l : list
         List to flatten
-
-    Example Usage:
-        .. code-block:: python
-
-            from autoprotocol_utilities.misc_helpers import flatten_list
-
-            temp_flattened_list = flatten_list(params["source"])
-            milliq_water_id = "rs17gmh5wafm5p"
-            lysis_buffer = createMastermix(protocol, "Water", "micro-1.5",\
-                reactions=len(temp_flattened_list),resources={milliq_water_id: Unit(50, "ul")})
-            protocol.transfer(source=lysis_buffer, dest=temp_flattened_list, volume="50:ul")
 
 
     Returns
@@ -142,18 +147,19 @@ def det_new_group(i, base=0):
     """Determine if new_group should be added to pipetting operation.
 
     Helper to determine if new_group should be added. Returns true when
-    i matches the base, which defaults to 0.
+    'i' matches the base, which defaults to 0.
 
     Parameters
     ----------
     i : int
-        The iteration you are on
+        The iteration you are on.
     base : int, optional
-        The value at which you want to trigger
+        The value at which you want to trigger a new group. Default: 0.
 
     Returns
     -------
     bool
+        True if iteration equals base case.
 
     Raises
     ------
@@ -181,14 +187,14 @@ def char_limit(label, length=22, trunc=False, clip=False):
     Parameters
     ----------
     label : str
-        String to test
+        String to test.
     length : int, optional
-        Maximum label length for this string. Default: 22
+        Maximum label length for this string. Default: 22.
     trunc : bool, optional
-        Truncate the label if it is too long. Default off.
+        Truncate the label if it is too long. Default: False.
     clip : bool, optional
         Clip the label (remove from beginning of the string) if it is too long
-        Default off. If both trunc and clip are True, trunc will take effect
+        Default: False. If both trunc and clip are True, trunc will take effect
         and not clip.
 
     Returns
@@ -227,6 +233,36 @@ def recursive_search(params, class_name=None, method=None, args={}):
     and either returns everything as a list, returns an optional subset of them
     or calls a specified method on the subset
 
+    Example Usage:
+
+    .. code-block:: python
+
+        from autoprotocol.protocol import Protocol
+        from autoprotocol.container import Well
+        from autoprotocol_utilities import recursive_search
+
+        p = Protocol()
+
+        example_container = p.ref(name="example", id=None, cont_type="96-pcr",
+                                  storage="ambient")
+
+        p.dispense(ref=example_container, reagent="water",
+                   columns=[{"column": 0, "volume": "20:microliters"},
+                            {"column": 1, "volume": "10:microliters"}
+                            ])
+
+        wells = example_container.wells_from(start=0, num=9, columnwise=True)
+
+        recursive_search(params=wells.wells, class_name=Well,
+                         method=volume_check, args={"usage_volume": 15})
+    Returns:
+
+    .. code-block:: python
+
+        ["1 volume errors: You want to pipette 15.0 ul from a container with "
+        "3.0 ul dead volume (18.0 ul total). However, your aliquot: example-1,"
+        "only has 10.0 ul."]
+
     Parameters
     ----------
     params : list, tuple or dict
@@ -245,34 +281,6 @@ def recursive_search(params, class_name=None, method=None, args={}):
         Will return a list of all items, or the found items of a specified
         class, or the response (if not None) from a method called on found items.
 
-    Example
-    -------
-
-    .. code-block:: python
-        from autoprotocol import Protocol
-        from autoprotocol_utilities.misc_helpers import recursive_search
-        from autoprotocol.container import Well
-        from autoprotocol_utilities import volume_check
-
-        p = Protocol()
-        example_container = p.ref(name="example", id=None, cont_type="96-pcr", storage="ambient")
-        #dispense liquid into first two columns
-        p.dispense(ref=example_container, reagent="water",
-            columns=[
-            {"column": 0, "volume": "20:microliters"},
-            {"column": 1, "volume": "20:microliters"}
-            ])
-
-        #create the well_list, so volume_check can be called on each well individually
-        wells = example_container.wells_from(start=0, num=17, columnwise=True)
-        well_list = []
-        for well in wells:
-            well_list.append(well)
-
-        #calls volume_check on the first 17 wells of example_container, going columnwise
-        result = recursive_search(params=well_list, class_name=Well, method=volume_check)
-        for error in result:
-            print(error)
 
     """
 
@@ -328,7 +336,7 @@ def transfer_properties(src_wells, dest_wells, properties={}, args={},
         If the dict is empty all propeties will be transferred.
     args: dict, optional
         Dict of dicts where the key is the property used to indicate the
-        function and the value another dict containging the arguments.
+        function and the value another dict containing the arguments.
     pset: bool, optional
         Indicate where to set or add the property, defaults to add.
 

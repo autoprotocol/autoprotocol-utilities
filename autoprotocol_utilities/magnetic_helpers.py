@@ -16,6 +16,25 @@ def get_mag_amplicenter(plate, amplitude_fraction=1.0):
     fill volume) and the amplitude to move around that from 0 to center +
     amplitude.
 
+    Example Usage:
+
+    .. code-block:: python
+
+        from autoprotocol import Protocol
+        from autoprotocol_utilities.magnetic_helpers import get_mag_amplicenter
+
+        p = Protocol()
+        example_plate = p.ref(name="Example", id=None, cont_type="96-pcr", storage="ambient")
+        p.dispense(ref=example_plate, reagent="water", columns=[{"column": 4, "volume": "100:microliters"},])
+
+        get_mag_amplicenter(example_plate)
+
+    Returns:
+
+    .. code-block:: json
+
+        {'center': 0.3125, 'amplitude': 0.3125}
+
     Parameters
     ----------
     plate: Container
@@ -23,18 +42,6 @@ def get_mag_amplicenter(plate, amplitude_fraction=1.0):
     amplitude_fraction: float, optional
         By default the full available amplitude will be used (from center to
         bottom of well). Use this parameter to reduce the amplitude.
-
-    .. code-block:: python
-
-            from autoprotocol import Protocol
-            from autoprotocol_utilities.magnetic_helpers import get_mag_amplicenter
-
-            p = Protocol()
-            example_plate = p.ref(name="Example", id=None, cont_type="96-pcr", storage="ambient")
-            p.dispense(ref=example_plate, reagent="water", columns=[{"column": 4, "volume": "100:microliters"},])
-
-            result = get_mag_amplicenter(plate=example_plate)
-
 
     Returns
     -------
@@ -66,22 +73,29 @@ def get_mag_frequency(plate, speed):
     Based on plate type and the desired KF speed, determine the frequency for
     the KF operation. Needed for `mix` and `release` operations.
 
+    Example Usage:
+
+    .. code-block:: python
+
+        from autoprotocol import Protocol
+        from autoprotocol_utilities.magnetic_helpers import get_mag_frequency
+
+        p = Protocol()
+        example_plate = p.ref(name="Example", id=None, cont_type="96-pcr", storage="ambient")
+        get_mag_frequency(plate=example_plate, speed="slow")
+
+    Returns:
+
+    .. code-block:: none
+
+        0.4:hertz
+
     Parameters
     ----------
     plate: Container
         Container that is being used
     speed: string
         String defining the speed - can be `slow`, `medium`, `fast`
-
-    .. code-block:: python
-
-            from autoprotocol import Protocol
-            from autoprotocol_utilities.magnetic_helpers import get_mag_frequency
-
-            p = Protocol()
-            example_plate = p.ref(name="Example", id=None, cont_type="96-pcr", storage="ambient")
-            result = get_mag_frequency(plate=example_plate, speed="slow")
-
 
     Returns
     -------

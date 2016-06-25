@@ -26,22 +26,6 @@ is_columnwise
 ~~~~~~~~~~~~~
 .. autofunction:: autoprotocol_utilities.container_helpers.is_columnwise
 
-stamp_shape
-~~~~~~~~~~~
-.. autofunction:: autoprotocol_utilities.container_helpers.stamp_shape
-
-Rectangle helper functions
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: autoprotocol_utilities.rectangle.area
-.. autofunction:: autoprotocol_utilities.rectangle.area2rect
-.. autofunction:: autoprotocol_utilities.rectangle.max_histogram_area
-.. autofunction:: autoprotocol_utilities.rectangle.binary_list
-.. autofunction:: autoprotocol_utilities.rectangle.get_quadrant_indices
-.. autofunction:: autoprotocol_utilities.rectangle.get_quadrant_binary_list
-.. autofunction:: autoprotocol_utilities.rectangle.get_well_in_quadrant
-.. autofunction:: autoprotocol_utilities.rectangle.chop_list
-
-
 unique_containers
 ~~~~~~~~~~~~~~~~~
 .. autofunction:: autoprotocol_utilities.container_helpers.unique_containers
@@ -61,3 +45,18 @@ container_type_checker
 get_well_list_by_cont
 ~~~~~~~~~~~~~~~~~~~~~
 .. autofunction:: autoprotocol_utilities.container_helpers.get_well_list_by_cont
+
+stamp_shape
+~~~~~~~~~~~
+.. autofunction:: autoprotocol_utilities.container_helpers.stamp_shape
+
+Rectangle helper functions
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: autoprotocol_utilities.rectangle.area
+.. autofunction:: autoprotocol_utilities.rectangle.area2rect
+.. autofunction:: autoprotocol_utilities.rectangle.max_histogram_area
+.. autofunction:: autoprotocol_utilities.rectangle.binary_list
+.. autofunction:: autoprotocol_utilities.rectangle.get_quadrant_indices
+.. autofunction:: autoprotocol_utilities.rectangle.get_quadrant_binary_list
+.. autofunction:: autoprotocol_utilities.rectangle.get_well_in_quadrant
+.. autofunction:: autoprotocol_utilities.rectangle.chop_list

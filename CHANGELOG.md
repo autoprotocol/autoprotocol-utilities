@@ -12,6 +12,17 @@ Removed
 
 Fixed
 
+## v2.1.5 - 2016-06-24
+---
+Added
+- more examples to functions
+
+Changed
+
+Removed
+
+Fixed
+
 ## v2.1.5 - 2016-06-14
 ---
 Added

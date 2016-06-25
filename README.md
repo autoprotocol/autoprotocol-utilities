@@ -1,6 +1,6 @@
 # Autoprotocol Utilities
 
->View Autoprotocol-utilities [Documentation](http://autoprotocol-utilities.readthedocs.org/en/latest/ on readthedocs.org)
+View Autoprotocol-utilities [Documentation](http://autoprotocol-utilities.readthedocs.org/en/latest/) on readthedocs.org
 
 [Autoprotocol](http://www.autoprotocol.org) is a standard way to express
 experiments in life science. This repository contains helper functions to be used with the [Autoprotocol-python](https://github.com/autoprotocol/autoprotocol-python) library to generate Autoprotocol.
