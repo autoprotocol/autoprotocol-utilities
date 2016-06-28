@@ -667,7 +667,8 @@ def volume_check(well, usage_volume=0, use_safe_vol=False,
 
     Example Usage:
 
-        .. code-block:: python
+    .. code-block:: python
+
             from autoprotocol import Protocol
             from autoprotocol_utilities.container_helpers import volume_check
 
