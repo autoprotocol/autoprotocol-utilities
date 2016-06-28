@@ -5,6 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/)
 ## Unreleased
 ---
 Added
+- flatten_list() can flatten WellGroup
 
 Changed
 
@@ -12,7 +13,7 @@ Removed
 
 Fixed
 
-## v2.1.5 - 2016-06-24
+## v2.1.6 - 2016-06-24
 ---
 Added
 - more examples to functions

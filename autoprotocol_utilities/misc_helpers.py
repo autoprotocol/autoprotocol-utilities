@@ -122,8 +122,8 @@ def flatten_list(l):
 
     Parameters
     ---------
-    l : list
-        List to flatten
+    l : list, list of WellGroup
+        List or list of WellGroups to flatten
 
 
     Returns
@@ -137,7 +137,7 @@ def flatten_list(l):
         If l is not of type list
 
     """
-    if isinstance(l, list):
+    if isinstance(l, (list, WellGroup)):
         return [x for sublist in l for x in flatten_list(sublist)]
     else:
         return [l]

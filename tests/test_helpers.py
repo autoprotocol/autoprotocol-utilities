@@ -228,10 +228,17 @@ class TestDataformattingfunctions:
         l = [[1, 2], [3, 4], [[5, 6], [[7, 8], [9, 10], 11], 12], 13]
         assert flatten_list(l) == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
 
+    def test_flatten_wellgroup(self):
+        p = Protocol()
+        c1 = p.ref("test1", None, cont_type="6-flat", discard=True)
+        c2 = p.ref("test2", None, cont_type="6-flat", discard=True)
+        ws = [pl.all_wells() for pl in (c1, c2)]
+        ws = [[ws], [[ws]]]
+        assert len(flatten_list(ws)) == 24
+
     def test_det_new_group(self):
-        base = 12
-        for x in range(0,13):
-            assert (det_new_group(i=x, base=12)) == (x==12)
+        for x in range(0, 13):
+            assert (det_new_group(i=x, base=12)) == (x == 12)
 
     @pytest.mark.parametrize("string, length, trunc, clip, r", [
         ('ILoveThis', 6, False, False, ['ILoveThis', 'The specified label']),
