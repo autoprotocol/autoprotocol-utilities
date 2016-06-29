@@ -6,6 +6,19 @@ This project adheres to [Semantic Versioning](http://semver.org/)
 ---
 Added
 - flatten_list() can flatten WellGroup
+- positive control for Gibson assembly
+
+Changed
+
+Removed
+
+Fixed
+
+## v2.1.7 - 2016-06-29
+---
+Added
+- flatten_list() can flatten WellGroup
+- positive control for Gibson assembly
 
 Changed
 

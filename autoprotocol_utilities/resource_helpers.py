@@ -480,6 +480,7 @@ class ResourceIDs(object):
         self.nebuilder2x = "rs18pc86ykcep6"
         self.nebuilderpc = "rs192pqa2jua9v"
         self.gibson2x = "rs16pfatkggmk5"
+        self.gibsonpc = "rs1959tbv27xu2"
         self.infusion5x = "rs16pfv7qw5ytj"
         self.infusionpuc = "rs192pqw2nuef8"
         self.infusioninsert = "rs192pqxnx9gm2"
@@ -542,7 +543,8 @@ class ResourceIDs(object):
                                   "pc": {self.nebuilderpc: 2}},
                     "Gibson": {"name": "Gibson",
                                "dil_fact": 2,
-                               "resource": self.gibson2x},
+                               "resource": self.gibson2x,
+                               "pc": {self.gibsonpc: 2}},
                     "InFusion": {"name": "InFusion",
                                  "dil_fact": 5,
                                  "resource": self.infusion5x,
