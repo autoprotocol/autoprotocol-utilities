@@ -1,0 +1,8 @@
+<snippet>
+	<content><![CDATA[
+dna_mole_to_mass(length=${1:int length}, mole=${2:Unit mole})
+]]></content>
+	<tabTrigger>dna_mole_to_mass</tabTrigger>
+	<scope>source.python</scope>
+	<description>For the DNA Length and mole amount given, return the mass of DNA</description>
+</snippet>

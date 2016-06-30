@@ -13,6 +13,16 @@ Changed
 Removed
 
 Fixed
+---
+Added
+- bio_calculators module 
+
+Changed
+
+Removed
+
+Fixed
+- sys.path.insert typo in docs/conf.py
 
 ## v2.1.7 - 2016-06-29
 ---

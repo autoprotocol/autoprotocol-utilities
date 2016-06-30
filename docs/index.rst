@@ -11,6 +11,7 @@ Autoprotocol Utilities are helper functions and modules to generate autoprotocol
     Resource helpers <resource_helpers>
     Container helpers <container_helpers>
     Magnetic helpers <magnetic_helpers>
+    Bio calculators <bio_calculators>
     Thermocyling helpers <thermocycle_helpers>
     AUTHORS
 
@@ -50,9 +51,9 @@ authors listed above for more details.
 Source Code: https://github.com/autoprotocol/autoprotocol-utilities
 
 
-************
+***************
 Search the Docs
-************
+***************
 
 * :ref:`genindex`
 

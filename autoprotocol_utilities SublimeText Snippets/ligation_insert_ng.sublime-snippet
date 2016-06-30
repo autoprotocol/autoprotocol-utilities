@@ -1,0 +1,8 @@
+<snippet>
+	<content><![CDATA[
+ligation_insert_ng(plasmid_size=${1:int plasmid size}, plasmid_mass=${2:Unit plasmid mass}, insert_size=${3:int insert size})
+]]></content>
+	<tabTrigger>ligation_insert_ng</tabTrigger>
+	<scope>source.python</scope>
+	<description>For the plasmid size, plasmid amount, insert size, and molar ratio given, return the mass of insert needed for ligation</description>
+</snippet>

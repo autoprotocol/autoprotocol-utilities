@@ -1,0 +1,8 @@
+<snippet>
+	<content><![CDATA[
+ligation_insert_volume(plasmid_size=${1:int plasmid size}, plasmid_mass=${2:Unit plasmid mass}, insert_size=${3:int insert size}, insert_conc=${4:Unit insert conc})
+]]></content>
+	<tabTrigger>ligation_insert_volume</tabTrigger>
+	<scope>source.python</scope>
+	<description>For the plasmid size, plasmid amount, insert size, insert concentration, and molar ratio given, return the volume of insert solution needed for ligation</description>
+</snippet>

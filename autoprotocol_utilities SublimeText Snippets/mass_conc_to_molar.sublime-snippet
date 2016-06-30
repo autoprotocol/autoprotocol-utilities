@@ -1,0 +1,8 @@
+<snippet>
+	<content><![CDATA[
+mass_conc_to_molar(length=${1:int length}, mass_conc=${2:Unit mass conc})
+]]></content>
+	<tabTrigger>mass_conc_to_molar</tabTrigger>
+	<scope>source.python</scope>
+	<description>For the DNA mass concentration given, return the molarity of DNA</description>
+</snippet>
