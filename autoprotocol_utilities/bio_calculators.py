@@ -136,6 +136,7 @@ def molar_to_mass_conc(length, molar, ds=True):
     .. code-block:: python
 
         from autoprotocol_utilities import molar_to_mass_conc
+        from autoprotocol_utilities import dna_mole_to_mass
         from autoprotocol.unit import Unit
 
         dna_length = 5000
@@ -196,6 +197,7 @@ def mass_conc_to_molar(length, mass_conc, ds=True):
     .. code-block:: python
 
         from autoprotocol_utilities import mass_conc_to_molar
+        from autoprotocol_utilities import dna_mass_to_mole
         from autoprotocol.unit import Unit
 
         dna_length = 5000
@@ -337,7 +339,8 @@ def ligation_insert_volume(plasmid_size,  plasmid_mass, insert_size,
 
     .. code-block:: python
 
-        from autoprotocol_utilities import ligation_insert_ng
+        from autoprotocol_utilities import ligation_insert_volume
+        from autoprotocol_utilities import molar_to_mass_conc
         from autoprotocol.unit import Unit
 
         plasmid_size = 3000
@@ -429,7 +432,6 @@ def ligation_insert_volume(plasmid_size,  plasmid_mass, insert_size,
 
 def ligation_insert_amount(plasmid_size, plasmid_conc, plasmid_volume,
                            insert_size, insert_conc, ds=True, molar_ratio=1):
-
     """
     For the plasmid size, plasmid concentration, insert size, insert concentration, and molar ratio given,
     return the volume of insert solution needed for ligation
@@ -440,7 +442,8 @@ def ligation_insert_amount(plasmid_size, plasmid_conc, plasmid_volume,
 
     .. code-block:: python
 
-        from autoprotocol_utilities import ligation_insert_ng
+        from autoprotocol_utilities import ligation_insert_amount
+        from autoprotocol_utilities import molar_to_mass_conc
         from autoprotocol.unit import Unit
 
         plasmid_size = 2000
@@ -452,7 +455,7 @@ def ligation_insert_amount(plasmid_size, plasmid_conc, plasmid_volume,
     Returns:
 
     .. code-block:: python
-    
+
         Unit(24.75, 'microliter')
 
     Parameters
@@ -466,7 +469,7 @@ def ligation_insert_amount(plasmid_size, plasmid_conc, plasmid_volume,
     insert_size: int
         Length of insert in bp
     insert_conc : str, Unit
-        Molar concentration of insert solution
+        Molar or mass concentration of insert solution
     ds: bool, optional
         True for dsDNA, False for ssDNA
     molar_ratio : int, float, string, optional
