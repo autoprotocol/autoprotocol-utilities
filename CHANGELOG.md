@@ -5,8 +5,6 @@ This project adheres to [Semantic Versioning](http://semver.org/)
 ## Unreleased
 ---
 Added
-- flatten_list() can flatten WellGroup
-- positive control for Gibson assembly
 - bio_calculators module 
 
 Changed
