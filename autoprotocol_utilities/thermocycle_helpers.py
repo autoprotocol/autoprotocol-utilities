@@ -179,10 +179,10 @@ def thermocycle_ramp(start_temp, end_temp, total_duration, step_duration):
     if isinstance(step_duration, string_type):
         step_duration = Unit.fromstring(step_duration)
 
-    start_temp.ito('degC')
-    end_temp.ito('degC')
-    total_duration.ito_base_units()
-    step_duration.ito_base_units()
+    start_temp.to('degC')
+    end_temp.to('degC')
+    total_duration.to_base_units()
+    step_duration.to_base_units()
 
     num_steps = int(total_duration // step_duration)
     step_size = (end_temp - start_temp).magnitude // num_steps

@@ -7,14 +7,6 @@ This project adheres to [Semantic Versioning](http://semver.org/)
 Added
 - flatten_list() can flatten WellGroup
 - positive control for Gibson assembly
-
-Changed
-
-Removed
-
-Fixed
----
-Added
 - bio_calculators module 
 
 Changed
@@ -23,6 +15,7 @@ Removed
 
 Fixed
 - sys.path.insert typo in docs/conf.py
+- thermocycle_ramp calculations
 
 ## v2.1.7 - 2016-06-29
 ---
