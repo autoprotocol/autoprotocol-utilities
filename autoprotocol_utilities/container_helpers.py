@@ -431,7 +431,7 @@ def stamp_shape(wells, full=True, quad=False):
             temp_shape.append(make_stamp_tuple(r, rows / 2, cols / 2, i))
             temp_remaining_wells.append(temp_shape[i].remaining_wells)
         temp_remaining_wells = Counter(flatten_list(temp_remaining_wells))
-        for k, v in temp_remaining_wells.iteritems():
+        for k, v in temp_remaining_wells.items():
             if v == 4:
                 remaining_wells.append(k)
         shape = []
@@ -557,7 +557,7 @@ def is_columnwise(wells):
     else:
         colwise = False
 
-    em = filter(None, em)
+    em = [_f for _f in em if _f]
     if len(em) > 0:
         return em
     else:
@@ -647,7 +647,7 @@ def set_pipettable_volume(well, use_safe_vol=False):
     elif isinstance(well, Well):
         cont[well.container] = [well]
 
-    for c, w in cont.iteritems():
+    for c, w in cont.items():
         correction_vol = c.container_type.dead_volume_ul
         if use_safe_vol:
             correction_vol = c.container_type.safe_min_volume_ul
@@ -847,13 +847,13 @@ def container_type_checker(containers, shortname, exclude=False):
                                                " container shortname: %s , "
                                                "(known types: %s)" %
                                                (short,
-                                                str(_CONTAINER_TYPES.keys())))
+                                                str(list(_CONTAINER_TYPES.keys()))))
     elif isinstance(shortname, str):
         assert shortname in _CONTAINER_TYPES, ("container_type_check: unknown"
                                                " container shortname: %s , "
                                                "(known types: %s)" %
                                                (shortname,
-                                                str(_CONTAINER_TYPES.keys())))
+                                                str(list(_CONTAINER_TYPES.keys()))))
     if isinstance(containers, list):
         for cont in containers:
             assert isinstance(cont, Container), ("container_type_check: "

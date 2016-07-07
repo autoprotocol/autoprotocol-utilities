@@ -181,8 +181,8 @@ def get_quadrant_indices(quad):
     assert quad in [0, 1, 2, 3]
     start_well = [0, 1, 24, 25]
     wells = []
-    for row_offset in xrange(start_well[quad], 384, 48):
-        for col_offset in xrange(0, 24, 2):
+    for row_offset in range(start_well[quad], 384, 48):
+        for col_offset in range(0, 24, 2):
             wells.append(row_offset + col_offset)
 
     return wells

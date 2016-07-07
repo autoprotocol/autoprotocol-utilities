@@ -31,7 +31,7 @@ def user_errors_group(error_msgs, info=None):
                                           " of a list to properly format the "
                                           "grouped message.")
 
-    error_msgs = filter(None, error_msgs)
+    error_msgs = [_f for _f in error_msgs if _f]
     if len(error_msgs) != 0:
         raise UserError(
             "%s error(s) found in this protocol: " % len(error_msgs) +
@@ -288,7 +288,7 @@ def recursive_search(params, class_name=None, method=None, args={}):
 
     def find_all_fields(params):
         if isinstance(params, dict):
-            for key, value in params.iteritems():
+            for key, value in params.items():
                 all_fields.append(key)
                 find_all_fields(value)
         elif isinstance(params, list) or isinstance(params, tuple):
@@ -381,7 +381,7 @@ def transfer_properties(src_wells, dest_wells, properties={}, args={},
             else:
                 dest_wells[i].add_properties(well.properties)
     else:
-        for prop, func in properties.iteritems():
+        for prop, func in properties.items():
             if func is None:
                 func = dummy
             for i, well in enumerate(src_wells):

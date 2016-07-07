@@ -676,14 +676,14 @@ class ResourceIDs(object):
         if not enzyme_id:
             em.append("The enzyme (%s) cannot be found." % enzyme)
         buffer_id = None
-        for resbuffer in buffer_map.itervalues():
+        for resbuffer in buffer_map.values():
             if enzyme in resbuffer["enzymes"]:
                 buffer_id = resbuffer["buffer_id"]
         if not buffer_id:
             em.append("The enzyme specified (%s) doesn't have a corresponding"
                       " buffer." % enzyme)
 
-        em = filter(None, em)
+        em = [_f for _f in em if _f]
         if len(em) == 0:
             em = None
 
