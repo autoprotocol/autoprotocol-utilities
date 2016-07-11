@@ -8,7 +8,8 @@ from autoprotocol_utilities.container_helpers import list_of_filled_wells, \
     is_columnwise, plates_needed, volume_check, set_pipettable_volume, well_name, \
     container_type_checker, get_well_list_by_cont
 from autoprotocol_utilities.misc_helpers import make_list, flatten_list, \
-    char_limit, det_new_group, recursive_search, transfer_properties, user_errors_group
+    char_limit, det_new_group, recursive_search, transfer_properties, \
+    user_errors_group
 from autoprotocol_utilities.magnetic_helpers import get_mag_frequency, \
     get_mag_amplicenter
 
@@ -33,7 +34,7 @@ class TestContainerfunctions:
         (well_name, [ws]),
         (get_well_list_by_cont, [c]),
         (transfer_properties, [c, c])
-        ])
+    ])
     def test_asserts(self, func, arg):
         with pytest.raises(Exception):
             func(*arg)
@@ -73,14 +74,15 @@ class TestContainerfunctions:
         (c.wells_from(0, 16, columnwise=True), False, False,
          [c.well(0), {"rows": 8, "columns": 2}, []]),
         (c.wells_from(0, 16), False, False, [c.well(0),
-         {"rows": 1, "columns": 12}, [12, 13, 14, 15]]),
+                                             {"rows": 1, "columns": 12},
+                                             [12, 13, 14, 15]]),
         (c.wells(0, 1, 2, 3, 95, 94, 93, 92, 91, 83, 82, 81, 80, 79), False,
          False, [c.well(79), {"rows": 2, "columns": 5}, [0, 1, 2, 3]]),
         (c.wells(0, 1, 2, 3, 95, 94, 93, 92, 91, 83, 82, 81, 80, 79), True,
          False, [None, {"rows": 0, "columns": 0},
-         [0, 1, 2, 3, 79, 80, 81, 82, 83, 91, 92, 93, 94, 95]]),
+                 [0, 1, 2, 3, 79, 80, 81, 82, 83, 91, 92, 93, 94, 95]]),
         (c2.wells_from(0, 4), False, False, [c2.well(0),
-         {"rows": 1, "columns": 4}, []]),
+                                             {"rows": 1, "columns": 4}, []]),
         (c2.wells_from(0, 4), False, True, [
          [c2.well(0), {"rows": 1, "columns": 2}, []],
          [c2.well(1), {"rows": 1, "columns": 2}, []],
@@ -217,6 +219,7 @@ class TestContainerfunctions:
 
 
 class TestDataformattingfunctions:
+
     def test_make_list(self):
         s = "1,2,3,4"
         r1 = [1, 2, 3, 4]
@@ -297,10 +300,12 @@ class TestPropertyFunctions:
         (c.well(0), c2.well(0), {"Sequence": "aaaaaaaaaa"}, {},
          {"Sequence": "aaaaaaaaaa"}),
         (c.well(1), c2.well(1), {"Sequence": "aaaaaaaaaa",
-         "Concentration": "bla"}, {}, {"Sequence": "aaaaaaaaaa",
-         "Concentration": "bla"}),
+                                 "Concentration": "bla"},
+                                {},
+                                {"Sequence": "aaaaaaaaaa",
+                                 "Concentration": "bla"}),
         (c.well(2), c2.well(2), {"Sequence": "aaaaaaaaaa",
-         "Concentration": "bla"}, {"Sequence": None},
+                                 "Concentration": "bla"}, {"Sequence": None},
          {"Sequence": "aaaaaaaaaa"})
     ])
     def test_transfer_properties(self, src_well, dest_well, setproperty,

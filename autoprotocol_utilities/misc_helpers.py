@@ -279,7 +279,8 @@ def recursive_search(params, class_name=None, method=None, args={}):
     -------
     list
         Will return a list of all items, or the found items of a specified
-        class, or the response (if not None) from a method called on found items.
+        class, or the response (if not None) from a method called on found
+        items.
 
 
     """

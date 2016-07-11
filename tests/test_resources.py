@@ -1,7 +1,7 @@
 import pytest
-from autoprotocol_utilities.resource_helpers import ResourceIDs, oligo_scale_default, \
-    oligo_dilution_table, return_agar_plates, ref_kit_container
-from autoprotocol import Protocol, Container, ContainerType
+from autoprotocol_utilities.resource_helpers import ResourceIDs, oligo_scale_default, oligo_dilution_table, return_agar_plates, ref_kit_container  # NOQA
+from autoprotocol import Protocol, Container, ContainerType  # NOQA
+
 
 @pytest.mark.parametrize("length, scale, label, output", [
     (50, "10nm", "sample", True),
@@ -24,15 +24,15 @@ def test_oligo_dilution_table(conc, sc, dilution_table):
 
 @pytest.mark.parametrize("wells, plates", [
     (6, {"lb_miller_50ug_ml_kan": "ki17rs7j799zc2",
-                  "lb_miller_100ug_ml_amp": "ki17sbb845ssx9",
-                  "lb_miller_100ug_ml_specto": "ki17sbb9r7jf98",
-                  "lb_miller_100ug_ml_cm": "ki17urn3gg8tmj",
-                  "lb_miller_noAB": "ki17reefwqq3sq"}),
+         "lb_miller_100ug_ml_amp": "ki17sbb845ssx9",
+         "lb_miller_100ug_ml_specto": "ki17sbb9r7jf98",
+         "lb_miller_100ug_ml_cm": "ki17urn3gg8tmj",
+         "lb_miller_noAB": "ki17reefwqq3sq"}),
     (1, {"lb_miller_50ug_ml_kan": "ki17t8j7kkzc4g",
-                  "lb_miller_100ug_ml_amp": "ki17t8jcebshtr",
-                  "lb_miller_100ug_ml_specto": "ki17t8jaa96pw3",
-                  "lb_miller_100ug_ml_cm": "ki17urn592xejq",
-                  "lb_miller_noAB": "ki17t8jejbea4z"})
+         "lb_miller_100ug_ml_amp": "ki17t8jcebshtr",
+         "lb_miller_100ug_ml_specto": "ki17t8jaa96pw3",
+         "lb_miller_100ug_ml_cm": "ki17urn592xejq",
+         "lb_miller_noAB": "ki17t8jejbea4z"})
 ])
 def test_return_agar_plates(wells, plates):
     assert(return_agar_plates(wells) == plates)
@@ -59,7 +59,8 @@ class TestResources:
             "lb_miller_50ug_ml_kan") == "rs18rx6a44qss7"
 
     def test_growth_media(self):
-        assert self._res.growth_media("lb_miller_50ug_ml_kan") == "rs18s8x88zz9ee"
+        assert self._res.growth_media(
+            "lb_miller_50ug_ml_kan") == "rs18s8x88zz9ee"
         assert self._res.growth_media("tb_100ug_ml_amp") == "rs18xr22jq7vtz"
 
     def test_t4_ligase(self):

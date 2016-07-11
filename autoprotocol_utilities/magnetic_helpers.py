@@ -24,8 +24,10 @@ def get_mag_amplicenter(plate, amplitude_fraction=1.0):
         from autoprotocol_utilities.magnetic_helpers import get_mag_amplicenter
 
         p = Protocol()
-        example_plate = p.ref(name="Example", id=None, cont_type="96-pcr", storage="ambient")
-        p.dispense(ref=example_plate, reagent="water", columns=[{"column": 4, "volume": "100:microliters"},])
+        example_plate = p.ref(name="Example", id=None, cont_type="96-pcr",
+                              storage="ambient")
+        p.dispense(ref=example_plate, reagent="water",
+                   columns=[{"column": 4, "volume": "100:microliters"},])
 
         get_mag_amplicenter(example_plate)
 
@@ -81,7 +83,8 @@ def get_mag_frequency(plate, speed):
         from autoprotocol_utilities.magnetic_helpers import get_mag_frequency
 
         p = Protocol()
-        example_plate = p.ref(name="Example", id=None, cont_type="96-pcr", storage="ambient")
+        example_plate = p.ref(name="Example", id=None, cont_type="96-pcr",
+                              storage="ambient")
         get_mag_frequency(plate=example_plate, speed="slow")
 
     Returns:

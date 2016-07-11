@@ -20,19 +20,22 @@ def melt_curve(start=65, end=95, inc=0.5, rate=5):
         from autoprotocol_utilities import melt_curve
         protocol = Protocol()
 
-        dest_plate = protocol.ref("plate", None, "96-pcr", discard=True, storage=None)
+        dest_plate = protocol.ref("plate", None, "96-pcr", discard=True,
+                                  storage=None)
         protocol.seal(dest_plate)
         melt_params = melt_curve()
         protocol.thermocycle(dest_plate,
                              [{"cycles": 1,
                                "steps": [
-                                   {"temperature": "37:celsius", "duration": "60:minute"}
+                                   {"temperature": "37:celsius",
+                                   "duration": "60:minute"}
                                    ]
                                }
                               ],
                              volume="15:microliter",
                              dataref="data",
-                             dyes={"SYBR": dest_plate.wells_from(0, 3).indices()},
+                             dyes={"SYBR":
+                             dest_plate.wells_from(0, 3).indices()},
                              **melt_params)
 
     Returns:

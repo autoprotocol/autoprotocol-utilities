@@ -3,7 +3,7 @@ from collections import namedtuple
 try:
     reduce = reduce
 except NameError:
-    from functools import reduce  # py3k
+    from functools import reduce  # py3k  # NOQA
 
 # A column in a histogram
 Column = namedtuple('Column', 'height x')
@@ -112,7 +112,8 @@ def max_histogram_area(histogram):
                 stack.append(Column(height=height, x=start))  # push
             elif stack and height < top().height:
                 col_height, col_x = stack.pop()
-                stack_area = Area(width=pos - col_x, height=col_height, x=col_x)
+                stack_area = Area(width=pos - col_x, height=col_height,
+                                  x=col_x)
                 max_area = max(max_area, stack_area, key=area)
                 start = col_x
                 continue
@@ -189,7 +190,8 @@ def get_quadrant_indices(quad):
 
 
 def get_quadrant_binary_list(binary_list, quad=[0, 1, 2, 3]):
-    """Take a binary list of 384 elements (aka wells) and return all the wells in the designated quadrant.
+    """Take a binary list of 384 elements (aka wells) and return all the wells
+    in the designated quadrant.
     This will be the stampable 96 wells that we have to check for a rectangle.
 
     Parameters
@@ -203,7 +205,8 @@ def get_quadrant_binary_list(binary_list, quad=[0, 1, 2, 3]):
     Returns
     -------
     List of lists
-        A list filled with smaller lists, separating each set of wells into quadrants
+        A list filled with smaller lists, separating each set of wells into
+        quadrants
 
     """
     assert len(binary_list) == 384
@@ -218,8 +221,8 @@ def get_quadrant_binary_list(binary_list, quad=[0, 1, 2, 3]):
 
 
 def get_well_in_quadrant(quadwells, quad):
-    """Take a list of wells and quadrant and return the correct well index in the 384
-    plate
+    """Take a list of wells and quadrant and return the correct well index in
+    the 384 plate
 
     Parameters
     ----------
@@ -231,7 +234,8 @@ def get_well_in_quadrant(quadwells, quad):
     Returns
     -------
     List
-        Returns the correct well indices of all the quad-specific wells in quadwells
+        Returns the correct well indices of all the quad-specific wells in
+        quadwells
 
     """
     assert isinstance(quadwells, list)
@@ -259,7 +263,8 @@ def chop_list(lst, chop_length, filler=None):
     Returns
     -------
     List
-        Returns the correct well indices of all the quad-specific wells in quadwells
+        Returns the correct well indices of all the quad-specific wells in
+        quadwells
 
     """
     assert chop_length > 0

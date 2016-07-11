@@ -30,7 +30,8 @@ def oligo_scale_default(length, scale, label):
     Returns
     -------
     namedtuple
-        'success' (bool) and 'error_message' (string) that is empty upon success
+        'success' (bool) and 'error_message' (string) that is empty upon
+        success
 
     """
 
@@ -47,9 +48,11 @@ def oligo_scale_default(length, scale, label):
 
     if scale not in scale_ranges.keys():
         error_message = ("The specified oligo, '{0!s}', does not have a "
-                         "recognized scale of {0!s}".format(', '.join(scale_ranges.keys)))
+                         "recognized scale of {0!s}".format(
+                             ', '.join(scale_ranges.keys)))
     else:
-        ok = True if ((length >= scale_ranges[scale][0]) & (length <= scale_ranges[scale][1])) else False
+        ok = True if ((length >= scale_ranges[scale][0]) & (
+            length <= scale_ranges[scale][1])) else False
 
     if not ok:
         error_message = ("The specified oligo, '{0!s}', is {1!s} base pairs "
@@ -81,7 +84,8 @@ def oligo_dilution_table(conc=None, sc=None):
 
     .. code-block:: python
 
-        {"100uM": {"10nm":60, "25nm": 250, "100nm": 1000, "250nm": 2500, "1um": 10000}}
+        {"100uM": {"10nm":60, "25nm": 250, "100nm": 1000, "250nm": 2500,
+                   "1um": 10000}}
         250
 
     Parameters
@@ -280,7 +284,8 @@ def return_dispense_media():
              "100_ug/mL_Spectinomycin": "lb_miller_100ug_ml_specto",
              "30_ug/ml_Kanamycin": "lb_miller_30ug_ml_kan",
              "15_ug/ml_Tetracycline": "lb_miller_15ug_ml_tet",
-             "50_ug/ml_Kanamycin_25_ug/ml_Chloramphenicol": "lb_miller_50ug_ml_kan_25ug_ml_cm",
+             "50_ug/ml_Kanamycin_25_ug/ml_Chloramphenicol":
+             "lb_miller_50ug_ml_kan_25ug_ml_cm",
              "25_ug/ml_Chloramphenicol": "lb_miller_25ug_ml_cm",
              "LB_miller": "lb_miller_noAB",
              "TB_100_ug/ml_Ampicillin": "tb_100ug_ml_amp",
@@ -299,8 +304,8 @@ def ref_kit_container(protocol, name, container, kit_id, discard=True,
     .. code-block:: python
 
         from autoprotocol import Protocol
-        from autoprotocol_utilities import return_dispense_media, return_agar_plates, \
-            ref_kit_container
+        from autoprotocol_utilities import return_dispense_media, \
+            return_agar_plates, ref_kit_container
 
         p = Protocol()
         bacteria = p.ref(name="test_bact", id=None,
@@ -332,7 +337,8 @@ def ref_kit_container(protocol, name, container, kit_id, discard=True,
 
 
     """
-    kit_item = Container(None, protocol.container_type(container), name, storage=store if store else None)
+    kit_item = Container(None, protocol.container_type(
+        container), name, storage=store if store else None)
     if store:
         protocol.refs[name] = Ref(
             name, {"reserve": kit_id, "store": {"where": store}}, kit_item)
@@ -343,6 +349,7 @@ def ref_kit_container(protocol, name, container, kit_id, discard=True,
 
 
 class ResourceIDs(object):
+
     """Common resource ids
 
     A list of resource identification numbers used to provision

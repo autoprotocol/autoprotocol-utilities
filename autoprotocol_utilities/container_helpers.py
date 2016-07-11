@@ -113,9 +113,12 @@ def unique_containers(wells):
 
         p = Protocol()
 
-        wells_1 = p.ref("plate_1_96", None, "96-flat", discard=True).wells_from("A1", 12)
-        wells_2 = p.ref("plate_2_96", None, "96-flat", discard=True).wells(0, 24, 49)
-        wells_3 = p.ref("plate_3_96", None, "96-flat", discard=True).well("D3")
+        wells_1 = p.ref("plate_1_96", None, "96-flat",
+                        discard=True).wells_from("A1", 12)
+        wells_2 = p.ref("plate_2_96", None, "96-flat",
+                        discard=True).wells(0, 24, 49)
+        wells_3 = p.ref("plate_3_96", None, "96-flat",
+                        discard=True).well("D3")
 
         many_wells = wells_1 + wells_2 + wells_3
         unique_containers(many_wells)
@@ -191,7 +194,7 @@ def sort_well_group(wells, columnwise=False):
         well.container.name,
         well.container.decompose(well)[0],
         well.container.decompose(well)[1]
-        ) for well in wells
+    ) for well in wells
     ]
 
     if columnwise:
@@ -216,7 +219,8 @@ def stamp_shape(wells, full=True, quad=False):
     .. code-block:: python
 
         from autoprotocol import Protocol
-        from autoprotocol_utilities import stamp_shape, first_empty_well, flatten_list
+        from autoprotocol_utilities import stamp_shape, first_empty_well, \
+            flatten_list
 
         p = Protocol()
         plate = p.ref("myplate", cont_type="96-pcr", storage="cold_4")
@@ -484,7 +488,8 @@ def is_columnwise(wells):
         from autoprotocol_utilities import is_columnwise
 
         p = Protocol()
-        plate = p.ref("plate", None, cont_type="96-flat", storage="cold_4", cover="standard")
+        plate = p.ref("plate", None, cont_type="96-flat", storage="cold_4",
+                      cover="standard")
         col_wells = plate.wells_from(start="A1", num=17, columnwise=True)
         col_wells_2 = plate.wells_from(start="A2", num=17, columnwise=True)
         row_wells = plate.wells_from(start="A1", num=17, columnwise=False)
@@ -673,13 +678,18 @@ def volume_check(well, usage_volume=0, use_safe_vol=False,
             from autoprotocol_utilities.container_helpers import volume_check
 
             p = Protocol()
-            example_container = p.ref(name="exampleplate", id=None, cont_type="96-pcr", storage="warm_37")
-            p.dispense(ref=example_container, reagent="water", columns=[{"column": 0, "volume": "10:microliters"}])
+            example_container = p.ref(name="exampleplate", id=None,
+                                      cont_type="96-pcr", storage="warm_37")
+            p.dispense(ref=example_container, reagent="water",
+                       columns=[{"column": 0, "volume": "10:microliters"}])
 
-            #Checks if there are 5 microliters above the dead volume available in well 0
-            assert (volume_check(well=example_container.well(0), usage_volume=5)) is None
+            #Checks if there are 5 microliters above the dead volume
+            #available in well 0
+            assert (volume_check(well=example_container.well(0),
+                    usage_volume=5)) is None
             #Checks if the volume in well 0 is at least the safe minimum volume
-            assert (volume_check(well=example_container.well(0), usage_volume=0, use_safe_vol=True) is None
+            assert (volume_check(well=example_container.well(0),
+                    usage_volume=0, use_safe_vol=True) is None
 
     Parameters
     ----------
@@ -847,13 +857,15 @@ def container_type_checker(containers, shortname, exclude=False):
                                                " container shortname: %s , "
                                                "(known types: %s)" %
                                                (short,
-                                                str(list(_CONTAINER_TYPES.keys()))))
+                                                str(list(
+                                                    _CONTAINER_TYPES.keys()))))
     elif isinstance(shortname, str):
         assert shortname in _CONTAINER_TYPES, ("container_type_check: unknown"
                                                " container shortname: %s , "
                                                "(known types: %s)" %
                                                (shortname,
-                                                str(list(_CONTAINER_TYPES.keys()))))
+                                                str(list(
+                                                    _CONTAINER_TYPES.keys()))))
     if isinstance(containers, list):
         for cont in containers:
             assert isinstance(cont, Container), ("container_type_check: "
@@ -901,9 +913,12 @@ def get_well_list_by_cont(wells):
 
         p = Protocol()
 
-        wells_1 = p.ref("plate_1_96", None, "96-flat", discard=True).wells_from("A1", 12)
-        wells_2 = p.ref("plate_2_96", None, "96-flat", discard=True).wells(0, 24, 49)
-        wells_3 = p.ref("plate_3_96", None, "96-flat", discard=True).well("D3")
+        wells_1 = p.ref("plate_1_96", None, "96-flat",
+                        discard=True).wells_from("A1", 12)
+        wells_2 = p.ref("plate_2_96", None, "96-flat",
+                        discard=True).wells(0, 24, 49)
+        wells_3 = p.ref("plate_3_96", None, "96-flat",
+                        discard=True).well("D3")
 
         many_wells = wells_1 + wells_2 + wells_3
         get_well_list_by_cont(many_wells)

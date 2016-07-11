@@ -73,7 +73,7 @@ def test_get_well_in_quadrant(well, quad, r):
 ])
 def test_get_quadrant_indices(quad, r):
     test_quad = get_quadrant_indices(quad)
-    assert ((r in test_quad) == True)
+    assert ((r in test_quad) is True)
 
 
 def test_area_area2rect():
@@ -97,10 +97,11 @@ def test_get_quadrant_binary_list(list, quad):
         temp_list += get_quadrant_indices(x)
     binary_list(temp_list, 384)
     for item in list:
-        assert ((item in get_quadrant_binary_list(temp_list, [quad])[0]) == True)
+        assert (
+            (item in get_quadrant_binary_list(temp_list, [quad])[0]) is True)
 
 
-@pytest.mark.parametrize("quadwells, quad, actual_wells", [
+@pytest.mark.parametrize("quadwells, quad, actual_wells", [  # NOQA
     ([0, 1, 2, 3], 0, [0, 2, 4, 6]),
     ([0, 1, 2, 3], 1, [1, 3, 5, 7]),
     ([0, 1, 2, 3], 2, [24, 26, 28, 30]),

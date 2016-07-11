@@ -49,10 +49,14 @@ def dna_mass_to_mole(length, mass, ds=True):
         raise ValueError("Mass of DNA must be of type Unit in prefix-gram")
 
     if not isinstance(length, int):
-        raise ValueError("Length of DNA is of type %s, must be of type integer" % type(length))
+        raise ValueError(
+            "Length of DNA is of type %s, must be of type "
+            "integer" % type(length))
 
     if not isinstance(ds, bool):
-        raise ValueError("ds is of type %s, must be of type bool: True for dsDNA, False for ssDNA" % type(ds))
+        raise ValueError(
+            "ds is of type %s, must be of type bool: True for dsDNA, "
+            "False for ssDNA" % type(ds))
 
     dna_pg = mass.to("pg")
 
@@ -109,20 +113,27 @@ def dna_mole_to_mass(length, mole, ds=True):
         mole = Unit.fromstring(mole)
 
     if not isinstance(mole, Unit) or str(mole.dimensionality) != "[substance]":
-        raise ValueError("Mole amount of DNA must be of type Unit in prefix-mol")
+        raise ValueError(
+            "Mole amount of DNA must be of type Unit in prefix-mol")
 
     if not isinstance(length, int):
-        raise ValueError("Length of DNA is of type %s, must be of type integer" % type(length))
+        raise ValueError(
+            "Length of DNA is of type %s, must be of type "
+            "integer" % type(length))
 
     if not isinstance(ds, bool):
-        raise ValueError("ds is of type %s, must be of type bool: True for dsDNA, False for ssDNA" % type(ds))
+        raise ValueError(
+            "ds is of type %s, must be of type bool: True for dsDNA, "
+            "False for ssDNA" % type(ds))
 
     dna_pmol = mole.to("pmol")
 
     if ds:
-        dna_ug = (Unit(660, "pg/pmol") * dna_pmol * Unit(10**(-6), "ug/pg") * length)
+        dna_ug = (
+            Unit(660, "pg/pmol") * dna_pmol * Unit(10**(-6), "ug/pg") * length)
     else:
-        dna_ug = (Unit(330, "pg/pmol") * dna_pmol * Unit(10**(-6), "ug/pg") * length)
+        dna_ug = (
+            Unit(330, "pg/pmol") * dna_pmol * Unit(10**(-6), "ug/pg") * length)
 
     return dna_ug
 
@@ -170,16 +181,22 @@ def molar_to_mass_conc(length, molar, ds=True):
 
     """
     if not isinstance(length, int):
-        raise ValueError("Length of DNA is of type %s, must be of type integer" % type(length))
+        raise ValueError(
+            "Length of DNA is of type %s, must be of type "
+            "integer" % type(length))
 
     if isinstance(molar, str):
         molar = Unit.fromstring(molar)
 
-    if not (isinstance(molar, Unit) and str(molar.dimensionality) == '[substance] / [length] ** 3'):
-        raise ValueError("Molar concentration of DNA must be of type string or Unit")
+    if not (isinstance(molar, Unit) and
+            str(molar.dimensionality) == '[substance] / [length] ** 3'):
+        raise ValueError(
+            "Molar concentration of DNA must be of type string or Unit")
 
     if not isinstance(ds, bool):
-        raise ValueError("ds is of type %s, must be of type bool: True for dsDNA, False for ssDNA" % type(ds))
+        raise ValueError(
+            "ds is of type %s, must be of type bool: True for dsDNA, "
+            "False for ssDNA" % type(ds))
 
     dna_umole = Unit((molar / Unit(1, "M")).magnitude, "umol")
     dna_ug = dna_mole_to_mass(length, dna_umole, ds)
@@ -231,16 +248,21 @@ def mass_conc_to_molar(length, mass_conc, ds=True):
 
     """
     if not isinstance(length, int):
-        raise ValueError("Length of DNA is of type %s, must be of type integer" % type(length))
+        raise ValueError(
+            "Length of DNA is of type %s, must be of type "
+            "integer" % type(length))
 
     if isinstance(mass_conc, str):
         mass_conc = Unit.fromstring(mass_conc)
 
-    if not isinstance(mass_conc, Unit) or str(mass_conc.dimensionality) != '[mass] / [length] ** 3':
+    if not isinstance(mass_conc, Unit) or \
+            str(mass_conc.dimensionality) != '[mass] / [length] ** 3':
         raise ValueError("Mass concentration of DNA must be of type Unit")
 
     if not isinstance(ds, bool):
-        raise ValueError("ds is of type %s, must be of type bool: True for dsDNA, False for ssDNA" % type(ds))
+        raise ValueError(
+            "ds is of type %s, must be of type bool: True for dsDNA, "
+            "False for ssDNA" % type(ds))
 
     dna_ng = Unit((mass_conc / Unit(1, "ng/uL")).magnitude, "ng")
     dna_pmol = dna_mass_to_mole(length, dna_ng, ds)
@@ -308,16 +330,21 @@ def ligation_insert_ng(plasmid_size,  plasmid_mass,
         raise ValueError("insert_size: must be an integer")
 
     if type(molar_ratio) == str:
-        molar_ratio = float(molar_ratio.split(":")[0]) / float(molar_ratio.split(":")[1])
+        molar_ratio = float(
+            molar_ratio.split(":")[0]) / float(molar_ratio.split(":")[1])
 
     if type(molar_ratio) not in (int, float):
-        raise ValueError("molar_ratio: must be an int, float, or string in the form of int:int")
+        raise ValueError(
+            "molar_ratio: must be an int, float, or string in the form "
+            "of int:int")
 
     if isinstance(plasmid_mass, str):
         plasmid_mass = Unit.fromstring(plasmid_mass)
 
-    if not (isinstance(plasmid_mass, Unit) and str(plasmid_mass.dimensionality) == "[mass]"):
-        raise ValueError("Plasmid amount must be of type str or Unit in prefix-g")
+    if not (isinstance(plasmid_mass, Unit) and
+            str(plasmid_mass.dimensionality) == "[mass]"):
+        raise ValueError(
+            "Plasmid amount must be of type str or Unit in prefix-g")
 
     length_ratio = float(insert_size) / float(plasmid_size)
     plasmid_ng = plasmid_mass.to("ng")
@@ -330,7 +357,8 @@ def ligation_insert_volume(plasmid_size,  plasmid_mass, insert_size,
                            insert_conc, ds=True, molar_ratio=1):
     """
     For the plasmid size, plasmid amount, insert size, insert concentration,
-    and molar ratio given, return the volume of insert solution needed for ligation
+    and molar ratio given, return the volume of insert solution needed for
+    ligation
 
     Different from ligation_insert_ng: insert concentration is given -> returns
     volume of insert solution needed
@@ -347,7 +375,8 @@ def ligation_insert_volume(plasmid_size,  plasmid_mass, insert_size,
         plasmid_mass = Unit(100, 'ng')
         insert_size = 48
         insert_conc = Unit(25, 'ng/uL')
-        ligation_insert_volume(plasmid_size, plasmid_mass, insert_size, insert_conc)
+        ligation_insert_volume(plasmid_size, plasmid_mass, insert_size,
+                               insert_conc)
 
     Returns:
 
@@ -392,8 +421,10 @@ def ligation_insert_volume(plasmid_size,  plasmid_mass, insert_size,
     if isinstance(plasmid_mass, str):
         plasmid_mass = Unit.fromstring(plasmid_mass)
 
-    if not isinstance(plasmid_mass, Unit) and str(plasmid_mass.dimensionality) == "[mass]":
-        raise ValueError("Plasmid mass must be of type str or Unit in prefix-g")
+    if not isinstance(plasmid_mass, Unit) and \
+            str(plasmid_mass.dimensionality) == "[mass]":
+        raise ValueError(
+            "Plasmid mass must be of type str or Unit in prefix-g")
 
     if not isinstance(insert_size, int):
         raise ValueError("insert_size: must be an integer")
@@ -401,18 +432,25 @@ def ligation_insert_volume(plasmid_size,  plasmid_mass, insert_size,
     if isinstance(insert_conc, str):
         insert_conc = Unit.fromstring(insert_conc)
 
-    if not (isinstance(insert_conc, Unit) and str(insert_conc.dimensionality) in conc_dimension):
+    if not (isinstance(insert_conc, Unit) and
+            str(insert_conc.dimensionality) in conc_dimension):
         raise ValueError(
-            "Plasmid concentration must be of type Unit in prefix-M or prefix-g / prefix-L ")
+            "Plasmid concentration must be of type Unit in prefix-M or "
+            "prefix-g / prefix-L ")
 
     if not isinstance(ds, bool):
-        raise ValueError("ds is of type %s, must be of type bool: True for dsDNA, False for ssDNA" % type(ds))
+        raise ValueError(
+            "ds is of type %s, must be of type bool: True for dsDNA, "
+            "False for ssDNA" % type(ds))
 
     if type(molar_ratio) == str:
-        molar_ratio = float(molar_ratio.split(":")[0]) / float(molar_ratio.split(":")[1])
+        molar_ratio = float(
+            molar_ratio.split(":")[0]) / float(molar_ratio.split(":")[1])
 
     if type(molar_ratio) not in (int, float):
-        raise ValueError("molar_ratio: must be an int, float, or string in the form of int:int")
+        raise ValueError(
+            "molar_ratio: must be an int, float, or string in the "
+            "form of int:int")
 
     len_ratio = float(insert_size) / float(plasmid_size)
     plasmid_ng = plasmid_mass.to("ng")
@@ -433,10 +471,12 @@ def ligation_insert_volume(plasmid_size,  plasmid_mass, insert_size,
 def ligation_insert_amount(plasmid_size, plasmid_conc, plasmid_volume,
                            insert_size, insert_conc, ds=True, molar_ratio=1):
     """
-    For the plasmid size, plasmid concentration, insert size, insert concentration, and molar ratio given,
+    For the plasmid size, plasmid concentration, insert size, insert
+    concentration, and molar ratio given,
     return the volume of insert solution needed for ligation
 
-    Different form ligation_insert_volume: plasmid concentration and volume are given instead of plasmid mass
+    Different form ligation_insert_volume: plasmid concentration and volume
+    are given instead of plasmid mass
 
     Example Usage:
 
@@ -451,7 +491,8 @@ def ligation_insert_amount(plasmid_size, plasmid_conc, plasmid_volume,
         plasmid_volume = Unit(10, 'uL')
         insert_size = 25
         insert_conc = Unit(10, 'ng/uL')
-        ligation_insert_amount(plasmid_size, plasmid_conc, plasmid_volume, insert_size, insert_conc)
+        ligation_insert_amount(plasmid_size, plasmid_conc, plasmid_volume,
+                               insert_size, insert_conc)
     Returns:
 
     .. code-block:: python
@@ -496,8 +537,10 @@ def ligation_insert_amount(plasmid_size, plasmid_conc, plasmid_volume,
 
     if isinstance(plasmid_volume, str):
         plasmid_volume = Unit.fromstring(plasmid_volume)
-    if not isinstance(plasmid_volume, Unit) or str(plasmid_volume.dimensionality) != "[length] ** 3":
-        raise ValueError("Volume of plasmid solution must be of type str or Unit")
+    if not isinstance(plasmid_volume, Unit) or \
+            str(plasmid_volume.dimensionality) != "[length] ** 3":
+        raise ValueError(
+            "Volume of plasmid solution must be of type str or Unit")
 
     conc_dimension = ["[substance] / [length] ** 3", '[mass] / [length] ** 3']
     conc = [plasmid_conc, insert_conc]
@@ -505,7 +548,8 @@ def ligation_insert_amount(plasmid_size, plasmid_conc, plasmid_volume,
     for i in range(0, 2):
         if isinstance(conc[i], str):
             conc[i] = Unit.fromstring(conc[i])
-        if (isinstance(conc[i], Unit) and str(conc[i].dimensionality) in conc_dimension):
+        if (isinstance(conc[i], Unit) and
+                str(conc[i].dimensionality) in conc_dimension):
             # Convert all concentrations to ng/uL
             if str(conc[i].dimensionality) == conc_dimension[0]:
                 conc[i] = molar_to_mass_conc(size[i], conc[i], ds)
@@ -516,17 +560,23 @@ def ligation_insert_amount(plasmid_size, plasmid_conc, plasmid_volume,
                 "Concentration must be of type string or Unit ")
 
     if not isinstance(ds, bool):
-        raise ValueError("ds is of type %s, must be of type bool: True for dsDNA, False for ssDNA" % type(ds))
+        raise ValueError(
+            "ds is of type %s, must be of type bool: True for dsDNA, "
+            "False for ssDNA" % type(ds))
 
     if type(molar_ratio) == str:
-        molar_ratio = float(molar_ratio.split(":")[0]) / float(molar_ratio.split(":")[1])
+        molar_ratio = float(
+            molar_ratio.split(":")[0]) / float(molar_ratio.split(":")[1])
 
     if type(molar_ratio) not in (int, float):
-        raise ValueError("molar_ratio: must be an int, float, or string in the form of int:int")
+        raise ValueError(
+            "molar_ratio: must be an int, float, or string in the "
+            "form of int:int")
 
     plasmid_conc = conc[0]
     insert_conc = conc[1]
-    plasmid_uL = Unit((plasmid_volume / Unit(1, "uL")).magnitude, "uL")  # Convert input volume to uL
+    # Convert input volume to uL
+    plasmid_uL = Unit((plasmid_volume / Unit(1, "uL")).magnitude, "uL")
     len_ratio = float(insert_size) / float(plasmid_size)
     plasmid_ng = plasmid_conc * plasmid_uL
     insert_ng = plasmid_ng * len_ratio * molar_ratio
