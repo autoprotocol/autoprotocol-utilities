@@ -188,7 +188,7 @@ def thermocycle_ramp(start_temp, end_temp, total_duration, step_duration):
     step_duration.to_base_units()
 
     num_steps = int(total_duration // step_duration)
-    step_size = (end_temp - start_temp).magnitude // num_steps
+    step_size = (end_temp - start_temp).magnitude / num_steps
 
     thermocycle_steps = []
     for i in range(num_steps + 1):

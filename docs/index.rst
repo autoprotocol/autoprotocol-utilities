@@ -13,7 +13,9 @@ Autoprotocol Utilities are helper functions and modules to generate autoprotocol
     Magnetic helpers <magnetic_helpers>
     Bio calculators <bio_calculators>
     Thermocyling helpers <thermocycle_helpers>
-    AUTHORS
+    Changelog <changelog>
+    Authors <AUTHORS>
+    License <LICENSE>
 
 
 ************

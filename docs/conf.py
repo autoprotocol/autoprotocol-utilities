@@ -32,8 +32,14 @@ extensions = [
     'sphinx.ext.coverage',
     'sphinx.ext.autodoc',
     'sphinx.ext.viewcode',
-    'sphinxcontrib.napoleon'
+    'sphinxcontrib.napoleon',
+    'releases'
 ]
+
+# 'releases' (changelog) settings
+releases_github_path = 'autoprotocol/autoprotocol-utilities'
+# releases_unstable_prehistory = True
+# releases_debug = True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

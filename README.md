@@ -1,5 +1,7 @@
 # Autoprotocol Utilities
 
+[![PyPI version](https://img.shields.io/pypi/v/autoprotocol-utilities.svg?maxAge=2592000)](https://pypi.python.org/pypi/autoprotocol-utilities)
+
 View Autoprotocol-utilities [Documentation](http://autoprotocol-utilities.readthedocs.org/en/latest/) on readthedocs.org
 
 [Autoprotocol](http://www.autoprotocol.org) is a standard way to express
@@ -15,7 +17,7 @@ experiments in life science. This repository contains helper functions to be use
     $ cd autoprotocol-utilities
     $ python setup.py install
 
- Check the releases tab or the [changelog](https://github.com/autoprotocol/autoprotocol-utilities/blob/master/CHANGELOG.md) in this repository to see the latest release that will be downloaded.
+ Check the releases tab or the [changelog](http://autoprotocol-utilities.readthedocs.org/en/latest/changelog.html) in this repository to see the latest release that will be downloaded.
 
 ## Example Usage
 
@@ -43,6 +45,6 @@ The easiest way to contribute is to fork this repository and submit a pull
 request.  You can also submit an issue or write an email to us at
 support@transcriptic.com if you want to discuss ideas or bugs.
 
-autoprotocol-utilities is BSD licensed (see [LICENSE](https://github.com/autoprotocol/autoprotocol-utilities/blob/master/LICENSE.rst)).
+autoprotocol-utilities is BSD licensed (see [LICENSE]http://autoprotocol-utilities.readthedocs.org/en/latest/LICENSE.html)).
 Before we can accept your pull request, we require that you sign a CLA (Contributor License Agreement)
-allowing us to distribute your work under the BSD license. Email one of the [AUTHORS](https://github.com/autoprotocol/autoprotocol-utilities/blob/master/AUTHORS.rst) for more details.
+allowing us to distribute your work under the BSD license. Email one of the [AUTHORS](http://autoprotocol-utilities.readthedocs.org/en/latest/AUTHORS.html) for more details.
