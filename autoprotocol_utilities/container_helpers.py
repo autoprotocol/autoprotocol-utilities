@@ -1,8 +1,8 @@
 from autoprotocol.container import Container, WellGroup, Well
 from autoprotocol.container_type import _CONTAINER_TYPES
 from autoprotocol.unit import Unit
-from misc_helpers import flatten_list
-from rectangle import binary_list, chop_list, max_rectangle, \
+from .misc_helpers import flatten_list
+from .rectangle import binary_list, chop_list, max_rectangle, \
     get_quadrant_binary_list, get_well_in_quadrant
 from collections import namedtuple, Counter
 from operator import itemgetter

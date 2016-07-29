@@ -2,6 +2,8 @@
 Changelog
 =========
 
+* :bug:`-` fix import compatibility for py3
+
 * :release:`2.2.0 <2016-07-28>`
 * :support:`-` new changelog and improved documentation
 * :feature:`-` bio_calculators module 
