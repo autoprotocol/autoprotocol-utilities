@@ -8,7 +8,6 @@ setup(name='autoprotocol_utilities',
       author_email='vanessa@transcriptic.com',
       license='MIT',
       packages=['autoprotocol_utilities'],
-      test_suite='tests',
       tests_require=['pytest'],
       install_requires=['autoprotocol>=3.7'],
       zip_safe=False)
