@@ -1,5 +1,6 @@
 # Autoprotocol Utilities
 
+[![Build Status](https://travis-ci.org/autoprotocol/autoprotocol-utilities.svg?branch=master)](https://travis-ci.org/autoprotocol/autoprotocol-utilities)
 [![PyPI version](https://img.shields.io/pypi/v/autoprotocol-utilities.svg?maxAge=2592000)](https://pypi.python.org/pypi/autoprotocol-utilities)
 
 View Autoprotocol-utilities [Documentation](http://autoprotocol-utilities.readthedocs.org/en/latest/) on readthedocs.org
