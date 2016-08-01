@@ -242,7 +242,7 @@ def get_well_in_quadrant(quadwells, quad):
     assert quad in [0, 1, 2, 3]
 
     basewells = get_quadrant_indices(quad)
-    wells = [basewells[i] for i in quadwells]
+    wells = [basewells[int(i)] for i in quadwells]
 
     return wells
 

@@ -34,7 +34,7 @@ class TestThermocycleHelpers:
     def test_thermocycle_ramp(self):
         resp = thermocycle_ramp("95:celsius", "65:celsius", "30:minute",
                                 "1:minute")
-        print resp
+        print(resp)
         assert resp == [
             {'duration': '1.0:minute', 'temperature': '95.0:celsius'},
             {'duration': '1.0:minute', 'temperature': '94.0:celsius'},

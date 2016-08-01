@@ -66,7 +66,7 @@ class TestContainerfunctions:
 
     def test_sort_well_group(self):
         wells = self.c.all_wells()
-        random_wells = sample(wells, len(wells))
+        random_wells = sample(set(wells), len(wells))
         assert list(random_wells) != list(wells)
         assert list(sort_well_group(random_wells)) == list(wells)
 
@@ -106,7 +106,7 @@ class TestContainerfunctions:
     ])
     def test_stamp_shape(self, wells, full, quad, r):
         res = stamp_shape(wells, full, quad)
-        print res
+        print(res)
         if quad:
             for i, re in enumerate(res):
                 assert re.start_well == r[i][0]
@@ -251,7 +251,7 @@ class TestDataformattingfunctions:
     ])
     def test_char_limit(self, string, length, trunc, clip, r):
         res = char_limit(string, length=length, trunc=trunc, clip=clip)
-        print res
+        print(res)
         assert res.label == r[0]
         if not r[1]:
             assert res.error_message == r[1]

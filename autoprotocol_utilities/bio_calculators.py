@@ -266,7 +266,7 @@ def mass_conc_to_molar(length, mass_conc, ds=True):
 
     dna_ng = Unit((mass_conc / Unit(1, "ng/uL")).magnitude, "ng")
     dna_pmol = dna_mass_to_mole(length, dna_ng, ds)
-    dna_molar = Unit(dna_pmol.magnitude, "uM")
+    dna_molar = Unit(round(dna_pmol.magnitude, 9), "uM")
 
     return dna_molar
 
