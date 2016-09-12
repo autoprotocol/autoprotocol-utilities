@@ -135,9 +135,14 @@ def thermocycle_ramp(start_temp, end_temp, total_duration, step_duration):
 
     .. code-block:: python
 
-        therm = thermocycle_ramp(65, 95, "30:minute", "1:minute")
+        thermocycle_group = [
+          {
+              "cycles": 1,
+              "steps": thermocycle_ramp(65, 95, "30:minute", "1:minute")
+          }
+        ]
         protocol.thermocycle(dest_plate,
-                             therm,
+                             groups=thermocycle_group,
                              volume="15:microliter")
 
     Parameters

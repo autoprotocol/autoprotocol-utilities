@@ -38,14 +38,12 @@ or
 Contributing
 ************
 
-The easiest way to contribute is to fork this repository and submit a pull request. You can also write an email to us if you want to discuss ideas or bugs.The easiest way to contribute is to fork this repository and submit a pull
-request.  You can also write an email to us if you want to discuss ideas or
-bugs.
+The easiest way to contribute is to fork this repository and submit a pull request. You can also write an email to us if you want to discuss ideas or bugs.
 
 - Vanessa Biggers: vanessa@transcriptic.com
-- Cornelia Scheitz: conny@transcriptic.com
+- Cornelia Scheitz: cornelia.scheitz@gmail.com
 
-autoprotocol-utilities is BSD licensed (see LICENSE). Before we can accept your
+autoprotocol-utilities is BSD licensed (see :ref:`license`). Before we can accept your
 pull request, we require that you sign a CLA (Contributor License Agreement)
 allowing us to distribute your work under the BSD license. Email one of the
 authors listed above for more details.
@@ -59,6 +57,6 @@ Search the Docs
 
 * :ref:`genindex`
 
-:copyright: 2016 by The Autoprotocol Development Team, see AUTHORS
+:copyright: 2016 by The Autoprotocol Development Team, see :ref:`authors`
     for more details.
-:license: BSD, see LICENSE for more details
+:license: BSD, see :ref:`license` for more details

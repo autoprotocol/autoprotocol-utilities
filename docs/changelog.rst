@@ -2,8 +2,10 @@
 Changelog
 =========
 
+* :release:`2.2.1 <2016-09-12>`
+* :support:`- backported` fix dox example :ref:`thermocycle-ramp`
 * :bug:`-` fixed python2/3 compatibility bugs
-* :feature:`-` Travis-ci and tox checkers added
+* :feature:`- backported` Travis-ci and tox checkers added
 * :bug:`-` fix import compatibility for py3
 
 * :release:`2.2.0 <2016-07-28>`
