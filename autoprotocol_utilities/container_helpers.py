@@ -973,3 +973,39 @@ def get_well_list_by_cont(wells):
             [well for well in wells if well.container == cont])
 
     return well_map
+
+
+def next_wells(plate, num=1, columnwise=False):
+    '''
+    Given a plate, returns a generator function that
+    can be used to iterate through the container's wells.
+
+    Parameters
+    ----------
+
+    plate: Container
+        The generator will iteratively return wells from this plate,
+        in order, from well 0, based on the parameters below.
+    num: int, optional
+        The generator will produce this many wells with each iteration.
+        Defaults to 1.
+    columnwise: bool, optional
+        Set to True if wells should be generated in columnwise
+        format. Defaults to False.
+
+    Returns
+    -------
+
+    genarator:
+        This function will iteratively generate the next set of
+        wells from the plate. Get the next plates using
+        `next(generator)`. Wells will be returned as a
+        WellGroup.
+
+    '''
+
+    next_index = 0
+    well_list = plate.all_wells(columnwise=columnwise)
+    while next_index <= plate.container_type.well_count - num:
+        yield well_list[next_index:(next_index + num)]
+        next_index += num
