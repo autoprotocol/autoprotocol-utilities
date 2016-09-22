@@ -2,6 +2,8 @@
 Changelog
 =========
 
+* :feature:`-` added well generator :ref:`next-wells`
+
 * :release:`2.2.1 <2016-09-12>`
 * :support:`- backported` fix dox example :ref:`thermocycle-ramp`
 * :bug:`-` fixed python2/3 compatibility bugs
