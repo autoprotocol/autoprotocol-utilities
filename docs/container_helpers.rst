@@ -76,6 +76,12 @@ stamp_shape
 ~~~~~~~~~~~
 .. autofunction:: autoprotocol_utilities.container_helpers.stamp_shape
 
+.. _next-wells:
+
+next_wells
+~~~~~~~~~~~
+.. autofunction:: autoprotocol_utilities.container_helpers.next_wells
+
 .. _rectangle-helper-functions:
 
 Rectangle helper functions
