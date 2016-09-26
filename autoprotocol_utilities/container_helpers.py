@@ -980,6 +980,35 @@ def next_wells(plate, num=1, columnwise=False):
     Given a plate, returns a generator function that
     can be used to iterate through the container's wells.
 
+    Example Usage:
+
+    .. code-block:: python
+
+        from autoprotocol import Protocol
+        from autoprotocol_utilities import next_wells
+
+        p = Protocol()
+        c1 = p.ref("c1", id=None, cont_type="96-pcr", discard=True)
+
+        assay_wells = next_wells(c1, num=2, columnwise=False)
+        my_wells = []
+        your_wells = []
+        my_wells.extend(next(assay_wells))
+        your_wells.extend(next(assay_wells))
+        your_wells.extend(next(assay_wells))
+        your_wells
+
+    Returns:
+
+    .. code-block:: python
+
+        [
+            Well(Container(c1), 2, None),
+            Well(Container(c1), 3, None),
+            Well(Container(c1), 4, None),
+            Well(Container(c1), 5, None)
+        ]
+
     Parameters
     ----------
 
