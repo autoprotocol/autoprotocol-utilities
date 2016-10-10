@@ -6,7 +6,7 @@ from autoprotocol.unit import Unit
 from autoprotocol_utilities.container_helpers import list_of_filled_wells, \
     first_empty_well, unique_containers, sort_well_group, stamp_shape, \
     is_columnwise, plates_needed, volume_check, set_pipettable_volume, well_name, \
-    container_type_checker, get_well_list_by_cont
+    container_type_checker, get_well_list_by_cont, next_wells
 from autoprotocol_utilities.misc_helpers import make_list, flatten_list, \
     char_limit, det_new_group, recursive_search, transfer_properties, \
     user_errors_group
@@ -216,6 +216,15 @@ class TestContainerfunctions:
 
     def test_user_errors_group(self):
         assert user_errors_group([None]) is None
+
+    def test_well_generator(self):
+        assay_wells = next_wells(self.c, num=8, columnwise=True)
+        well_matrix = []
+        for i in range(12):
+            well_matrix.append(next(assay_wells))
+        assert well_matrix[1] == [well for well in self.c.wells_from(1, 8, columnwise=True)]
+        with pytest.raises(StopIteration):
+            next(assay_wells)
 
 
 class TestDataformattingfunctions:
