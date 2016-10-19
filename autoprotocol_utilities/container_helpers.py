@@ -975,10 +975,10 @@ def get_well_list_by_cont(wells):
     return well_map
 
 
-def next_wells(plate, num=1, columnwise=False):
+def next_wells(target, num=1, columnwise=False):
     '''
-    Given a plate, returns a generator function that
-    can be used to iterate through the container's wells.
+    Given a plate, a list of plates or a WellGroup, returns a generator
+    function that can be used to iterate through the (container's) wells.
 
     Example Usage:
 
@@ -1012,29 +1012,54 @@ def next_wells(plate, num=1, columnwise=False):
     Parameters
     ----------
 
-    plate: Container
-        The generator will iteratively return wells from this plate,
-        in order, from well 0, based on the parameters below.
+    target: Container, List of Containers, WellGroup
+        The generator will iteratively return wells from these plate(s)
+        or WellGroup, in order, from the first well in the list,
+        based on the parameters below.
     num: int, optional
         The generator will produce this many wells with each iteration.
         Defaults to 1.
     columnwise: bool, optional
         Set to True if wells should be generated in columnwise
-        format. Defaults to False.
+        format. Defaults to False. If a WellGroup is given this parameter is
+        ignored.
 
     Returns
     -------
 
-    genarator:
+    generator:
         This function will iteratively generate the next set of
         wells from the plate. Get the next plates using
         `next(generator)`. Wells will be returned as a
         WellGroup.
 
+    Raises
+    ------
+    ValueError
+        If `target` is not a Container, a list of Containers or a WellGroup
+    RumtimeError
+        If all wells have been used
     '''
-
     next_index = 0
-    well_list = plate.all_wells(columnwise=columnwise)
-    while next_index <= plate.container_type.well_count - num:
+    assert isinstance(target, (list, Container, WellGroup)), (
+        "target must be a Container or a list of Containers or WellGroup")
+
+    well_list = []
+    if isinstance(target, Container):
+        well_list.extend(target.all_wells(columnwise=columnwise))
+    if isinstance(target, list):
+        for p in target:
+            assert isinstance(p, Container), ("all elements of `target` "
+                                              "must be Containers")
+        for t in target:
+            well_list.extend(t.all_wells(columnwise=columnwise))
+    elif isinstance(target, WellGroup):
+        well_list = list(target)
+    while next_index <= len(well_list) - num:
         yield well_list[next_index:(next_index + num)]
         next_index += num
+    else:
+        raise RuntimeError("Want to generate {!s} wells, "
+                           "but only have {!s} left.".format(
+                               (num),
+                               (len(well_list) - num)))

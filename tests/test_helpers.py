@@ -222,8 +222,9 @@ class TestContainerfunctions:
         well_matrix = []
         for i in range(12):
             well_matrix.append(next(assay_wells))
-        assert well_matrix[1] == [well for well in self.c.wells_from(1, 8, columnwise=True)]
-        with pytest.raises(StopIteration):
+        assert well_matrix[1] == [
+            well for well in self.c.wells_from(1, 8, columnwise=True)]
+        with pytest.raises(RuntimeError):
             next(assay_wells)
 
 

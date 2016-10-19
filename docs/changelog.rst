@@ -2,6 +2,8 @@
 Changelog
 =========
 
+* :bug: `-` :ref:`next-wells` fails with error and accepts list of Containers
+
 * :release:`2.3.0 <2016-10-10>`
 * :feature:`-` added well generator :ref:`next-wells`
 * :release:`2.2.1 <2016-09-12>`
