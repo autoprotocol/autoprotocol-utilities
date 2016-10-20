@@ -2,6 +2,7 @@
 Changelog
 =========
 
+* :release:`2.3.1 <2016-10-20>`
 * :bug: `-` :ref:`next-wells` fails with error and accepts list of Containers
 
 * :release:`2.3.0 <2016-10-10>`
