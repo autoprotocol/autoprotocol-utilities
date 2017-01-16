@@ -224,8 +224,13 @@ class TestContainerfunctions:
             well_matrix.append(next(assay_wells))
         assert well_matrix[1] == [
             well for well in self.c.wells_from(1, 8, columnwise=True)]
-        with pytest.raises(RuntimeError):
+        with pytest.raises(StopIteration):
             next(assay_wells)
+        assay_wells2 = next_wells(self.c, num=8, columnwise=True)
+        well_matrix2 = []
+        for wells in assay_wells2:
+            well_matrix2.append(assay_wells2)
+        assert len(well_matrix2) == 12
 
 
 class TestDataformattingfunctions:

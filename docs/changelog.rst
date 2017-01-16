@@ -2,6 +2,9 @@
 Changelog
 =========
 
+* :release:`2.3.2 <2017-1-16>`
+* :bug: `-` Fixes bug where :ref:`next-wells` could not be used as an iterator for loops
+
 * :release:`2.3.1 <2016-10-20>`
 * :bug: `-` :ref:`next-wells` fails with error and accepts list of Containers
 

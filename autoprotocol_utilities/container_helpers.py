@@ -1037,7 +1037,7 @@ def next_wells(target, num=1, columnwise=False):
     ------
     ValueError
         If `target` is not a Container, a list of Containers or a WellGroup
-    RumtimeError
+    StopIteration
         If all wells have been used
     '''
     next_index = 0
@@ -1058,8 +1058,3 @@ def next_wells(target, num=1, columnwise=False):
     while next_index <= len(well_list) - num:
         yield well_list[next_index:(next_index + num)]
         next_index += num
-    else:
-        raise RuntimeError("Want to generate {!s} wells, "
-                           "but only have {!s} left.".format(
-                               (num),
-                               (len(well_list) - num)))
