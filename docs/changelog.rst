@@ -2,6 +2,9 @@
 Changelog
 =========
 
+* :release:`2.3.3 <2017-3-21>`
+* :bug: `-` Remove unsupported resource ids
+
 * :release:`2.3.2 <2017-1-16>`
 * :bug: `-` Fixes bug where :ref:`next-wells` could not be used as an iterator for loops
 

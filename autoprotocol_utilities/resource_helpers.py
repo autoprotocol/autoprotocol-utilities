@@ -400,10 +400,6 @@ class ResourceIDs(object):
         self.lb_miller_50ug_ml_kan = "rs18s8x88zz9ee"
         self.lb_miller_100ug_ml_amp = "rs18s8x4qbsvjz"
         self.lb_miller_noAB = "rs17bafcbmyrmh"
-        self.tb_50ug_ml_kan = "rs18xqzy4ftdy3"
-        self.tb_100ug_ml_amp = "rs18xr22jq7vtz"
-        self.tb_100ug_ml_spec = "rs18xr25bpakgs"
-        self.tb_25ug_ml_cm = "rs18xr28t3z8nx"
         # kunkel resources
         self.t7_poly = "rs16pca2urcz74"
         self.t4_pnk = "rs16pc9rd5hsf6"
@@ -595,11 +591,7 @@ class ResourceIDs(object):
         media_dict = {
             "lb_miller_50ug_ml_kan": self.lb_miller_50ug_ml_kan,
             "lb_miller_100ug_ml_amp": self.lb_miller_100ug_ml_amp,
-            "lb_miller_noAB": self.lb_miller_noAB,
-            "tb_50ug_ml_kan": self.tb_50ug_ml_kan,
-            "tb_100ug_ml_amp": self.tb_100ug_ml_amp,
-            "tb_100ug_ml_specto": self.tb_100ug_ml_spec,
-            "tb_25ug_ml_cm": self.tb_25ug_ml_cm,
+            "lb_miller_noAB": self.lb_miller_noAB
         }
         return media_dict.get(media)
 

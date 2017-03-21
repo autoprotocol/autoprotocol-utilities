@@ -61,7 +61,7 @@ class TestResources:
     def test_growth_media(self):
         assert self._res.growth_media(
             "lb_miller_50ug_ml_kan") == "rs18s8x88zz9ee"
-        assert self._res.growth_media("tb_100ug_ml_amp") == "rs18xr22jq7vtz"
+        assert self._res.growth_media("lb_miller_noAB") == "rs17bafcbmyrmh"
 
     def test_t4_ligase(self):
         assert self._res.t4_ligase("lifetech") is None

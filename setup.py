@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='autoprotocol_utilities',
-      version='2.3.2',
+      version='2.3.3',
       description='Helper methods to construct protocols using autoprotocol-python.',  # NOQA
       url='https://github.com/transcriptic/autoprotocol-utilities',
       author='All past and present Application Scientists',
