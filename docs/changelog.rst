@@ -2,14 +2,16 @@
 Changelog
 =========
 
+* :support:`-` document fixes and year update
+
 * :release:`2.3.3 <2017-3-21>`
-* :bug: `-` Remove unsupported resource ids
+* :bug:`-` Remove unsupported resource ids
 
 * :release:`2.3.2 <2017-1-16>`
-* :bug: `-` Fixes bug where :ref:`next-wells` could not be used as an iterator for loops
+* :bug:`-` Fixes bug where :ref:`next-wells` could not be used as an iterator for loops
 
 * :release:`2.3.1 <2016-10-20>`
-* :bug: `-` :ref:`next-wells` fails with error and accepts list of Containers
+* :bug:`-` :ref:`next-wells` fails with error and accepts list of Containers
 
 * :release:`2.3.0 <2016-10-10>`
 * :feature:`-` added well generator :ref:`next-wells`

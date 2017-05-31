@@ -57,6 +57,6 @@ Search the Docs
 
 * :ref:`genindex`
 
-:copyright: 2016 by The Autoprotocol Development Team, see :ref:`authors`
+:copyright: 2017 by The Autoprotocol Development Team, see :ref:`authors`
     for more details.
 :license: BSD, see :ref:`license` for more details
